@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
-import { CheckCircle, Lock, Search, Trophy, AlertTriangle, Users, Gift, Settings, Bell, Gamepad2 } from "lucide-react"
+import { CheckCircle, Search, Trophy, AlertTriangle, Users, Gift, Settings, Bell, Gamepad2 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
 import { RewardsManagementSection } from "@/components/rewards-management-section"
@@ -39,7 +39,7 @@ interface PlayerStats {
 
 interface PokerQualifier {
   id: string
-  user_id: string
+  user_id: string | null
   thrill_username: string
   display_name: string | null
   monthly_wager: number
@@ -200,11 +200,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
       return
     }
 
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) {
-      return
-    }
-
     setIsCapturingQualifiers(true)
 
     try {
@@ -213,7 +208,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ adminKey }),
+        body: JSON.stringify({ adminKey: process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key" }),
       })
 
       const data = await response.json()
@@ -238,11 +233,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
       return
     }
 
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) {
-      return
-    }
-
     setIsUnlinkingAll(true)
 
     try {
@@ -251,7 +241,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ adminKey }),
+        body: JSON.stringify({ adminKey: process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key" }),
       })
 
       const data = await response.json()
@@ -587,93 +577,8 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
               </Card>
 
               {/* User List */}
-              <div className="space-y-4">
-                {filteredProfiles.map((profile) => {
-                  const stats = profile.thrill_username ? userStats[profile.thrill_username.toLowerCase()] : null
-
-                  return (
-                    <Card
-                      key={profile.id}
-                      className="p-6 rounded-xl border border-white/30 hover:border-[#5cfec0]/50 transition-all"
-                      style={{
-                        backgroundColor: "rgba(10, 10, 10, 0.95)",
-                        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
-                      }}
-                    >
-                      <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="flex items-center gap-4 lg:w-1/3">
-                          <Avatar className="h-16 w-16 border-2 border-[#5cfec0]">
-                            <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || "User"} />
-                            <AvatarFallback className="bg-[#1a1a1a] text-[#5cfec0] text-xl font-bold">
-                              {profile.display_name?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-white truncate">
-                              {profile.display_name || "No display name"}
-                            </h3>
-                            {profile.thrill_username && (
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-[#5cfec0] font-semibold">@{profile.thrill_username}</p>
-                                {profile.thrill_username_verified && <CheckCircle className="h-4 w-4 text-[#5cfec0]" />}
-                                {profile.thrill_username_locked && <Lock className="h-4 w-4 text-[#5cfec0]" />}
-                              </div>
-                            )}
-                            {profile.pokernow_username && (
-                              <p className="text-gray-400 text-sm">PokerNow: @{profile.pokernow_username}</p>
-                            )}
-                            {profile.telegram_username && (
-                              <p className="text-gray-400 text-sm">Telegram: @{profile.telegram_username}</p>
-                            )}
-                            <p className="text-xs text-gray-400 mt-1">Joined {formatDate(profile.created_at)}</p>
-                          </div>
-                        </div>
-
-                        {stats ? (
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:w-2/3">
-                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                              <p className="text-gray-400 text-xs uppercase mb-1">Rank</p>
-                              <p className="text-xl font-bold text-[#5cfec0]">#{stats.rank}</p>
-                            </div>
-                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                              <p className="text-gray-400 text-xs uppercase mb-1">Wager</p>
-                              <p className="text-xl font-bold text-white">{formatCurrency(stats.wager)}</p>
-                            </div>
-                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                              <p className="text-gray-400 text-xs uppercase mb-1">XP</p>
-                              <p className="text-xl font-bold text-indigo-400">{formatNumber(stats.xp)}</p>
-                            </div>
-                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                              <p className="text-gray-400 text-xs uppercase mb-1">Prize</p>
-                              <p className="text-xl font-bold text-[#5cfec0]">{formatCurrency(stats.prize)}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center lg:w-2/3 text-gray-400">
-                            {profile.thrill_username
-                              ? isLoadingStats
-                                ? "Loading stats..."
-                                : "Not on leaderboard"
-                              : "No Thrill username linked"}
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-                  )
-                })}
-
-                {filteredProfiles.length === 0 && (
-                  <Card
-                    className="p-12 rounded-xl border border-white/30 text-center"
-                    style={{
-                      backgroundColor: "rgba(10, 10, 10, 0.95)",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
-                    }}
-                  >
-                    <p className="text-gray-400 text-lg">No users found matching your search.</p>
-                  </Card>
-                )}
-              </div>
+              {/* The detailed user cards with leaderboard rankings are no longer shown here */}
+              {/* This section is now handled by UserManagementSection */}
             </div>
           )}
 

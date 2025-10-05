@@ -4,7 +4,8 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CheckCircle, Lock, Unlock, UserX, RefreshCw, Shield, ShieldOff } from "lucide-react"
+import { CheckCircle, Lock, Unlock, UserX, RefreshCw, Shield, ShieldOff, Trash2, ExternalLink } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface Profile {
   id: string
@@ -26,14 +27,16 @@ interface UserManagementSectionProps {
 
 export function UserManagementSection({ profiles, onRefresh }: UserManagementSectionProps) {
   const [processingUserId, setProcessingUserId] = useState<string | null>(null)
+  const router = useRouter()
+
+  const getAdminKey = () => {
+    return process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key"
+  }
 
   const handleUnlinkUser = async (userId: string, displayName: string | null) => {
     if (!confirm(`Are you sure you want to unlink ${displayName || "this user"}'s Thrill account?`)) {
       return
     }
-
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) return
 
     setProcessingUserId(userId)
 
@@ -41,7 +44,7 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
       const response = await fetch("/api/admin/users/unlink", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, adminKey }),
+        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
       })
 
       const data = await response.json()
@@ -69,16 +72,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
       return
     }
 
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) return
-
     setProcessingUserId(userId)
 
     try {
       const response = await fetch("/api/admin/users/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, adminKey }),
+        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
       })
 
       const data = await response.json()
@@ -103,16 +103,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
       return
     }
 
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) return
-
     setProcessingUserId(userId)
 
     try {
       const response = await fetch("/api/admin/users/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, verified: !currentStatus, adminKey }),
+        body: JSON.stringify({ userId, verified: !currentStatus, adminKey: getAdminKey() }),
       })
 
       const data = await response.json()
@@ -137,16 +134,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
       return
     }
 
-    const adminKey = prompt("Enter admin key to confirm:")
-    if (!adminKey) return
-
     setProcessingUserId(userId)
 
     try {
       const response = await fetch("/api/admin/users/lock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, locked: !currentStatus, adminKey }),
+        body: JSON.stringify({ userId, locked: !currentStatus, adminKey: getAdminKey() }),
       })
 
       const data = await response.json()
@@ -163,6 +157,50 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     } finally {
       setProcessingUserId(null)
     }
+  }
+
+  const handleDeleteUser = async (userId: string, displayName: string | null) => {
+    if (
+      !confirm(
+        `⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE ${displayName || "this user"}? This action CANNOT be undone and will remove all their data.`,
+      )
+    ) {
+      return
+    }
+
+    const confirmText = prompt('Type "DELETE" to confirm:')
+    if (confirmText !== "DELETE") {
+      alert("Deletion cancelled.")
+      return
+    }
+
+    setProcessingUserId(userId)
+
+    try {
+      const response = await fetch("/api/admin/users/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        alert("User deleted successfully!")
+        onRefresh()
+      } else {
+        alert(`Error: ${data.error}`)
+      }
+    } catch (error) {
+      console.error("[v0] Error deleting user:", error)
+      alert("An error occurred while deleting the user.")
+    } finally {
+      setProcessingUserId(null)
+    }
+  }
+
+  const handleViewDashboard = (userId: string) => {
+    router.push(`/dashboard/${userId}?admin=true`)
   }
 
   const formatDate = (dateString: string) => {
@@ -200,7 +238,14 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-bold truncate">{profile.display_name || "No display name"}</h3>
+                  <h3 className="text-white font-bold truncate flex items-center gap-2">
+                    {profile.display_name || "No display name"}
+                    {profile.thrill_username_verified && (
+                      <span className="text-yellow-400 text-lg" title="Verified">
+                        ⭐
+                      </span>
+                    )}
+                  </h3>
                   {profile.thrill_username ? (
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-indigo-400 font-semibold">@{profile.thrill_username}</p>
@@ -228,6 +273,16 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={() => handleViewDashboard(profile.id)}
+                  disabled={processingUserId === profile.id}
+                  size="sm"
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold uppercase rounded-lg"
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  View
+                </Button>
+
                 {profile.thrill_username && (
                   <>
                     <Button
@@ -298,6 +353,16 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                 >
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Reset
+                </Button>
+
+                <Button
+                  onClick={() => handleDeleteUser(profile.id, profile.display_name)}
+                  disabled={processingUserId === profile.id}
+                  size="sm"
+                  className="bg-gray-800 hover:bg-gray-900 text-red-400 font-bold uppercase rounded-lg border border-red-500/50"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
                 </Button>
               </div>
             </div>

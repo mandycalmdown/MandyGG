@@ -74,12 +74,10 @@ function calculateNextPokerNight(): Date {
   return targetPokerNight
 }
 
-// GET - Fetch qualified players for the next poker night
 export async function GET(request: Request) {
   try {
     const supabase = await createClient()
 
-    // Check if user is authenticated
     const {
       data: { user },
       error: authError,
@@ -90,30 +88,69 @@ export async function GET(request: Request) {
     }
 
     const targetPokerNight = calculateNextPokerNight()
+    const POKER_REQUIREMENT = 50000
 
-    const adminClient = createAdminClient()
+    // Fetch from Thrill API to get ALL qualified players
+    const token = process.env.THRILL_API_TOKEN
 
-    const { data: qualifiers, error } = await adminClient
-      .from("poker_qualifiers")
-      .select("*")
-      .order("poker_night_date", { ascending: false })
-      .order("monthly_wager", { ascending: false })
-
-    if (error) {
-      console.error("[v0] Error fetching poker qualifiers:", error)
-      return NextResponse.json({ error: "Failed to fetch qualifiers" }, { status: 500 })
+    if (!token) {
+      console.error("[v0] THRILL_API_TOKEN not set")
+      return NextResponse.json({ error: "Thrill API token not configured" }, { status: 500 })
     }
 
-    const nextPokerNightQualifiers =
-      qualifiers?.filter((q) => new Date(q.poker_night_date).getTime() === targetPokerNight.getTime()) || []
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now)
+    thirtyDaysAgo.setDate(now.getDate() - 30)
+    const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
+    const toDate = now.toISOString().split("T")[0]
 
-    console.log("[v0] Total qualifiers in DB:", qualifiers?.length || 0)
-    console.log("[v0] Qualifiers for next poker night:", nextPokerNightQualifiers.length)
+    const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        Cookie: `token=${token}`,
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; MandyGG-Leaderboard/1.0)",
+      },
+    })
+
+    if (!response.ok) {
+      console.error("[v0] Thrill API error:", response.status)
+      return NextResponse.json({ error: "Failed to fetch data from Thrill API" }, { status: 500 })
+    }
+
+    const data: ThrillApiResponse = await response.json()
+
+    // Get profiles to match display names
+    const adminClient = createAdminClient()
+    const { data: profiles } = await adminClient.from("profiles").select("*")
+
+    // Filter qualified players from Thrill API
+    const qualifiedPlayers = data.items
+      .map((item) => {
+        const monthlyWager = convertAtomicValue(item.wager.value, item.wager.decimals)
+        if (monthlyWager >= POKER_REQUIREMENT) {
+          const profile = profiles?.find((p) => p.thrill_username?.toLowerCase() === item.username.toLowerCase())
+          return {
+            id: profile?.id || item.username,
+            user_id: profile?.id || null,
+            thrill_username: item.username,
+            display_name: profile?.display_name || null,
+            monthly_wager: monthlyWager,
+            qualification_date: new Date().toISOString(),
+            poker_night_date: targetPokerNight.toISOString(),
+            created_at: new Date().toISOString(),
+          }
+        }
+        return null
+      })
+      .filter((p) => p !== null)
+
+    console.log("[v0] Found", qualifiedPlayers.length, "qualified players from Thrill API")
 
     return NextResponse.json({
-      qualifiers: nextPokerNightQualifiers,
+      qualifiers: qualifiedPlayers,
       pokerNightDate: targetPokerNight.toISOString(),
-      allQualifiers: qualifiers || [], // Include all qualifiers for debugging
     })
   } catch (error) {
     console.error("[v0] Error in poker qualifiers API:", error)
@@ -126,7 +163,6 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient()
 
-    // Check if user is authenticated and is admin
     const {
       data: { user },
       error: authError,
@@ -139,7 +175,6 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { adminKey } = body
 
-    // Verify admin key
     if (adminKey !== process.env.ADMIN_UNLINK_KEY) {
       return NextResponse.json({ error: "Invalid admin key" }, { status: 403 })
     }
@@ -167,7 +202,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Thrill API token not configured" }, { status: 500 })
     }
 
-    // Calculate date range for last 30 days
     const now = new Date()
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(now.getDate() - 30)
@@ -176,7 +210,6 @@ export async function POST(request: Request) {
 
     console.log("[v0] Fetching wager data from Thrill API for date range:", fromDate, "to", toDate)
 
-    // Fetch wager data from Thrill API
     const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -195,7 +228,6 @@ export async function POST(request: Request) {
     const data: ThrillApiResponse = await response.json()
     console.log("[v0] Thrill API returned", data.items?.length || 0, "players")
 
-    // Filter qualified players
     const qualifiedPlayers = []
     const POKER_REQUIREMENT = 50000
 
@@ -223,7 +255,6 @@ export async function POST(request: Request) {
 
     console.log("[v0] Found", qualifiedPlayers.length, "qualified players")
 
-    // Insert qualified players into the database
     if (qualifiedPlayers.length > 0) {
       const { error: insertError } = await adminClient.from("poker_qualifiers").upsert(qualifiedPlayers, {
         onConflict: "user_id,poker_night_date",
