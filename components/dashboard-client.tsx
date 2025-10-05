@@ -26,6 +26,8 @@ interface Profile {
   updated_at: string
   thrill_username_verified: boolean
   thrill_username_locked: boolean
+  pokernow_username: string | null
+  telegram_username: string | null
 }
 
 interface PlayerStats {
@@ -53,6 +55,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
   const [profile, setProfile] = useState<Profile | null>(initialProfile)
   const [thrillUsername, setThrillUsername] = useState(initialProfile?.thrill_username || "")
   const [displayName, setDisplayName] = useState(initialProfile?.display_name || "")
+  const [pokernowUsername, setPokernowUsername] = useState(initialProfile?.pokernow_username || "")
+  const [telegramUsername, setTelegramUsername] = useState(initialProfile?.telegram_username || "")
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -260,6 +264,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         body: JSON.stringify({
           thrill_username: thrillUsername || null,
           display_name: displayName || null,
+          pokernow_username: pokernowUsername || null,
+          telegram_username: telegramUsername || null,
         }),
       })
 
@@ -463,6 +469,38 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       </p>
                     </div>
                   )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pokernowUsername" className="text-gray-300">
+                    PokerNow Username
+                  </Label>
+                  <Input
+                    id="pokernowUsername"
+                    value={pokernowUsername}
+                    onChange={(e) => setPokernowUsername(e.target.value)}
+                    placeholder="Your PokerNow username (optional)"
+                    className="bg-[#1a1a1a] border-[#333] text-white"
+                  />
+                  <p className="text-sm text-gray-400">
+                    Add your PokerNow username so admins can identify you for poker tournaments.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="telegramUsername" className="text-gray-300">
+                    Telegram Username
+                  </Label>
+                  <Input
+                    id="telegramUsername"
+                    value={telegramUsername}
+                    onChange={(e) => setTelegramUsername(e.target.value)}
+                    placeholder="Your Telegram username (without @)"
+                    className="bg-[#1a1a1a] border-[#333] text-white"
+                  />
+                  <p className="text-sm text-gray-400">
+                    Add your Telegram username for direct communication and updates.
+                  </p>
                 </div>
 
                 {error && (

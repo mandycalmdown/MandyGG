@@ -41,6 +41,39 @@ function convertAtomicValue(value: string, decimals: number): number {
   }
 }
 
+function calculateNextPokerNight(): Date {
+  const now = new Date()
+  const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
+
+  const currentMonth = centralTime.getMonth()
+  const currentYear = centralTime.getFullYear()
+
+  const firstDayOfCurrentMonth = new Date(currentYear, currentMonth, 1)
+  const firstSundayOfCurrentMonth = new Date(firstDayOfCurrentMonth)
+  while (firstSundayOfCurrentMonth.getDay() !== 0) {
+    firstSundayOfCurrentMonth.setDate(firstSundayOfCurrentMonth.getDate() + 1)
+  }
+  firstSundayOfCurrentMonth.setHours(18, 0, 0, 0)
+
+  let nextMonth = currentMonth + 1
+  let nextYear = currentYear
+  if (nextMonth > 11) {
+    nextMonth = 0
+    nextYear++
+  }
+
+  const firstDayOfNextMonth = new Date(nextYear, nextMonth, 1)
+  const firstSundayOfNextMonth = new Date(firstDayOfNextMonth)
+  while (firstSundayOfNextMonth.getDay() !== 0) {
+    firstSundayOfNextMonth.setDate(firstSundayOfNextMonth.getDate() + 1)
+  }
+  firstSundayOfNextMonth.setHours(18, 0, 0, 0)
+
+  const targetPokerNight = centralTime < firstSundayOfCurrentMonth ? firstSundayOfCurrentMonth : firstSundayOfNextMonth
+
+  return targetPokerNight
+}
+
 // GET - Fetch qualified players for the next poker night
 export async function GET(request: Request) {
   try {
@@ -56,42 +89,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get the next poker night date (first Sunday of next month at 6 PM CST)
-    const now = new Date()
-    const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
-
-    const currentMonth = centralTime.getMonth()
-    const currentYear = centralTime.getFullYear()
-
-    const firstDayOfCurrentMonth = new Date(currentYear, currentMonth, 1)
-    const firstSundayOfCurrentMonth = new Date(firstDayOfCurrentMonth)
-    while (firstSundayOfCurrentMonth.getDay() !== 0) {
-      firstSundayOfCurrentMonth.setDate(firstSundayOfCurrentMonth.getDate() + 1)
-    }
-    firstSundayOfCurrentMonth.setHours(18, 0, 0, 0)
-
-    let nextMonth = currentMonth + 1
-    let nextYear = currentYear
-    if (nextMonth > 11) {
-      nextMonth = 0
-      nextYear++
-    }
-
-    const firstDayOfNextMonth = new Date(nextYear, nextMonth, 1)
-    const firstSundayOfNextMonth = new Date(firstDayOfNextMonth)
-    while (firstSundayOfNextMonth.getDay() !== 0) {
-      firstSundayOfNextMonth.setDate(firstSundayOfNextMonth.getDate() + 1)
-    }
-    firstSundayOfNextMonth.setHours(18, 0, 0, 0)
-
-    const targetPokerNight =
-      centralTime < firstSundayOfCurrentMonth ? firstSundayOfCurrentMonth : firstSundayOfNextMonth
+    const targetPokerNight = calculateNextPokerNight()
 
     const adminClient = createAdminClient()
+
     const { data: qualifiers, error } = await adminClient
       .from("poker_qualifiers")
       .select("*")
-      .eq("poker_night_date", targetPokerNight.toISOString())
+      .order("poker_night_date", { ascending: false })
       .order("monthly_wager", { ascending: false })
 
     if (error) {
@@ -99,9 +104,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Failed to fetch qualifiers" }, { status: 500 })
     }
 
+    const nextPokerNightQualifiers =
+      qualifiers?.filter((q) => new Date(q.poker_night_date).getTime() === targetPokerNight.getTime()) || []
+
+    console.log("[v0] Total qualifiers in DB:", qualifiers?.length || 0)
+    console.log("[v0] Qualifiers for next poker night:", nextPokerNightQualifiers.length)
+
     return NextResponse.json({
-      qualifiers: qualifiers || [],
+      qualifiers: nextPokerNightQualifiers,
       pokerNightDate: targetPokerNight.toISOString(),
+      allQualifiers: qualifiers || [], // Include all qualifiers for debugging
     })
   } catch (error) {
     console.error("[v0] Error in poker qualifiers API:", error)
@@ -145,21 +157,8 @@ export async function POST(request: Request) {
 
     console.log("[v0] Found profiles with Thrill usernames:", profiles?.length || 0)
 
-    // Calculate the poker night date
-    const now = new Date()
-    const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
-
-    const currentMonth = centralTime.getMonth()
-    const currentYear = centralTime.getFullYear()
-
-    const firstDayOfCurrentMonth = new Date(currentYear, currentMonth, 1)
-    const firstSundayOfCurrentMonth = new Date(firstDayOfCurrentMonth)
-    while (firstSundayOfCurrentMonth.getDay() !== 0) {
-      firstSundayOfCurrentMonth.setDate(firstSundayOfCurrentMonth.getDate() + 1)
-    }
-    firstSundayOfCurrentMonth.setHours(18, 0, 0, 0)
-
-    const pokerNightDate = firstSundayOfCurrentMonth
+    const pokerNightDate = calculateNextPokerNight()
+    console.log("[v0] Capturing qualifiers for poker night:", pokerNightDate.toISOString())
 
     const token = process.env.THRILL_API_TOKEN
 
@@ -169,6 +168,7 @@ export async function POST(request: Request) {
     }
 
     // Calculate date range for last 30 days
+    const now = new Date()
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(now.getDate() - 30)
     const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
@@ -239,6 +239,7 @@ export async function POST(request: Request) {
       success: true,
       count: qualifiedPlayers.length,
       qualifiers: qualifiedPlayers,
+      pokerNightDate: pokerNightDate.toISOString(),
     })
   } catch (error) {
     console.error("[v0] Error capturing poker qualifiers:", error)

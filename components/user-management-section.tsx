@@ -15,6 +15,8 @@ interface Profile {
   updated_at: string
   thrill_username_verified: boolean
   thrill_username_locked: boolean
+  pokernow_username: string | null
+  telegram_username: string | null
 }
 
 interface UserManagementSectionProps {
@@ -208,6 +210,18 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                   ) : (
                     <p className="text-gray-400 text-sm">No username linked</p>
                   )}
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                    {profile.pokernow_username && (
+                      <p className="text-xs text-gray-400">
+                        <span className="text-gray-500">PokerNow:</span> {profile.pokernow_username}
+                      </p>
+                    )}
+                    {profile.telegram_username && (
+                      <p className="text-xs text-gray-400">
+                        <span className="text-gray-500">Telegram:</span> @{profile.telegram_username}
+                      </p>
+                    )}
+                  </div>
                   <p className="text-xs text-gray-500">Joined {formatDate(profile.created_at)}</p>
                 </div>
               </div>

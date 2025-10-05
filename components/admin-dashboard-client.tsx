@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
-import { CheckCircle, Lock, Search, Trophy, AlertTriangle } from "lucide-react"
+import { CheckCircle, Lock, Search, Trophy, AlertTriangle, Users, Gift, Settings, Bell, Gamepad2 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
 import { RewardsManagementSection } from "@/components/rewards-management-section"
@@ -24,6 +24,8 @@ interface Profile {
   updated_at: string
   thrill_username_verified: boolean
   thrill_username_locked: boolean
+  pokernow_username: string | null
+  telegram_username: string | null
 }
 
 interface PlayerStats {
@@ -69,6 +71,7 @@ interface AdminDashboardClientProps {
 }
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
+  const [activeTab, setActiveTab] = useState<"users" | "rewards" | "announcements" | "poker" | "settings">("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
   const [searchQuery, setSearchQuery] = useState("")
@@ -384,7 +387,9 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     return (
       profile.display_name?.toLowerCase().includes(query) ||
       profile.thrill_username?.toLowerCase().includes(query) ||
-      profile.id.toLowerCase().includes(query)
+      profile.id.toLowerCase().includes(query) ||
+      profile.pokernow_username?.toLowerCase().includes(query) ||
+      profile.telegram_username?.toLowerCase().includes(query)
     )
   })
 
@@ -427,6 +432,14 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const totalWager = Object.values(userStats).reduce((sum, stats) => sum + stats.wager, 0)
   const totalPrizes = Object.values(userStats).reduce((sum, stats) => sum + stats.prize, 0)
 
+  const tabs = [
+    { id: "users" as const, label: "User Management", icon: Users },
+    { id: "rewards" as const, label: "Rewards", icon: Gift },
+    { id: "announcements" as const, label: "Announcements", icon: Bell },
+    { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
+    { id: "settings" as const, label: "Settings", icon: Settings },
+  ]
+
   return (
     <div className="min-h-screen bg-black font-sans">
       <div className="relative z-10">
@@ -435,569 +448,616 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-4xl md:text-5xl font-bold text-teal-500 mb-8 uppercase text-center">ADMIN DASHBOARD</h1>
 
-          {/* User Management Section */}
-          <UserManagementSection profiles={filteredProfiles} onRefresh={() => router.refresh()} />
-
-          {/* Rewards Management Section */}
-          <RewardsManagementSection />
-
-          {/* News Ticker Customization Section */}
-          <Card
-            className="p-6 mb-8 rounded-xl border border-teal-500/50"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-            }}
-          >
-            <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">News Ticker Customization</h2>
-
-            {!tickerTableExists && (
-              <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-yellow-500 font-bold mb-1">Database Table Missing</p>
-                  <p className="text-yellow-200 text-sm">
-                    The ticker_settings table doesn't exist yet. You can preview settings but cannot save them. Please
-                    run the SQL script{" "}
-                    <code className="bg-black/30 px-2 py-0.5 rounded">scripts/004_add_ticker_settings.sql</code> to
-                    enable customization.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Live Preview */}
-            <div className="mb-6">
-              <Label className="text-white mb-2 block">Live Preview</Label>
-              <div
-                className="w-full py-3 px-4 overflow-hidden relative rounded-lg"
-                style={{
-                  background: tickerSettings.background_gradient || tickerSettings.background_color,
-                }}
-              >
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="relative z-10 text-center">
-                  <p
-                    style={{
-                      color: tickerSettings.text_color,
-                      fontFamily: tickerSettings.font_family,
-                      fontSize: tickerSettings.font_size,
-                      fontWeight: tickerSettings.font_weight,
-                    }}
-                  >
-                    {announcements.find((a) => a.is_active)?.message ||
-                      "🎰 Get your $50,000 wager in by Sunday's deadline for Monthly Poker Night! 🃏"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* Text Color */}
-              <div>
-                <Label htmlFor="text-color" className="text-white mb-2 block">
-                  Text Color
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="text-color"
-                    type="color"
-                    value={tickerSettings.text_color}
-                    onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
-                    className="w-20 h-10"
-                  />
-                  <Input
-                    type="text"
-                    value={tickerSettings.text_color}
-                    onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
-                    className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                    placeholder="#ffffff"
-                  />
-                </div>
-              </div>
-
-              {/* Background Color */}
-              <div>
-                <Label htmlFor="bg-color" className="text-white mb-2 block">
-                  Background Color
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="bg-color"
-                    type="color"
-                    value={tickerSettings.background_color}
-                    onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
-                    className="w-20 h-10"
-                  />
-                  <Input
-                    type="text"
-                    value={tickerSettings.background_color}
-                    onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
-                    className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                    placeholder="#6366f1"
-                  />
-                </div>
-              </div>
-
-              {/* Background Gradient */}
-              <div className="md:col-span-2">
-                <Label htmlFor="bg-gradient" className="text-white mb-2 block">
-                  Background Gradient (CSS)
-                </Label>
-                <Input
-                  id="bg-gradient"
-                  type="text"
-                  value={tickerSettings.background_gradient}
-                  onChange={(e) => setTickerSettings({ ...tickerSettings, background_gradient: e.target.value })}
-                  className="bg-[#1a1a1a] border-[#333] text-white"
-                  placeholder="linear-gradient(to right, #6366f1, #a855f7, #6366f1)"
-                />
-              </div>
-
-              {/* Speed */}
-              <div>
-                <Label htmlFor="speed" className="text-white mb-2 block">
-                  Speed (milliseconds)
-                </Label>
-                <Input
-                  id="speed"
-                  type="number"
-                  value={tickerSettings.speed}
-                  onChange={(e) =>
-                    setTickerSettings({ ...tickerSettings, speed: Number.parseInt(e.target.value) || 8000 })
-                  }
-                  className="bg-[#1a1a1a] border-[#333] text-white"
-                  min="1000"
-                  max="30000"
-                  step="1000"
-                />
-              </div>
-
-              {/* Font Family */}
-              <div>
-                <Label htmlFor="font-family" className="text-white mb-2 block">
-                  Font Family
-                </Label>
-                <Input
-                  id="font-family"
-                  type="text"
-                  value={tickerSettings.font_family}
-                  onChange={(e) => setTickerSettings({ ...tickerSettings, font_family: e.target.value })}
-                  className="bg-[#1a1a1a] border-[#333] text-white"
-                  placeholder="inherit"
-                />
-              </div>
-
-              {/* Font Size */}
-              <div>
-                <Label htmlFor="font-size" className="text-white mb-2 block">
-                  Font Size
-                </Label>
-                <Input
-                  id="font-size"
-                  type="text"
-                  value={tickerSettings.font_size}
-                  onChange={(e) => setTickerSettings({ ...tickerSettings, font_size: e.target.value })}
-                  className="bg-[#1a1a1a] border-[#333] text-white"
-                  placeholder="1rem"
-                />
-              </div>
-
-              {/* Font Weight */}
-              <div>
-                <Label htmlFor="font-weight" className="text-white mb-2 block">
-                  Font Weight
-                </Label>
-                <select
-                  id="font-weight"
-                  value={tickerSettings.font_weight}
-                  onChange={(e) => setTickerSettings({ ...tickerSettings, font_weight: e.target.value })}
-                  className="w-full bg-[#1a1a1a] border border-[#333] text-white rounded-md px-3 py-2"
-                >
-                  <option value="normal">Normal</option>
-                  <option value="bold">Bold</option>
-                  <option value="600">Semi-Bold (600)</option>
-                  <option value="700">Bold (700)</option>
-                  <option value="800">Extra Bold (800)</option>
-                </select>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleSaveTickerSettings}
-              disabled={isSavingSettings || !tickerTableExists}
-              className="w-full bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50"
-            >
-              {isSavingSettings
-                ? "Saving..."
-                : !tickerTableExists
-                  ? "Table Not Found - Cannot Save"
-                  : "Save Ticker Settings"}
-            </Button>
-          </Card>
-
-          {/* Announcements Management Section */}
-          <Card
-            className="p-6 mb-8 rounded-xl border border-teal-500/50"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25), 0 0 40px rgba(20, 184, 166, 0.15)",
-            }}
-          >
-            <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">Manage Announcements</h2>
-
-            {/* Create New Announcement */}
-            <div className="mb-6">
-              <Label htmlFor="new-announcement" className="text-white mb-2 block">
-                New Announcement
-              </Label>
-              <div className="flex gap-2">
-                <Textarea
-                  id="new-announcement"
-                  value={newAnnouncement}
-                  onChange={(e) => setNewAnnouncement(e.target.value)}
-                  placeholder="Enter announcement message..."
-                  className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                  rows={2}
-                />
-                <Button
-                  onClick={handleCreateAnnouncement}
-                  className="bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl"
-                >
-                  Create
-                </Button>
-              </div>
-            </div>
-
-            {/* Announcements List */}
-            <div className="space-y-3">
-              {isLoadingAnnouncements ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-400">Loading announcements...</p>
-                </div>
-              ) : announcements.length > 0 ? (
-                announcements.map((announcement) => (
-                  <div
-                    key={announcement.id}
-                    className={`p-4 rounded-lg border transition-all ${
-                      announcement.is_active
-                        ? "bg-[#1a1a1a] border-teal-500/50"
-                        : "bg-[#0a0a0a] border-gray-700 opacity-60"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white mb-2">{announcement.message}</p>
-                        <p className="text-xs text-gray-400">
-                          Created: {new Date(announcement.created_at).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => handleToggleAnnouncement(announcement.id, announcement.is_active)}
-                          size="sm"
-                          className={`${
-                            announcement.is_active
-                              ? "bg-yellow-600 hover:bg-yellow-700"
-                              : "bg-teal-500 hover:bg-teal-600"
-                          } text-white font-bold uppercase rounded-lg`}
-                        >
-                          {announcement.is_active ? "Deactivate" : "Activate"}
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteAnnouncement(announcement.id)}
-                          size="sm"
-                          className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-                  <p className="text-gray-400">No announcements yet</p>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          <div className="flex justify-center mb-6">
-            <div className="flex bg-gray-800/50 rounded-lg p-1 border border-white/20">
-              <button
-                onClick={() => setSelectedPeriod("current")}
-                className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                  selectedPeriod === "current"
-                    ? "bg-[#5cfec0] text-black shadow-lg"
-                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                }`}
-              >
-                Current Week
-              </button>
-              <button
-                onClick={() => setSelectedPeriod("past")}
-                className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                  selectedPeriod === "past"
-                    ? "bg-[#5cfec0] text-black shadow-lg"
-                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                }`}
-              >
-                Past Week
-              </button>
-            </div>
-          </div>
-
-          <Card
-            className="p-6 mb-8 rounded-xl border border-[#5cfec0]/50"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(92, 254, 192, 0.25), 0 0 40px rgba(92, 254, 192, 0.15)",
-            }}
-          >
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-[#5cfec0] uppercase mb-2">Poker Night Qualifiers</h2>
-                {pokerNightDate && (
-                  <p className="text-gray-400 text-sm">
-                    Next Poker Night:{" "}
-                    <span className="text-white font-semibold">{formatPokerNightDate(pokerNightDate)}</span>
-                  </p>
-                )}
-              </div>
-              <Button
-                onClick={handleCaptureQualifiers}
-                disabled={isCapturingQualifiers}
-                className="bg-[#5cfec0] hover:bg-[#4de8ad] text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isCapturingQualifiers ? "Capturing..." : "Capture Qualified Players"}
-              </Button>
-            </div>
-
-            {isLoadingQualifiers ? (
-              <div className="text-center py-8">
-                <p className="text-gray-400">Loading qualified players...</p>
-              </div>
-            ) : pokerQualifiers.length > 0 ? (
-              <div className="space-y-3">
-                <p className="text-sm text-gray-400 mb-4">
-                  <Trophy className="inline h-4 w-4 mr-1 text-[#5cfec0]" />
-                  {pokerQualifiers.length} player{pokerQualifiers.length !== 1 ? "s" : ""} qualified for the $1,000
-                  poker tournament
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {pokerQualifiers.map((qualifier) => (
-                    <div
-                      key={qualifier.id}
-                      className="p-4 bg-[#1a1a1a] rounded-lg border border-[#5cfec0]/30 hover:border-[#5cfec0]/60 transition-all"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border-2 border-[#5cfec0]">
-                          <AvatarFallback className="bg-[#0a0a0a] text-[#5cfec0] font-bold">
-                            {qualifier.display_name?.charAt(0).toUpperCase() ||
-                              qualifier.thrill_username.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-bold truncate">
-                            {qualifier.display_name || qualifier.thrill_username}
-                          </p>
-                          <p className="text-[#5cfec0] text-sm">@{qualifier.thrill_username}</p>
-                          <p className="text-gray-400 text-xs">{formatCurrency(qualifier.monthly_wager)} wagered</p>
-                        </div>
-                        <CheckCircle className="h-5 w-5 text-[#5cfec0] flex-shrink-0" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-                <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                <p className="text-gray-400">No qualified players yet</p>
-                <p className="text-gray-500 text-sm mt-1">Players need to wager $50,000 to qualify</p>
-              </div>
-            )}
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {/* Statistics Overview Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <Card
-              className="p-6 rounded-xl border border-white/30 hover:border-[#5cfec0]/50 transition-all"
+              className="p-4 rounded-xl border border-teal-500/50 text-center"
               style={{
                 backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
               }}
             >
-              <div className="flex flex-col lg:flex-row gap-6">
-                <div className="flex items-center gap-4 lg:w-1/3">
-                  <Avatar className="h-16 w-16 border-2 border-[#5cfec0]">
-                    <AvatarImage src={profiles[0].avatar_url || undefined} alt={profiles[0].display_name || "User"} />
-                    <AvatarFallback className="bg-[#1a1a1a] text-[#5cfec0] text-xl font-bold">
-                      {profiles[0].display_name?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-white truncate">
-                      {profiles[0].display_name || "No display name"}
-                    </h3>
-                    {profiles[0].thrill_username && (
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-[#5cfec0] font-semibold">@{profiles[0].thrill_username}</p>
-                        {profiles[0].thrill_username_verified && <CheckCircle className="h-4 w-4 text-[#5cfec0]" />}
-                        {profiles[0].thrill_username_locked && <Lock className="h-4 w-4 text-[#5cfec0]" />}
-                      </div>
-                    )}
-                    <p className="text-xs text-gray-400 mt-1">Joined {formatDate(profiles[0].created_at)}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:w-2/3">
-                  <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Rank</p>
-                    <p className="text-xl font-bold text-[#5cfec0]">
-                      #{userStats[profiles[0].thrill_username.toLowerCase()]?.rank}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Wager</p>
-                    <p className="text-xl font-bold text-white">
-                      {formatCurrency(userStats[profiles[0].thrill_username.toLowerCase()]?.wager || 0)}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-xs uppercase mb-1">XP</p>
-                    <p className="text-xl font-bold text-indigo-400">
-                      {formatNumber(userStats[profiles[0].thrill_username.toLowerCase()]?.xp || 0)}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Prize</p>
-                    <p className="text-xl font-bold text-[#5cfec0]">
-                      {formatCurrency(userStats[profiles[0].thrill_username.toLowerCase()]?.prize || 0)}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <p className="text-gray-400 text-xs uppercase mb-2">Total Users</p>
+              <p className="text-3xl font-bold text-teal-500">{totalUsers}</p>
+            </Card>
+            <Card
+              className="p-4 rounded-xl border border-teal-500/50 text-center"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+              }}
+            >
+              <p className="text-gray-400 text-xs uppercase mb-2">Verified</p>
+              <p className="text-3xl font-bold text-green-500">{verifiedUsers}</p>
+            </Card>
+            <Card
+              className="p-4 rounded-xl border border-teal-500/50 text-center"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+              }}
+            >
+              <p className="text-gray-400 text-xs uppercase mb-2">Linked</p>
+              <p className="text-3xl font-bold text-blue-500">{totalLinks}</p>
+            </Card>
+            <Card
+              className="p-4 rounded-xl border border-teal-500/50 text-center"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+              }}
+            >
+              <p className="text-gray-400 text-xs uppercase mb-2">Total Wager</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(totalWager)}</p>
+            </Card>
+            <Card
+              className="p-4 rounded-xl border border-teal-500/50 text-center"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+              }}
+            >
+              <p className="text-gray-400 text-xs uppercase mb-2">Total Prizes</p>
+              <p className="text-2xl font-bold text-yellow-500">{formatCurrency(totalPrizes)}</p>
             </Card>
           </div>
 
-          <div className="mb-6">
-            <Button
-              onClick={handleUnlinkAll}
-              disabled={isUnlinkingAll || totalLinks === 0}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase text-lg py-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isUnlinkingAll ? "Unlinking All Accounts..." : `Unlink All Accounts (${totalLinks} linked)`}
-            </Button>
+          {/* Tabbed Navigation */}
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2 bg-[#1a1a1a] p-2 rounded-xl border border-teal-500/30">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-3 rounded-lg font-bold uppercase text-sm transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? "bg-teal-500 text-black shadow-lg"
+                        : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="hidden md:inline">{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          <Card
-            className="p-4 mb-6 rounded-xl border border-white/30"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-            }}
-          >
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search by display name, Thrill username, or user ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-[#1a1a1a] border-[#333] text-white"
-              />
-            </div>
-          </Card>
+          {/* Tab Panels */}
+          {activeTab === "users" && (
+            <div className="space-y-6">
+              {/* Period Selector */}
+              <div className="flex justify-center">
+                <div className="flex bg-gray-800/50 rounded-lg p-1 border border-white/20">
+                  <button
+                    onClick={() => setSelectedPeriod("current")}
+                    className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
+                      selectedPeriod === "current"
+                        ? "bg-[#5cfec0] text-black shadow-lg"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                    }`}
+                  >
+                    Current Week
+                  </button>
+                  <button
+                    onClick={() => setSelectedPeriod("past")}
+                    className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
+                      selectedPeriod === "past"
+                        ? "bg-[#5cfec0] text-black shadow-lg"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                    }`}
+                  >
+                    Past Week
+                  </button>
+                </div>
+              </div>
 
-          <div className="space-y-4">
-            {filteredProfiles.map((profile) => {
-              const stats = profile.thrill_username ? userStats[profile.thrill_username.toLowerCase()] : null
+              {/* User Management Section */}
+              <UserManagementSection profiles={filteredProfiles} onRefresh={() => router.refresh()} />
 
-              return (
-                <Card
-                  key={profile.id}
-                  className="p-6 rounded-xl border border-white/30 hover:border-[#5cfec0]/50 transition-all"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                  }}
-                >
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="flex items-center gap-4 lg:w-1/3">
-                      <Avatar className="h-16 w-16 border-2 border-[#5cfec0]">
-                        <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || "User"} />
-                        <AvatarFallback className="bg-[#1a1a1a] text-[#5cfec0] text-xl font-bold">
-                          {profile.display_name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-white truncate">
-                          {profile.display_name || "No display name"}
-                        </h3>
-                        {profile.thrill_username && (
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-[#5cfec0] font-semibold">@{profile.thrill_username}</p>
-                            {profile.thrill_username_verified && <CheckCircle className="h-4 w-4 text-[#5cfec0]" />}
-                            {profile.thrill_username_locked && <Lock className="h-4 w-4 text-[#5cfec0]" />}
-                          </div>
-                        )}
-                        <p className="text-xs text-gray-400 mt-1">Joined {formatDate(profile.created_at)}</p>
-                      </div>
-                    </div>
+              {/* Unlink All Button */}
+              <Button
+                onClick={handleUnlinkAll}
+                disabled={isUnlinkingAll || totalLinks === 0}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase text-lg py-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUnlinkingAll ? "Unlinking All Accounts..." : `Unlink All Accounts (${totalLinks} linked)`}
+              </Button>
 
-                    {stats ? (
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:w-2/3">
-                        <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                          <p className="text-gray-400 text-xs uppercase mb-1">Rank</p>
-                          <p className="text-xl font-bold text-[#5cfec0]">#{stats.rank}</p>
-                        </div>
-                        <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                          <p className="text-gray-400 text-xs uppercase mb-1">Wager</p>
-                          <p className="text-xl font-bold text-white">{formatCurrency(stats.wager)}</p>
-                        </div>
-                        <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                          <p className="text-gray-400 text-xs uppercase mb-1">XP</p>
-                          <p className="text-xl font-bold text-indigo-400">{formatNumber(stats.xp)}</p>
-                        </div>
-                        <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
-                          <p className="text-gray-400 text-xs uppercase mb-1">Prize</p>
-                          <p className="text-xl font-bold text-[#5cfec0]">{formatCurrency(stats.prize)}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center lg:w-2/3 text-gray-400">
-                        {profile.thrill_username
-                          ? isLoadingStats
-                            ? "Loading stats..."
-                            : "Not on leaderboard"
-                          : "No Thrill username linked"}
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              )
-            })}
-
-            {filteredProfiles.length === 0 && (
+              {/* Search Bar */}
               <Card
-                className="p-12 rounded-xl border border-white/30 text-center"
+                className="p-4 rounded-xl border border-white/30"
                 style={{
                   backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
                 }}
               >
-                <p className="text-gray-400 text-lg">No users found matching your search.</p>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search by display name, Thrill username, PokerNow username, Telegram username, or user ID..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-[#1a1a1a] border-[#333] text-white"
+                  />
+                </div>
               </Card>
-            )}
-          </div>
+
+              {/* User List */}
+              <div className="space-y-4">
+                {filteredProfiles.map((profile) => {
+                  const stats = profile.thrill_username ? userStats[profile.thrill_username.toLowerCase()] : null
+
+                  return (
+                    <Card
+                      key={profile.id}
+                      className="p-6 rounded-xl border border-white/30 hover:border-[#5cfec0]/50 transition-all"
+                      style={{
+                        backgroundColor: "rgba(10, 10, 10, 0.95)",
+                        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
+                      }}
+                    >
+                      <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="flex items-center gap-4 lg:w-1/3">
+                          <Avatar className="h-16 w-16 border-2 border-[#5cfec0]">
+                            <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || "User"} />
+                            <AvatarFallback className="bg-[#1a1a1a] text-[#5cfec0] text-xl font-bold">
+                              {profile.display_name?.charAt(0).toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg font-bold text-white truncate">
+                              {profile.display_name || "No display name"}
+                            </h3>
+                            {profile.thrill_username && (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="text-[#5cfec0] font-semibold">@{profile.thrill_username}</p>
+                                {profile.thrill_username_verified && <CheckCircle className="h-4 w-4 text-[#5cfec0]" />}
+                                {profile.thrill_username_locked && <Lock className="h-4 w-4 text-[#5cfec0]" />}
+                              </div>
+                            )}
+                            {profile.pokernow_username && (
+                              <p className="text-gray-400 text-sm">PokerNow: @{profile.pokernow_username}</p>
+                            )}
+                            {profile.telegram_username && (
+                              <p className="text-gray-400 text-sm">Telegram: @{profile.telegram_username}</p>
+                            )}
+                            <p className="text-xs text-gray-400 mt-1">Joined {formatDate(profile.created_at)}</p>
+                          </div>
+                        </div>
+
+                        {stats ? (
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:w-2/3">
+                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
+                              <p className="text-gray-400 text-xs uppercase mb-1">Rank</p>
+                              <p className="text-xl font-bold text-[#5cfec0]">#{stats.rank}</p>
+                            </div>
+                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
+                              <p className="text-gray-400 text-xs uppercase mb-1">Wager</p>
+                              <p className="text-xl font-bold text-white">{formatCurrency(stats.wager)}</p>
+                            </div>
+                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
+                              <p className="text-gray-400 text-xs uppercase mb-1">XP</p>
+                              <p className="text-xl font-bold text-indigo-400">{formatNumber(stats.xp)}</p>
+                            </div>
+                            <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/20">
+                              <p className="text-gray-400 text-xs uppercase mb-1">Prize</p>
+                              <p className="text-xl font-bold text-[#5cfec0]">{formatCurrency(stats.prize)}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center lg:w-2/3 text-gray-400">
+                            {profile.thrill_username
+                              ? isLoadingStats
+                                ? "Loading stats..."
+                                : "Not on leaderboard"
+                              : "No Thrill username linked"}
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  )
+                })}
+
+                {filteredProfiles.length === 0 && (
+                  <Card
+                    className="p-12 rounded-xl border border-white/30 text-center"
+                    style={{
+                      backgroundColor: "rgba(10, 10, 10, 0.95)",
+                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
+                    }}
+                  >
+                    <p className="text-gray-400 text-lg">No users found matching your search.</p>
+                  </Card>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "rewards" && (
+            <div>
+              <RewardsManagementSection />
+            </div>
+          )}
+
+          {activeTab === "announcements" && (
+            <div className="space-y-6">
+              {/* News Ticker Customization */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">News Ticker Customization</h2>
+
+                {!tickerTableExists && (
+                  <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-yellow-500 font-bold mb-1">Database Table Missing</p>
+                      <p className="text-yellow-200 text-sm">
+                        The ticker_settings table doesn't exist yet. Please run the SQL script{" "}
+                        <code className="bg-black/30 px-2 py-0.5 rounded">scripts/004_add_ticker_settings.sql</code> to
+                        enable customization.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Live Preview */}
+                <div className="mb-6">
+                  <Label className="text-white mb-2 block">Live Preview</Label>
+                  <div
+                    className="w-full py-3 px-4 overflow-hidden relative rounded-lg"
+                    style={{
+                      background: tickerSettings.background_gradient || tickerSettings.background_color,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="relative z-10 text-center">
+                      <p
+                        style={{
+                          color: tickerSettings.text_color,
+                          fontFamily: tickerSettings.font_family,
+                          fontSize: tickerSettings.font_size,
+                          fontWeight: tickerSettings.font_weight,
+                        }}
+                      >
+                        {announcements.find((a) => a.is_active)?.message ||
+                          "🎰 Get your $50,000 wager in by Sunday's deadline for Monthly Poker Night! 🃏"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Text Color */}
+                  <div>
+                    <Label htmlFor="text-color" className="text-white mb-2 block">
+                      Text Color
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="text-color"
+                        type="color"
+                        value={tickerSettings.text_color}
+                        onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
+                        className="w-20 h-10"
+                      />
+                      <Input
+                        type="text"
+                        value={tickerSettings.text_color}
+                        onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
+                        className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
+                        placeholder="#ffffff"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Background Color */}
+                  <div>
+                    <Label htmlFor="bg-color" className="text-white mb-2 block">
+                      Background Color
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="bg-color"
+                        type="color"
+                        value={tickerSettings.background_color}
+                        onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
+                        className="w-20 h-10"
+                      />
+                      <Input
+                        type="text"
+                        value={tickerSettings.background_color}
+                        onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
+                        className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
+                        placeholder="#6366f1"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Background Gradient */}
+                  <div className="md:col-span-2">
+                    <Label htmlFor="bg-gradient" className="text-white mb-2 block">
+                      Background Gradient (CSS)
+                    </Label>
+                    <Input
+                      id="bg-gradient"
+                      type="text"
+                      value={tickerSettings.background_gradient}
+                      onChange={(e) => setTickerSettings({ ...tickerSettings, background_gradient: e.target.value })}
+                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      placeholder="linear-gradient(to right, #6366f1, #a855f7, #6366f1)"
+                    />
+                  </div>
+
+                  {/* Speed */}
+                  <div>
+                    <Label htmlFor="speed" className="text-white mb-2 block">
+                      Speed (milliseconds)
+                    </Label>
+                    <Input
+                      id="speed"
+                      type="number"
+                      value={tickerSettings.speed}
+                      onChange={(e) =>
+                        setTickerSettings({ ...tickerSettings, speed: Number.parseInt(e.target.value) || 8000 })
+                      }
+                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      min="1000"
+                      max="30000"
+                      step="1000"
+                    />
+                  </div>
+
+                  {/* Font Family */}
+                  <div>
+                    <Label htmlFor="font-family" className="text-white mb-2 block">
+                      Font Family
+                    </Label>
+                    <Input
+                      id="font-family"
+                      type="text"
+                      value={tickerSettings.font_family}
+                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_family: e.target.value })}
+                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      placeholder="inherit"
+                    />
+                  </div>
+
+                  {/* Font Size */}
+                  <div>
+                    <Label htmlFor="font-size" className="text-white mb-2 block">
+                      Font Size
+                    </Label>
+                    <Input
+                      id="font-size"
+                      type="text"
+                      value={tickerSettings.font_size}
+                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_size: e.target.value })}
+                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      placeholder="1rem"
+                    />
+                  </div>
+
+                  {/* Font Weight */}
+                  <div>
+                    <Label htmlFor="font-weight" className="text-white mb-2 block">
+                      Font Weight
+                    </Label>
+                    <select
+                      id="font-weight"
+                      value={tickerSettings.font_weight}
+                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_weight: e.target.value })}
+                      className="w-full bg-[#1a1a1a] border border-[#333] text-white rounded-md px-3 py-2"
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="bold">Bold</option>
+                      <option value="600">Semi-Bold (600)</option>
+                      <option value="700">Bold (700)</option>
+                      <option value="800">Extra Bold (800)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleSaveTickerSettings}
+                  disabled={isSavingSettings || !tickerTableExists}
+                  className="w-full bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50"
+                >
+                  {isSavingSettings
+                    ? "Saving..."
+                    : !tickerTableExists
+                      ? "Table Not Found - Cannot Save"
+                      : "Save Ticker Settings"}
+                </Button>
+              </Card>
+
+              {/* Announcements Management */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">Manage Announcements</h2>
+
+                {/* Create New Announcement */}
+                <div className="mb-6">
+                  <Label htmlFor="new-announcement" className="text-white mb-2 block">
+                    New Announcement
+                  </Label>
+                  <div className="flex gap-2">
+                    <Textarea
+                      id="new-announcement"
+                      value={newAnnouncement}
+                      onChange={(e) => setNewAnnouncement(e.target.value)}
+                      placeholder="Enter announcement message..."
+                      className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
+                      rows={2}
+                    />
+                    <Button
+                      onClick={handleCreateAnnouncement}
+                      className="bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl"
+                    >
+                      Create
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Announcements List */}
+                <div className="space-y-3">
+                  {isLoadingAnnouncements ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400">Loading announcements...</p>
+                    </div>
+                  ) : announcements.length > 0 ? (
+                    announcements.map((announcement) => (
+                      <div
+                        key={announcement.id}
+                        className={`p-4 rounded-lg border transition-all ${
+                          announcement.is_active
+                            ? "bg-[#1a1a1a] border-teal-500/50"
+                            : "bg-[#0a0a0a] border-gray-700 opacity-60"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white mb-2">{announcement.message}</p>
+                            <p className="text-xs text-gray-400">
+                              Created: {new Date(announcement.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleToggleAnnouncement(announcement.id, announcement.is_active)}
+                              size="sm"
+                              className={`${
+                                announcement.is_active
+                                  ? "bg-yellow-600 hover:bg-yellow-700"
+                                  : "bg-teal-500 hover:bg-teal-600"
+                              } text-white font-bold uppercase rounded-lg`}
+                            >
+                              {announcement.is_active ? "Deactivate" : "Activate"}
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteAnnouncement(announcement.id)}
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                      <p className="text-gray-400">No announcements yet</p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {activeTab === "poker" && (
+            <div>
+              <Card
+                className="p-6 rounded-xl border border-[#5cfec0]/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(92, 254, 192, 0.25)",
+                }}
+              >
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-[#5cfec0] uppercase mb-2">Poker Night Qualifiers</h2>
+                    {pokerNightDate && (
+                      <p className="text-gray-400 text-sm">
+                        Next Poker Night:{" "}
+                        <span className="text-white font-semibold">{formatPokerNightDate(pokerNightDate)}</span>
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    onClick={handleCaptureQualifiers}
+                    disabled={isCapturingQualifiers}
+                    className="bg-[#5cfec0] hover:bg-[#4de8ad] text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50"
+                  >
+                    {isCapturingQualifiers ? "Capturing..." : "Capture Qualified Players"}
+                  </Button>
+                </div>
+
+                {isLoadingQualifiers ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">Loading qualified players...</p>
+                  </div>
+                ) : pokerQualifiers.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-400 mb-4">
+                      <Trophy className="inline h-4 w-4 mr-1 text-[#5cfec0]" />
+                      {pokerQualifiers.length} player{pokerQualifiers.length !== 1 ? "s" : ""} qualified for the $1,000
+                      poker tournament
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {pokerQualifiers.map((qualifier) => (
+                        <div
+                          key={qualifier.id}
+                          className="p-4 bg-[#1a1a1a] rounded-lg border border-[#5cfec0]/30 hover:border-[#5cfec0]/60 transition-all"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10 border-2 border-[#5cfec0]">
+                              <AvatarFallback className="bg-[#0a0a0a] text-[#5cfec0] font-bold">
+                                {qualifier.display_name?.charAt(0).toUpperCase() ||
+                                  qualifier.thrill_username.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-bold truncate">
+                                {qualifier.display_name || qualifier.thrill_username}
+                              </p>
+                              <p className="text-[#5cfec0] text-sm">@{qualifier.thrill_username}</p>
+                              <p className="text-gray-400 text-xs">{formatCurrency(qualifier.monthly_wager)} wagered</p>
+                            </div>
+                            <CheckCircle className="h-5 w-5 text-[#5cfec0] flex-shrink-0" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+                    <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-400">No qualified players yet</p>
+                    <p className="text-gray-500 text-sm mt-1">Players need to wager $50,000 to qualify</p>
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
+
+          {activeTab === "settings" && (
+            <div>
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">Admin Settings</h2>
+                <p className="text-gray-400 mb-4">Additional admin settings and configurations will be added here.</p>
+              </Card>
+            </div>
+          )}
         </div>
 
         <footer className="px-4 mt-8 pb-4">
@@ -1005,8 +1065,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
             className="max-w-7xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/30 transition-all duration-300 hover:scale-[1.01]"
             style={{
               backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
             }}
           >
             <div className="text-center">
