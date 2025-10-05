@@ -13,6 +13,7 @@ import type { User } from "@supabase/supabase-js"
 import { CheckCircle, Lock, Search, Trophy, AlertTriangle } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
+import { RewardsManagementSection } from "@/components/rewards-management-section"
 
 interface Profile {
   id: string
@@ -436,6 +437,9 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
           {/* User Management Section */}
           <UserManagementSection profiles={filteredProfiles} onRefresh={() => router.refresh()} />
+
+          {/* Rewards Management Section */}
+          <RewardsManagementSection />
 
           {/* News Ticker Customization Section */}
           <Card

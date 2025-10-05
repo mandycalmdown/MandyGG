@@ -1,7 +1,45 @@
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 export const dynamic = "force-dynamic"
+
+interface ThrillApiResponse {
+  items: Array<{
+    username: string
+    campaignName: string
+    createdAt: string
+    wager: {
+      value: string
+      currency: string
+      decimals: number
+    }
+    earning: {
+      value: string
+      currency: string
+      decimals: number
+    }
+    xp: {
+      value: string
+      decimals: number
+    }
+  }>
+  isLastBatch: boolean
+  totalCount: number
+}
+
+function convertAtomicValue(value: string, decimals: number): number {
+  try {
+    if (!value || value === "0") return 0
+    const bigIntValue = BigInt(value)
+    const divisor = BigInt(10 ** decimals)
+    const result = Number(bigIntValue) / Number(divisor)
+    return Math.floor(result)
+  } catch (error) {
+    console.error("[v0] Error converting atomic value:", value, decimals, error)
+    return 0
+  }
+}
 
 // GET - Fetch qualified players for the next poker night
 export async function GET(request: Request) {
@@ -49,8 +87,8 @@ export async function GET(request: Request) {
     const targetPokerNight =
       centralTime < firstSundayOfCurrentMonth ? firstSundayOfCurrentMonth : firstSundayOfNextMonth
 
-    // Fetch qualified players for this poker night
-    const { data: qualifiers, error } = await supabase
+    const adminClient = createAdminClient()
+    const { data: qualifiers, error } = await adminClient
       .from("poker_qualifiers")
       .select("*")
       .eq("poker_night_date", targetPokerNight.toISOString())
@@ -86,12 +124,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Check if user is admin (you can add admin check logic here)
-    const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
-
-    // For now, we'll allow any authenticated user to trigger this
-    // In production, you should add proper admin verification
-
     const body = await request.json()
     const { adminKey } = body
 
@@ -100,8 +132,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid admin key" }, { status: 403 })
     }
 
-    // Get all users with their monthly wager
-    const { data: profiles, error: profilesError } = await supabase
+    const adminClient = createAdminClient()
+    const { data: profiles, error: profilesError } = await adminClient
       .from("profiles")
       .select("*")
       .not("thrill_username", "is", null)
@@ -110,6 +142,8 @@ export async function POST(request: Request) {
       console.error("[v0] Error fetching profiles:", profilesError)
       return NextResponse.json({ error: "Failed to fetch profiles" }, { status: 500 })
     }
+
+    console.log("[v0] Found profiles with Thrill usernames:", profiles?.length || 0)
 
     // Calculate the poker night date
     const now = new Date()
@@ -127,45 +161,71 @@ export async function POST(request: Request) {
 
     const pokerNightDate = firstSundayOfCurrentMonth
 
-    // Fetch wager data for each user and filter qualified players
+    const token = process.env.THRILL_API_TOKEN
+
+    if (!token) {
+      console.error("[v0] THRILL_API_TOKEN not set")
+      return NextResponse.json({ error: "Thrill API token not configured" }, { status: 500 })
+    }
+
+    // Calculate date range for last 30 days
+    const thirtyDaysAgo = new Date(now)
+    thirtyDaysAgo.setDate(now.getDate() - 30)
+    const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
+    const toDate = now.toISOString().split("T")[0]
+
+    console.log("[v0] Fetching wager data from Thrill API for date range:", fromDate, "to", toDate)
+
+    // Fetch wager data from Thrill API
+    const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
+    const response = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        Cookie: `token=${token}`,
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; MandyGG-Leaderboard/1.0)",
+      },
+    })
+
+    if (!response.ok) {
+      console.error("[v0] Thrill API error:", response.status)
+      return NextResponse.json({ error: "Failed to fetch wager data from Thrill API" }, { status: 500 })
+    }
+
+    const data: ThrillApiResponse = await response.json()
+    console.log("[v0] Thrill API returned", data.items?.length || 0, "players")
+
+    // Filter qualified players
     const qualifiedPlayers = []
     const POKER_REQUIREMENT = 50000
 
     for (const profile of profiles || []) {
-      try {
-        // Fetch monthly wager from the API
-        const wagerResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/player-wager-history`,
-          {
-            headers: {
-              Cookie: request.headers.get("cookie") || "",
-            },
-          },
-        )
+      const thrillPlayer = data.items.find(
+        (item) => item.username.toLowerCase() === profile.thrill_username.toLowerCase(),
+      )
 
-        if (wagerResponse.ok) {
-          const wagerData = await wagerResponse.json()
-          const monthlyWager = wagerData.last30Days || 0
+      if (thrillPlayer) {
+        const monthlyWager = convertAtomicValue(thrillPlayer.wager.value, thrillPlayer.wager.decimals)
+        console.log("[v0] Player", profile.thrill_username, "has wager:", monthlyWager)
 
-          if (monthlyWager >= POKER_REQUIREMENT) {
-            qualifiedPlayers.push({
-              user_id: profile.id,
-              thrill_username: profile.thrill_username,
-              display_name: profile.display_name,
-              monthly_wager: monthlyWager,
-              qualification_date: new Date().toISOString(),
-              poker_night_date: pokerNightDate.toISOString(),
-            })
-          }
+        if (monthlyWager >= POKER_REQUIREMENT) {
+          qualifiedPlayers.push({
+            user_id: profile.id,
+            thrill_username: profile.thrill_username,
+            display_name: profile.display_name,
+            monthly_wager: monthlyWager,
+            qualification_date: new Date().toISOString(),
+            poker_night_date: pokerNightDate.toISOString(),
+          })
         }
-      } catch (error) {
-        console.error(`[v0] Error fetching wager for ${profile.thrill_username}:`, error)
       }
     }
 
+    console.log("[v0] Found", qualifiedPlayers.length, "qualified players")
+
     // Insert qualified players into the database
     if (qualifiedPlayers.length > 0) {
-      const { error: insertError } = await supabase.from("poker_qualifiers").upsert(qualifiedPlayers, {
+      const { error: insertError } = await adminClient.from("poker_qualifiers").upsert(qualifiedPlayers, {
         onConflict: "user_id,poker_night_date",
       })
 
