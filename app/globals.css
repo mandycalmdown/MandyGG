@@ -1,0 +1,450 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color tokens to match gambling/wagering theme with mint green accents */
+  --background: oklch(0.145 0.02 240); /* Dark Gray #1f2937 */
+  --foreground: oklch(0.985 0 0); /* White */
+  --card: oklch(0.08 0 0); /* Black */
+  --card-foreground: oklch(0.985 0 0); /* White */
+  --popover: oklch(0.32 0.02 240); /* Gray #4b5563 */
+  --popover-foreground: oklch(0.985 0 0); /* White */
+  --primary: oklch(0.72 0.15 165); /* Mint Green #00b894 */
+  --primary-foreground: oklch(0.985 0 0); /* White */
+  --secondary: oklch(0.32 0.02 240); /* Gray #4b5563 */
+  --secondary-foreground: oklch(0.985 0 0); /* White */
+  --muted: oklch(0.25 0.02 240); /* Darker Gray #374151 */
+  --muted-foreground: oklch(0.985 0 0); /* White */
+  --accent: oklch(0.72 0.15 165); /* Mint Green #00b894 */
+  --accent-foreground: oklch(0.985 0 0); /* White */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.32 0.02 240); /* Gray #4b5563 */
+  --input: oklch(0.08 0 0); /* Black */
+  --ring: oklch(0.72 0.15 165); /* Mint Green #00b894 */
+  --chart-1: oklch(0.72 0.15 165); /* Mint Green */
+  --chart-2: oklch(0.32 0.02 240); /* Gray */
+  --chart-3: oklch(0.577 0.245 27.325); /* Red */
+  --chart-4: oklch(0.696 0.17 162.48); /* Orange */
+  --chart-5: oklch(0.645 0.246 16.439); /* Dark Orange */
+  --radius: 0.5rem;
+  --sidebar: oklch(0.145 0.02 240); /* Dark Gray */
+  --sidebar-foreground: oklch(0.985 0 0); /* White */
+  --sidebar-primary: oklch(0.72 0.15 165); /* Mint Green */
+  --sidebar-primary-foreground: oklch(0.985 0 0); /* White */
+  --sidebar-accent: oklch(0.32 0.02 240); /* Gray */
+  --sidebar-accent-foreground: oklch(0.985 0 0); /* White */
+  --sidebar-border: oklch(0.32 0.02 240); /* Gray */
+  --sidebar-ring: oklch(0.72 0.15 165); /* Mint Green */
+  --font-roboto-condensed: "Roboto Condensed", sans-serif; /* Added Roboto Condensed font definition */
+  --font-poppins: "Poppins", sans-serif; /* Added Poppins font definition */
+}
+
+.dark {
+  /* Dark mode uses same colors since this is already a dark theme */
+  --background: oklch(0.145 0.02 240);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.08 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.32 0.02 240);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.72 0.15 165);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.32 0.02 240);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.25 0.02 240);
+  --muted-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.72 0.15 165);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.32 0.02 240);
+  --input: oklch(0.08 0 0);
+  --ring: oklch(0.72 0.15 165);
+  --chart-1: oklch(0.72 0.15 165);
+  --chart-2: oklch(0.32 0.02 240);
+  --chart-3: oklch(0.577 0.245 27.325);
+  --chart-4: oklch(0.696 0.17 162.48);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.145 0.02 240);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.72 0.15 165);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.32 0.02 240);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.32 0.02 240);
+  --sidebar-ring: oklch(0.72 0.15 165);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Ensured Roboto Condensed is applied as the primary sans serif font across the entire site */
+  --font-sans: var(--font-roboto-condensed);
+  --font-family-sans: var(--font-roboto-condensed);
+  /* Added Poppins as a serif font option */
+  --font-serif: var(--font-poppins);
+  --font-family-serif: var(--font-poppins);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-black text-foreground font-sans; /* Changed background to black for darker theme */
+  }
+
+  /* Enhanced global font family override to ensure Roboto Condensed is used everywhere with bold headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div,
+  button,
+  input,
+  textarea,
+  label {
+    font-family: var(--font-roboto-condensed), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Make all headings bold by default */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+  }
+}
+
+/* Added custom styles for flip counter animation */
+@keyframes flip {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes flipDown {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+.flip-animation {
+  animation: flipDown 0.6s ease-in-out;
+}
+
+.flip-digit {
+  perspective: 200px;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.flip-digit::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  z-index: 10;
+  transform: translateY(-1px);
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s;
+  transform-style: preserve-3d;
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-card-back {
+  transform: rotateX(180deg);
+}
+
+/* Added glass tile effect for podium cards */
+.glass-tile {
+  backdrop-filter: blur(10px);
+  background-blend-mode: overlay;
+}
+
+/* Updated marquee animation for continuous scrolling ticker */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee-scroll {
+  animation: marquee-scroll linear infinite;
+  display: inline-block;
+}
+
+/* Added marquee animation for scrolling text banner */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Enhanced floating card effects with teal glow */
+.floating-card {
+  backdrop-filter: blur(16px);
+  background-blend-mode: overlay;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(92, 254, 192, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Teal glow effects for corners and edges */
+.teal-glow-corner::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(92, 254, 192, 0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.teal-glow-corner::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(92, 254, 192, 0.6) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Enhanced card backgrounds with proper stretching */
+.card-background {
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.card-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .animate-marquee {
+    animation-duration: 15s;
+  }
+
+  .floating-card:hover {
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+/* Accordion animation for FAQ section */
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.accordion-content {
+  overflow: hidden;
+  animation: accordion-down 0.3s ease-out;
+}
+
+.accordion-content[data-state="closed"] {
+  animation: accordion-up 0.3s ease-out;
+}
+
+/* Enhanced scrolling banner animation with teal glow effect */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 25s linear infinite;
+  display: inline-block;
+  text-shadow: 0 0 10px rgba(0, 255, 159, 0.5), 0 0 20px rgba(0, 255, 159, 0.3), 0 0 30px rgba(0, 255, 159, 0.2);
+}
+
+/* Added teal glow effects for scrolling banner background */
+.banner-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-glow::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 255, 159, 0.15) 0%,
+    rgba(0, 255, 159, 0.05) 40%,
+    transparent 70%
+  );
+  animation: pulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* Enhanced teal light effects for page background */
+.teal-ambient-light {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(0, 255, 159, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 159, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(0, 255, 159, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 60% 60%, rgba(0, 255, 159, 0.05) 0%, transparent 50%);
+  animation: ambient-glow 8s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-glow {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+/* Added shimmer animation for the mystery "wen?" card */
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
