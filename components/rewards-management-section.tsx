@@ -3,95 +3,68 @@
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Trash2, Save, X, Trophy, Gift } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Edit, Trash2, Save, X, Trophy, Eye, EyeOff } from "lucide-react"
 
 interface Reward {
   id: string
   name: string
   description: string
-  point_value: number
+  rank_requirement: number
+  image_url: string | null
+  is_active: boolean
   created_at: string
   updated_at: string
 }
 
-interface Profile {
-  id: string
-  display_name: string | null
-  thrill_username: string | null
-}
-
-interface UserReward {
-  id: string
-  user_id: string
-  reward_id: string
-  date_granted: string
-  reward: Reward
-  profile: Profile
-}
-
 export function RewardsManagementSection() {
   const [rewards, setRewards] = useState<Reward[]>([])
-  const [userRewards, setUserRewards] = useState<UserReward[]>([])
-  const [profiles, setProfiles] = useState<Profile[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [isCreating, setIsCreating] = useState(false)
-  const [newRewardText, setNewRewardText] = useState("")
-
-  // For adding rewards to users
-  const [selectedUserId, setSelectedUserId] = useState<string>("")
-  const [selectedRewardId, setSelectedRewardId] = useState<string>("")
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    rank_requirement: 1,
+    image_url: "",
+    is_active: true,
+  })
 
   useEffect(() => {
-    fetchData()
+    fetchRewards()
   }, [])
 
-  const fetchData = async () => {
+  const fetchRewards = async () => {
     setIsLoading(true)
     try {
-      const rewardsResponse = await fetch("/api/admin/rewards")
-      const rewardsData = await rewardsResponse.json()
-      if (rewardsResponse.ok) {
-        setRewards(rewardsData.rewards || [])
-      }
-
-      const userRewardsResponse = await fetch("/api/admin/user-rewards")
-      const userRewardsData = await userRewardsResponse.json()
-      if (userRewardsResponse.ok) {
-        setUserRewards(userRewardsData.userRewards || [])
-      }
-
-      const profilesResponse = await fetch("/api/admin/profiles")
-      const profilesData = await profilesResponse.json()
-      if (profilesResponse.ok) {
-        setProfiles(profilesData.profiles || [])
+      const response = await fetch("/api/admin/rewards")
+      const data = await response.json()
+      if (response.ok) {
+        setRewards(data.rewards || [])
       }
     } catch (error) {
-      console.error("[v0] Error fetching data:", error)
+      console.error("[v0] Error fetching rewards:", error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleCreateReward = async () => {
-    if (!newRewardText.trim()) {
-      alert("Please enter a reward description")
+  const handleCreate = async () => {
+    if (!formData.name || !formData.description) {
+      alert("Please fill in all required fields")
       return
     }
+
+    const adminKey = prompt("Enter admin key to confirm:")
+    if (!adminKey) return
 
     try {
       const response = await fetch("/api/admin/rewards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reward: {
-            name: newRewardText.substring(0, 50), // Use first 50 chars as name
-            description: newRewardText,
-            point_value: 0,
-          },
-        }),
+        body: JSON.stringify({ adminKey, reward: formData }),
       })
 
       const data = await response.json()
@@ -99,8 +72,14 @@ export function RewardsManagementSection() {
       if (response.ok) {
         alert("Reward created successfully!")
         setIsCreating(false)
-        setNewRewardText("")
-        fetchData()
+        setFormData({
+          name: "",
+          description: "",
+          rank_requirement: 1,
+          image_url: "",
+          is_active: true,
+        })
+        fetchRewards()
       } else {
         alert(`Error: ${data.error}`)
       }
@@ -110,45 +89,42 @@ export function RewardsManagementSection() {
     }
   }
 
-  const handleAddRewardToUser = async () => {
-    if (!selectedUserId || !selectedRewardId) {
-      alert("Please select both a user and a reward")
-      return
-    }
+  const handleUpdate = async (rewardId: string, updates: Partial<Reward>) => {
+    const adminKey = prompt("Enter admin key to confirm:")
+    if (!adminKey) return
 
     try {
-      const response = await fetch("/api/admin/user-rewards", {
-        method: "POST",
+      const response = await fetch("/api/admin/rewards", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: selectedUserId,
-          rewardId: selectedRewardId,
-        }),
+        body: JSON.stringify({ adminKey, rewardId, updates }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        alert("Reward added to user successfully!")
-        setSelectedUserId("")
-        setSelectedRewardId("")
-        fetchData()
+        alert("Reward updated successfully!")
+        setEditingId(null)
+        fetchRewards()
       } else {
         alert(`Error: ${data.error}`)
       }
     } catch (error) {
-      console.error("[v0] Error adding reward to user:", error)
-      alert("An error occurred while adding the reward.")
+      console.error("[v0] Error updating reward:", error)
+      alert("An error occurred while updating the reward.")
     }
   }
 
-  const handleDeleteReward = async (rewardId: string, rewardName: string) => {
-    if (!confirm(`Are you sure you want to delete "${rewardName}"? This will remove it from all users.`)) {
+  const handleDelete = async (rewardId: string, rewardName: string) => {
+    if (!confirm(`Are you sure you want to delete "${rewardName}"?`)) {
       return
     }
 
+    const adminKey = prompt("Enter admin key to confirm:")
+    if (!adminKey) return
+
     try {
-      const response = await fetch(`/api/admin/rewards?id=${rewardId}`, {
+      const response = await fetch(`/api/admin/rewards?id=${rewardId}&adminKey=${adminKey}`, {
         method: "DELETE",
       })
 
@@ -156,7 +132,7 @@ export function RewardsManagementSection() {
 
       if (response.ok) {
         alert("Reward deleted successfully!")
-        fetchData()
+        fetchRewards()
       } else {
         alert(`Error: ${data.error}`)
       }
@@ -166,221 +142,287 @@ export function RewardsManagementSection() {
     }
   }
 
-  const handleRemoveUserReward = async (userRewardId: string) => {
-    if (!confirm("Are you sure you want to remove this reward from the user?")) {
+  const handleToggleActive = async (reward: Reward) => {
+    await handleUpdate(reward.id, { is_active: !reward.is_active })
+  }
+
+  const startEdit = (reward: Reward) => {
+    setEditingId(reward.id)
+    setFormData({
+      name: reward.name,
+      description: reward.description,
+      rank_requirement: reward.rank_requirement,
+      image_url: reward.image_url || "",
+      is_active: reward.is_active,
+    })
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setFormData({
+      name: "",
+      description: "",
+      rank_requirement: 1,
+      image_url: "",
+      is_active: true,
+    })
+  }
+
+  const saveEdit = async (rewardId: string) => {
+    if (!formData.name || !formData.description) {
+      alert("Please fill in all required fields")
       return
     }
 
-    try {
-      const response = await fetch(`/api/admin/user-rewards?id=${userRewardId}`, {
-        method: "DELETE",
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        alert("Reward removed from user successfully!")
-        fetchData()
-      } else {
-        alert(`Error: ${data.error}`)
-      }
-    } catch (error) {
-      console.error("[v0] Error removing user reward:", error)
-      alert("An error occurred while removing the reward.")
-    }
+    await handleUpdate(rewardId, formData)
   }
 
   return (
-    <div className="space-y-6">
-      {/* Create New Reward */}
-      <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-purple-400 uppercase">Create Rewards</h2>
+    <Card
+      className="p-6 mb-8 rounded-xl border border-purple-400/50"
+      style={{
+        backgroundColor: "rgba(10, 10, 10, 0.95)",
+        boxShadow:
+          "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-purple-400 uppercase">Rewards Management</h2>
+        <Button
+          onClick={() => setIsCreating(!isCreating)}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold uppercase rounded-lg"
+        >
+          {isCreating ? (
+            <>
+              <X className="h-4 w-4 mr-1" />
+              Cancel
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4 mr-1" />
+              Add Reward
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Create New Reward Form */}
+      {isCreating && (
+        <div className="mb-6 p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30">
+          <h3 className="text-lg font-bold text-purple-400 mb-4">Create New Reward</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="new-name" className="text-white mb-2 block">
+                Reward Name *
+              </Label>
+              <Input
+                id="new-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., Gold Trophy"
+                className="bg-[#0a0a0a] border-[#333] text-white"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-rank" className="text-white mb-2 block">
+                Rank Requirement *
+              </Label>
+              <Input
+                id="new-rank"
+                type="number"
+                value={formData.rank_requirement}
+                onChange={(e) => setFormData({ ...formData, rank_requirement: Number.parseInt(e.target.value) || 1 })}
+                min="1"
+                className="bg-[#0a0a0a] border-[#333] text-white"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="new-description" className="text-white mb-2 block">
+                Description *
+              </Label>
+              <Textarea
+                id="new-description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe the reward..."
+                className="bg-[#0a0a0a] border-[#333] text-white"
+                rows={3}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="new-image" className="text-white mb-2 block">
+                Image URL (optional)
+              </Label>
+              <Input
+                id="new-image"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                placeholder="https://example.com/image.png"
+                className="bg-[#0a0a0a] border-[#333] text-white"
+              />
+            </div>
+          </div>
           <Button
-            onClick={() => setIsCreating(!isCreating)}
-            className="bg-purple-600 hover:bg-purple-700 text-white font-bold uppercase rounded-lg"
+            onClick={handleCreate}
+            className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold uppercase rounded-lg"
           >
-            {isCreating ? (
-              <>
-                <X className="h-4 w-4 mr-1" />
-                Cancel
-              </>
-            ) : (
-              <>
-                <Plus className="h-4 w-4 mr-1" />
-                Add Reward
-              </>
-            )}
+            <Save className="h-4 w-4 mr-1" />
+            Create Reward
           </Button>
         </div>
+      )}
 
-        {isCreating && (
-          <div className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30">
-            <Label htmlFor="new-reward" className="text-white mb-2 block">
-              Reward Description
-            </Label>
-            <Textarea
-              id="new-reward"
-              value={newRewardText}
-              onChange={(e) => setNewRewardText(e.target.value)}
-              placeholder="Enter reward description (e.g., 'Free entry to next tournament')"
-              className="bg-[#0a0a0a] border-[#333] text-white mb-4"
-              rows={3}
-            />
-            <Button
-              onClick={handleCreateReward}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold uppercase rounded-lg"
+      {/* Rewards List */}
+      {isLoading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-400">Loading rewards...</p>
+        </div>
+      ) : rewards.length > 0 ? (
+        <div className="space-y-4">
+          {rewards.map((reward) => (
+            <div
+              key={reward.id}
+              className={`p-4 rounded-lg border transition-all ${
+                reward.is_active ? "bg-[#1a1a1a] border-purple-400/30" : "bg-[#0a0a0a] border-gray-700 opacity-60"
+              }`}
             >
-              <Save className="h-4 w-4 mr-1" />
-              Save Reward
-            </Button>
-          </div>
-        )}
-
-        {/* Available Rewards List */}
-        {isLoading ? (
-          <div className="text-center py-8">
-            <p className="text-gray-400">Loading rewards...</p>
-          </div>
-        ) : rewards.length > 0 ? (
-          <div className="space-y-3 mt-6">
-            <h3 className="text-lg font-bold text-purple-400">Available Rewards</h3>
-            {rewards.map((reward) => (
-              <div
-                key={reward.id}
-                className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <Trophy className="h-6 w-6 text-purple-400" />
-                  <div>
-                    <p className="text-white font-semibold">{reward.name}</p>
-                    <p className="text-gray-400 text-sm">{reward.description}</p>
+              {editingId === reward.id ? (
+                // Edit Mode
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <Label className="text-white mb-2 block">Reward Name *</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="bg-[#0a0a0a] border-[#333] text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-white mb-2 block">Rank Requirement *</Label>
+                      <Input
+                        type="number"
+                        value={formData.rank_requirement}
+                        onChange={(e) =>
+                          setFormData({ ...formData, rank_requirement: Number.parseInt(e.target.value) || 1 })
+                        }
+                        min="1"
+                        className="bg-[#0a0a0a] border-[#333] text-white"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label className="text-white mb-2 block">Description *</Label>
+                      <Textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        className="bg-[#0a0a0a] border-[#333] text-white"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label className="text-white mb-2 block">Image URL (optional)</Label>
+                      <Input
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        className="bg-[#0a0a0a] border-[#333] text-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => saveEdit(reward.id)}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold uppercase rounded-lg"
+                    >
+                      <Save className="h-4 w-4 mr-1" />
+                      Save Changes
+                    </Button>
+                    <Button
+                      onClick={cancelEdit}
+                      className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold uppercase rounded-lg"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
                   </div>
                 </div>
-                <Button
-                  onClick={() => handleDeleteReward(reward.id, reward.name)}
-                  size="sm"
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg mt-6">
-            <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No rewards yet</p>
-          </div>
-        )}
-      </Card>
+              ) : (
+                // View Mode
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {reward.image_url ? (
+                      <img
+                        src={reward.image_url || "/placeholder.svg"}
+                        alt={reward.name}
+                        className="h-12 w-12 object-cover rounded-lg border-2 border-purple-400"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 bg-[#0a0a0a] rounded-lg border-2 border-purple-400 flex items-center justify-center">
+                        <Trophy className="h-6 w-6 text-purple-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-white font-bold">{reward.name}</h3>
+                        <span className="px-2 py-0.5 bg-purple-600 text-white text-xs font-bold rounded">
+                          Rank #{reward.rank_requirement}
+                        </span>
+                        {!reward.is_active && (
+                          <span className="px-2 py-0.5 bg-gray-600 text-white text-xs font-bold rounded">INACTIVE</span>
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-sm mt-1">{reward.description}</p>
+                    </div>
+                  </div>
 
-      {/* Add Reward to User */}
-      <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
-      >
-        <h2 className="text-2xl font-bold text-purple-400 uppercase mb-6">Add Reward to User</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <Label className="text-white mb-2 block">Select User</Label>
-            <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="bg-[#1a1a1a] border-[#333] text-white">
-                <SelectValue placeholder="Choose a user..." />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1a1a1a] border-[#333]">
-                {profiles.map((profile) => (
-                  <SelectItem key={profile.id} value={profile.id} className="text-white hover:bg-[#333]">
-                    {profile.display_name || profile.thrill_username || "Unknown User"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="text-white mb-2 block">Select Reward</Label>
-            <Select value={selectedRewardId} onValueChange={setSelectedRewardId}>
-              <SelectTrigger className="bg-[#1a1a1a] border-[#333] text-white">
-                <SelectValue placeholder="Choose a reward..." />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1a1a1a] border-[#333]">
-                {rewards.map((reward) => (
-                  <SelectItem key={reward.id} value={reward.id} className="text-white hover:bg-[#333]">
-                    {reward.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleAddRewardToUser}
-          disabled={!selectedUserId || !selectedRewardId}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold uppercase rounded-lg disabled:opacity-50"
-        >
-          <Gift className="h-4 w-4 mr-1" />
-          Add Reward to User
-        </Button>
-      </Card>
-
-      {/* User Rewards List */}
-      <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
-      >
-        <h2 className="text-2xl font-bold text-purple-400 uppercase mb-6">Assigned Rewards</h2>
-
-        {userRewards.length > 0 ? (
-          <div className="space-y-3">
-            {userRewards.map((userReward) => (
-              <div
-                key={userReward.id}
-                className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30 flex items-center justify-between"
-              >
-                <div className="flex-1">
-                  <p className="text-white font-semibold">
-                    {userReward.profile?.display_name || userReward.profile?.thrill_username || "Unknown User"}
-                  </p>
-                  <p className="text-purple-400 text-sm">{userReward.reward?.description}</p>
-                  <p className="text-gray-500 text-xs mt-1">
-                    Granted: {new Date(userReward.date_granted).toLocaleDateString()}
-                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => handleToggleActive(reward)}
+                      size="sm"
+                      className={`${
+                        reward.is_active ? "bg-yellow-600 hover:bg-yellow-700" : "bg-green-600 hover:bg-green-700"
+                      } text-white font-bold uppercase rounded-lg`}
+                    >
+                      {reward.is_active ? (
+                        <>
+                          <EyeOff className="h-4 w-4 mr-1" />
+                          Deactivate
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="h-4 w-4 mr-1" />
+                          Activate
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={() => startEdit(reward)}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase rounded-lg"
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(reward.id, reward.name)}
+                      size="sm"
+                      className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  onClick={() => handleRemoveUserReward(userReward.id)}
-                  size="sm"
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-            <Gift className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No rewards assigned yet</p>
-          </div>
-        )}
-      </Card>
-    </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
+          <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-400">No rewards yet</p>
+          <p className="text-gray-500 text-sm mt-1">Click "Add Reward" to create your first reward</p>
+        </div>
+      )}
+    </Card>
   )
 }
