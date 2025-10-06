@@ -173,7 +173,7 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
   }
 
   const handleViewDashboard = (userId: string) => {
-    router.push(`/dashboard/${userId}?admin=true`)
+    router.push(`/admin/user/${userId}`)
   }
 
   const formatDate = (dateString: string) => {
