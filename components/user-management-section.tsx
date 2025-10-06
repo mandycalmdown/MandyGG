@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CheckCircle, Lock, Unlock, UserX, RefreshCw, Shield, ShieldOff, Trash2, ExternalLink } from "lucide-react"
 import { useRouter } from "next/navigation"
+import {
+  unlinkUserAction,
+  resetUserAction,
+  toggleVerificationAction,
+  toggleLockAction,
+  deleteUserAction,
+} from "@/app/actions/admin-actions"
 
 interface Profile {
   id: string
@@ -29,10 +36,6 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
   const [processingUserId, setProcessingUserId] = useState<string | null>(null)
   const router = useRouter()
 
-  const getAdminKey = () => {
-    return process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key"
-  }
-
   const handleUnlinkUser = async (userId: string, displayName: string | null) => {
     if (!confirm(`Are you sure you want to unlink ${displayName || "this user"}'s Thrill account?`)) {
       return
@@ -41,19 +44,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     setProcessingUserId(userId)
 
     try {
-      const response = await fetch("/api/admin/users/unlink", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
-      })
+      const result = await unlinkUserAction(userId)
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (result.success) {
         alert("User unlinked successfully!")
         onRefresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error unlinking user:", error)
@@ -75,19 +72,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     setProcessingUserId(userId)
 
     try {
-      const response = await fetch("/api/admin/users/reset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
-      })
+      const result = await resetUserAction(userId)
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (result.success) {
         alert("User account reset successfully!")
         onRefresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error resetting user:", error)
@@ -106,19 +97,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     setProcessingUserId(userId)
 
     try {
-      const response = await fetch("/api/admin/users/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, verified: !currentStatus, adminKey: getAdminKey() }),
-      })
+      const result = await toggleVerificationAction(userId, !currentStatus)
 
-      const data = await response.json()
-
-      if (response.ok) {
-        alert(data.message)
+      if (result.success) {
+        alert(result.data.message)
         onRefresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error toggling verification:", error)
@@ -137,19 +122,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     setProcessingUserId(userId)
 
     try {
-      const response = await fetch("/api/admin/users/lock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, locked: !currentStatus, adminKey: getAdminKey() }),
-      })
+      const result = await toggleLockAction(userId, !currentStatus)
 
-      const data = await response.json()
-
-      if (response.ok) {
-        alert(data.message)
+      if (result.success) {
+        alert(result.data.message)
         onRefresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error toggling lock:", error)
@@ -177,19 +156,13 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
     setProcessingUserId(userId)
 
     try {
-      const response = await fetch("/api/admin/users/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, adminKey: getAdminKey() }),
-      })
+      const result = await deleteUserAction(userId)
 
-      const data = await response.json()
-
-      if (response.ok) {
+      if (result.success) {
         alert("User deleted successfully!")
         onRefresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error deleting user:", error)

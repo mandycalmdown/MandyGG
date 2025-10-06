@@ -30,10 +30,3 @@ export function isAdminSessionValid(): boolean {
 
   return true
 }
-
-export function getAdminKey(): string | null {
-  if (!isAdminSessionValid()) {
-    return null
-  }
-  return process.env.NEXT_PUBLIC_ADMIN_KEY || process.env.ADMIN_UNLINK_KEY || ""
-}

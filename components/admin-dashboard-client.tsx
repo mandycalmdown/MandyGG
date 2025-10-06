@@ -14,6 +14,7 @@ import { CheckCircle, Search, Trophy, AlertTriangle, Users, Gift, Settings, Bell
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
 import { RewardsManagementSection } from "@/components/rewards-management-section"
+import { captureQualifiersAction, unlinkAllAccountsAction } from "@/app/actions/admin-actions"
 
 interface Profile {
   id: string
@@ -77,7 +78,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [searchQuery, setSearchQuery] = useState("")
   const [userStats, setUserStats] = useState<Record<string, PlayerStats>>({})
   const [isLoadingStats, setIsLoadingStats] = useState(false)
-  const [selectedPeriod, setSelectedPeriod] = useState<"current" | "past">("current")
+  const [selectedPeriod, setSelectedPeriod] = useState<"current">("current")
   const [isUnlinkingAll, setIsUnlinkingAll] = useState(false)
   const [pokerQualifiers, setPokerQualifiers] = useState<PokerQualifier[]>([])
   const [isLoadingQualifiers, setIsLoadingQualifiers] = useState(false)
@@ -203,22 +204,14 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     setIsCapturingQualifiers(true)
 
     try {
-      const response = await fetch("/api/poker-qualifiers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ adminKey: process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key" }),
-      })
+      const result = await captureQualifiersAction()
 
-      const data = await response.json()
-
-      if (response.ok) {
-        alert(`Success! Captured ${data.count} qualified players for poker night.`)
-        setPokerQualifiers(data.qualifiers || [])
+      if (result.success) {
+        alert(`Success! Captured ${result.data.count} qualified players for poker night.`)
+        setPokerQualifiers(result.data.qualifiers || [])
         router.refresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error capturing qualifiers:", error)
@@ -236,21 +229,13 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     setIsUnlinkingAll(true)
 
     try {
-      const response = await fetch("/api/unlink-all-accounts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ adminKey: process.env.NEXT_PUBLIC_ADMIN_KEY || "default_admin_key" }),
-      })
+      const result = await unlinkAllAccountsAction()
 
-      const data = await response.json()
-
-      if (response.ok) {
-        alert(`Success! Unlinked ${data.count} accounts.`)
+      if (result.success) {
+        alert(`Success! Unlinked ${result.data.count} accounts.`)
         router.refresh()
       } else {
-        alert(`Error: ${data.error}`)
+        alert(`Error: ${result.error}`)
       }
     } catch (error) {
       console.error("[v0] Error unlinking all accounts:", error)
@@ -283,7 +268,9 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
       if (data.tableExists === false) {
         setTickerTableExists(false)
         alert(
-          "Cannot save settings: ticker_settings table not found. Please run scripts/004_add_ticker_settings.sql first.",
+          "Cannot save settings: ticker_settings table not found. Please run the SQL script{" +
+            " scripts/004_add_ticker_settings.sql" +
+            "} to enable customization.",
         )
         return
       }
@@ -518,32 +505,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
           {/* Tab Panels */}
           {activeTab === "users" && (
             <div className="space-y-6">
-              {/* Period Selector */}
-              <div className="flex justify-center">
-                <div className="flex bg-gray-800/50 rounded-lg p-1 border border-white/20">
-                  <button
-                    onClick={() => setSelectedPeriod("current")}
-                    className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                      selectedPeriod === "current"
-                        ? "bg-[#5cfec0] text-black shadow-lg"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`}
-                  >
-                    Current Week
-                  </button>
-                  <button
-                    onClick={() => setSelectedPeriod("past")}
-                    className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                      selectedPeriod === "past"
-                        ? "bg-[#5cfec0] text-black shadow-lg"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`}
-                  >
-                    Past Week
-                  </button>
-                </div>
-              </div>
-
               {/* User Management Section */}
               <UserManagementSection profiles={filteredProfiles} onRefresh={() => router.refresh()} />
 
@@ -697,7 +658,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       type="text"
                       value={tickerSettings.background_gradient}
                       onChange={(e) => setTickerSettings({ ...tickerSettings, background_gradient: e.target.value })}
-                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      className="bg-[#1a1a1a] border border-[#333] text-white"
                       placeholder="linear-gradient(to right, #6366f1, #a855f7, #6366f1)"
                     />
                   </div>
@@ -714,7 +675,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       onChange={(e) =>
                         setTickerSettings({ ...tickerSettings, speed: Number.parseInt(e.target.value) || 8000 })
                       }
-                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      className="bg-[#1a1a1a] border border-[#333] text-white"
                       min="1000"
                       max="30000"
                       step="1000"
@@ -731,7 +692,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       type="text"
                       value={tickerSettings.font_family}
                       onChange={(e) => setTickerSettings({ ...tickerSettings, font_family: e.target.value })}
-                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      className="bg-[#1a1a1a] border border-[#333] text-white"
                       placeholder="inherit"
                     />
                   </div>
@@ -746,7 +707,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       type="text"
                       value={tickerSettings.font_size}
                       onChange={(e) => setTickerSettings({ ...tickerSettings, font_size: e.target.value })}
-                      className="bg-[#1a1a1a] border-[#333] text-white"
+                      className="bg-[#1a1a1a] border border-[#333] text-white"
                       placeholder="1rem"
                     />
                   </div>
