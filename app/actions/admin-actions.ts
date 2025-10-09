@@ -246,3 +246,26 @@ export async function clearLeaderboardCacheAction() {
     return { success: false, error: "Failed to clear cache" }
   }
 }
+
+export async function testThrillApiAction() {
+  if (!validateAdminKey()) {
+    return { success: false, error: "Unauthorized" }
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/admin/test-thrill-api`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminKey: process.env.ADMIN_UNLINK_KEY }),
+      },
+    )
+
+    const data = await response.json()
+    return { success: response.ok, data }
+  } catch (error) {
+    console.error("[v0] Error in testThrillApiAction:", error)
+    return { success: false, error: "Failed to test Thrill API" }
+  }
+}
