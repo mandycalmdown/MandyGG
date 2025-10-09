@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
 import { SiteNavigation } from "@/components/site-navigation"
+import { isAdminSessionValid } from "@/lib/admin-session"
 
 interface LeaderboardEntry {
   id: number
@@ -64,6 +65,8 @@ export function Leaderboard() {
   const [activeTab, setActiveTab] = useState<"current" | "past">("current")
   const currentDataCache = useRef<CachedData | null>(null)
   const pastDataCache = useRef<CachedData | null>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [countdown, setCountdown] = useState({
     days: 0,
     hours: 0,
@@ -73,6 +76,10 @@ export function Leaderboard() {
   const [scrollY, setScrollY] = useState(0)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    setIsAdmin(isAdminSessionValid())
+  }, [])
 
   useEffect(() => {
     const calculateCountdown = () => {
@@ -193,6 +200,41 @@ export function Leaderboard() {
   const topThree = entries.slice(0, 3)
   const remainingEntries = entries.slice(3)
 
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      console.log(`[v0] Manual refresh requested for ${activeTab} leaderboard`)
+      const response = await fetch(`/api/leaderboard?period=${activeTab}&refresh=true`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data: ApiResponse = await response.json()
+      console.log(`[v0] Received fresh ${activeTab} leaderboard data:`, data)
+
+      if (data.entries && data.entries.length > 0) {
+        setEntries(data.entries)
+        const now = Date.now()
+        if (activeTab === "current") {
+          currentDataCache.current = { data: data.entries, timestamp: now }
+        } else {
+          pastDataCache.current = { data: data.entries, timestamp: now }
+        }
+      }
+    } catch (err) {
+      console.error("[v0] Error during manual refresh:", err)
+      setError(err instanceof Error ? err.message : "Failed to refresh data")
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black font-sans">
       <div
@@ -289,6 +331,66 @@ export function Leaderboard() {
               </button>
             </div>
           </div>
+
+          {isAdmin && (
+            <div className="flex justify-center mb-4">
+              <button
+                onClick={handleManualRefresh}
+                disabled={isRefreshing}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-lg font-bold uppercase text-sm transition-all duration-200 flex items-center gap-2"
+              >
+                {isRefreshing ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Refreshing...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    Refresh Data
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {!isAdmin && (
+            <div className="flex justify-center mb-4">
+              <div className="px-4 py-2 bg-gray-800/50 border border-white/10 rounded-lg text-xs md:text-sm text-gray-400 flex items-center gap-2">
+                <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Leaderboard updates every 10 minutes</span>
+              </div>
+            </div>
+          )}
 
           {isLoading && <p className="text-sm text-gray-400 mt-2">Loading {activeTab} leaderboard data...</p>}
           {error && <p className="text-sm text-red-400 mt-2">Using cached data - API temporarily unavailable</p>}

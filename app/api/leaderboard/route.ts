@@ -106,14 +106,20 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const period = searchParams.get("period") || "current"
+    const forceRefresh = searchParams.get("refresh") === "true"
 
     const cacheKey = `leaderboard:${period}`
     const staleCacheKey = `${cacheKey}:stale`
-    const cached = await kv.get(cacheKey)
 
-    if (cached) {
-      console.log(`[v0] Returning cached ${period} leaderboard data from Redis`)
-      return NextResponse.json(cached)
+    if (!forceRefresh) {
+      const cached = await kv.get(cacheKey)
+
+      if (cached) {
+        console.log(`[v0] Returning cached ${period} leaderboard data from Redis`)
+        return NextResponse.json(cached)
+      }
+    } else {
+      console.log("[v0] Force refresh requested, bypassing cache")
     }
 
     const token = process.env.THRILL_API_TOKEN
