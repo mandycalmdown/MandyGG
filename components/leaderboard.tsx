@@ -6,6 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { SiteNavigation } from "@/components/site-navigation"
 import { isAdminSessionValid } from "@/lib/admin-session"
+import { clearLeaderboardCacheAction } from "@/app/actions/admin-actions"
 
 interface LeaderboardEntry {
   id: number
@@ -204,6 +205,17 @@ export function Leaderboard() {
     setIsRefreshing(true)
     try {
       console.log(`[v0] Manual refresh requested for ${activeTab} leaderboard`)
+
+      if (isAdmin) {
+        console.log("[v0] Admin refresh - clearing cache first")
+        const result = await clearLeaderboardCacheAction()
+        if (result.success) {
+          console.log("[v0] Cache cleared successfully")
+        } else {
+          console.error("[v0] Error clearing cache:", result.error)
+        }
+      }
+
       const response = await fetch(`/api/leaderboard?period=${activeTab}&refresh=true`, {
         method: "GET",
         headers: {

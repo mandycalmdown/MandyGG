@@ -1,6 +1,7 @@
 "use server"
 
 import { createAdminClient } from "@/lib/supabase/admin"
+import { kv } from "@/lib/kv"
 
 function validateAdminKey(): boolean {
   return !!process.env.ADMIN_UNLINK_KEY
@@ -214,5 +215,34 @@ export async function unlinkAllAccountsAction() {
   } catch (error) {
     console.error("[v0] Error in unlinkAllAccountsAction:", error)
     return { success: false, error: "Failed to unlink all accounts" }
+  }
+}
+
+export async function clearLeaderboardCacheAction() {
+  if (!validateAdminKey()) {
+    return { success: false, error: "Unauthorized" }
+  }
+
+  try {
+    const cacheKeys = [
+      "leaderboard:current",
+      "leaderboard:past",
+      "leaderboard:current:stale",
+      "leaderboard:past:stale",
+      "leaderboard:current:uncensored",
+      "leaderboard:past:uncensored",
+    ]
+
+    console.log("[v0] Clearing Redis cache keys:", cacheKeys)
+
+    for (const cacheKey of cacheKeys) {
+      await kv.del(cacheKey)
+      console.log("[v0] Deleted cache key:", cacheKey)
+    }
+
+    return { success: true, data: { message: "Cache cleared successfully", clearedKeys: cacheKeys } }
+  } catch (error) {
+    console.error("[v0] Error in clearLeaderboardCacheAction:", error)
+    return { success: false, error: "Failed to clear cache" }
   }
 }

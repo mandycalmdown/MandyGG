@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Lock } from "lucide-react"
+import { setAdminSession, isAdminSessionValid } from "@/lib/admin-session"
 
 interface AdminPasswordGateProps {
   children: React.ReactNode
@@ -18,10 +19,8 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(true)
 
-  // Check if already authenticated on mount
   useEffect(() => {
-    const adminAuth = sessionStorage.getItem("admin_authenticated")
-    if (adminAuth === "true") {
+    if (isAdminSessionValid()) {
       setIsAuthenticated(true)
     }
     setIsLoading(false)
@@ -31,12 +30,11 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
     e.preventDefault()
     setError("")
 
-    // Get admin password from environment variable
     const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123"
 
     if (password === adminPassword) {
       setIsAuthenticated(true)
-      sessionStorage.setItem("admin_authenticated", "true")
+      setAdminSession()
     } else {
       setError("Incorrect password. Please try again.")
       setPassword("")
