@@ -77,6 +77,8 @@ export function Leaderboard() {
   const [scrollY, setScrollY] = useState(0)
   const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [dataStatus, setDataStatus] = useState<string>("")
+  const [lastUpdated, setLastUpdated] = useState<string>("")
 
   useEffect(() => {
     setIsAdmin(isAdminSessionValid())
@@ -129,6 +131,7 @@ export function Leaderboard() {
           console.log(`[v0] Using cached ${activeTab} data (${Math.round((now - cache.timestamp) / 1000)}s old)`)
           setEntries(cache.data)
           setIsLoading(false)
+          setDataStatus("Cached Data")
           return
         }
 
@@ -149,6 +152,11 @@ export function Leaderboard() {
 
         const data: ApiResponse = await response.json()
         console.log(`[v0] Received ${activeTab} leaderboard data:`, data)
+        console.log(`[v0] Data status: ${data.status}`)
+        console.log(`[v0] Last updated: ${data.lastUpdated}`)
+
+        setDataStatus(data.status || "Unknown")
+        setLastUpdated(data.lastUpdated || "")
 
         if (data.entries && data.entries.length > 0) {
           setEntries(data.entries)
@@ -160,10 +168,12 @@ export function Leaderboard() {
         } else {
           console.log("[v0] No entries received, using mock data")
           setEntries(mockData)
+          setDataStatus("Mock Data - No Results")
         }
       } catch (err) {
         console.error("[v0] Error fetching leaderboard:", err)
         setError(err instanceof Error ? err.message : "Failed to fetch data")
+        setDataStatus("Error - Using Fallback")
         const cache = activeTab === "current" ? currentDataCache.current : pastDataCache.current
         if (cache) {
           console.log(`[v0] Using stale cached ${activeTab} data due to fetch error`)
@@ -178,7 +188,6 @@ export function Leaderboard() {
 
     fetchLeaderboardData()
 
-    // Refresh data every 2 minutes (respecting API rate limits)
     const refreshInterval = setInterval(fetchLeaderboardData, 2 * 60 * 1000)
     return () => clearInterval(refreshInterval)
   }, [activeTab]) // Re-fetch when tab changes
@@ -204,18 +213,22 @@ export function Leaderboard() {
   const handleManualRefresh = async () => {
     setIsRefreshing(true)
     try {
-      console.log(`[v0] Manual refresh requested for ${activeTab} leaderboard`)
+      console.log(`[v0] ========== MANUAL REFRESH STARTED ==========`)
+      console.log(`[v0] Admin status: ${isAdmin}`)
+      console.log(`[v0] Active tab: ${activeTab}`)
 
       if (isAdmin) {
         console.log("[v0] Admin refresh - clearing cache first")
         const result = await clearLeaderboardCacheAction()
+        console.log("[v0] Cache clear result:", result)
         if (result.success) {
-          console.log("[v0] Cache cleared successfully")
+          console.log("[v0] Cache cleared successfully:", result.data)
         } else {
           console.error("[v0] Error clearing cache:", result.error)
         }
       }
 
+      console.log(`[v0] Fetching fresh data with refresh=true parameter`)
       const response = await fetch(`/api/leaderboard?period=${activeTab}&refresh=true`, {
         method: "GET",
         headers: {
@@ -223,12 +236,20 @@ export function Leaderboard() {
         },
       })
 
+      console.log(`[v0] Refresh API response status: ${response.status}`)
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const data: ApiResponse = await response.json()
       console.log(`[v0] Received fresh ${activeTab} leaderboard data:`, data)
+      console.log(`[v0] Data status: ${data.status}`)
+      console.log(`[v0] Entry count: ${data.entries?.length || 0}`)
+      console.log(`[v0] ========== MANUAL REFRESH COMPLETED ==========`)
+
+      setDataStatus(data.status || "Unknown")
+      setLastUpdated(data.lastUpdated || "")
 
       if (data.entries && data.entries.length > 0) {
         setEntries(data.entries)
@@ -242,9 +263,30 @@ export function Leaderboard() {
     } catch (err) {
       console.error("[v0] Error during manual refresh:", err)
       setError(err instanceof Error ? err.message : "Failed to refresh data")
+      setDataStatus("Refresh Failed")
     } finally {
       setIsRefreshing(false)
     }
+  }
+
+  const getStatusColor = (status: string) => {
+    if (status.includes("live")) return "text-green-400"
+    if (status.includes("mock") || status.includes("Mock")) return "text-yellow-400"
+    if (status.includes("cache") || status.includes("Cached")) return "text-blue-400"
+    if (status.includes("error") || status.includes("Error")) return "text-red-400"
+    return "text-gray-400"
+  }
+
+  const getStatusLabel = (status: string) => {
+    if (status === "live_data") return "Live Data"
+    if (status === "mock_data_no_token") return "Mock Data (No API Token)"
+    if (status === "mock_data") return "Mock Data (API Error)"
+    if (status === "mock_data_no_results") return "Mock Data (No Results)"
+    if (status === "stale_cache_rate_limited") return "Cached (Rate Limited)"
+    if (status === "stale_cache_error") return "Cached (API Error)"
+    if (status === "stale_cache_exception") return "Cached (Server Error)"
+    if (status === "Cached Data") return "Cached Data"
+    return status
   }
 
   return (
@@ -343,6 +385,21 @@ export function Leaderboard() {
               </button>
             </div>
           </div>
+
+          {isAdmin && dataStatus && (
+            <div className="flex justify-center mb-2">
+              <div className="px-3 py-1 bg-gray-900/80 border border-white/10 rounded-lg text-xs flex items-center gap-2">
+                <span className="text-gray-400">Status:</span>
+                <span className={`font-bold ${getStatusColor(dataStatus)}`}>{getStatusLabel(dataStatus)}</span>
+                {lastUpdated && (
+                  <>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-gray-400">Updated: {new Date(lastUpdated).toLocaleTimeString()}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {isAdmin && (
             <div className="flex justify-center mb-4">
