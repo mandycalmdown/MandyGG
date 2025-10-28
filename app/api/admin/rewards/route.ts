@@ -1,15 +1,15 @@
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 // GET all rewards
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data: rewards, error } = await supabase
       .from("rewards")
       .select("*")
-      .order("rank_requirement", { ascending: true })
+      .order("created_at", { ascending: false })
 
     if (error) {
       console.error("[v0] Error fetching rewards:", error)
@@ -26,27 +26,20 @@ export async function GET() {
 // POST create new reward
 export async function POST(request: Request) {
   try {
-    const { adminKey, reward } = await request.json()
+    const { reward } = await request.json()
 
-    // Verify admin key
-    if (adminKey !== process.env.ADMIN_UNLINK_KEY) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    if (!reward || !reward.name || !reward.description || reward.rank_requirement === undefined) {
+    if (!reward || !reward.name || !reward.description) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase
       .from("rewards")
       .insert({
         name: reward.name,
         description: reward.description,
-        rank_requirement: reward.rank_requirement,
-        image_url: reward.image_url || null,
-        is_active: reward.is_active ?? true,
+        point_value: reward.point_value || 0,
       })
       .select()
       .single()
@@ -63,62 +56,27 @@ export async function POST(request: Request) {
   }
 }
 
-// PUT update reward
-export async function PUT(request: Request) {
-  try {
-    const { adminKey, rewardId, updates } = await request.json()
-
-    // Verify admin key
-    if (adminKey !== process.env.ADMIN_UNLINK_KEY) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    if (!rewardId) {
-      return NextResponse.json({ error: "Reward ID is required" }, { status: 400 })
-    }
-
-    const supabase = await createClient()
-
-    const { data, error } = await supabase
-      .from("rewards")
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", rewardId)
-      .select()
-      .single()
-
-    if (error) {
-      console.error("[v0] Error updating reward:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-
-    return NextResponse.json({ success: true, reward: data })
-  } catch (error) {
-    console.error("[v0] Error in rewards PUT route:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-  }
-}
-
 // DELETE reward
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const rewardId = searchParams.get("id")
-    const adminKey = searchParams.get("adminKey")
-
-    // Verify admin key
-    if (adminKey !== process.env.ADMIN_UNLINK_KEY) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
 
     if (!rewardId) {
       return NextResponse.json({ error: "Reward ID is required" }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
+    // First delete all user_rewards entries for this reward
+    const { error: userRewardsError } = await supabase.from("user_rewards").delete().eq("reward_id", rewardId)
+
+    if (userRewardsError) {
+      console.error("[v0] Error deleting user rewards:", userRewardsError)
+      return NextResponse.json({ error: userRewardsError.message }, { status: 500 })
+    }
+
+    // Then delete the reward itself
     const { error } = await supabase.from("rewards").delete().eq("id", rewardId)
 
     if (error) {

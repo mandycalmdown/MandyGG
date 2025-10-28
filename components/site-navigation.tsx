@@ -45,11 +45,10 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
   const navLinks = [
     { href: "/", label: "HOME", page: "home" },
+    { href: "/how-to-join", label: "HOW TO JOIN", page: "how-to-join" },
     { href: "/rewards", label: "REWARDS", page: "rewards" },
     { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
-    { href: "/tutorials", label: "TUTORIALS", page: "tutorials" },
     { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "https://thrill.com/?r=MANDY", label: "THRILL", page: "thrill", external: true },
   ]
 
   return (
@@ -70,7 +69,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 alt="MandyGG - Premier Crypto Casino Leaderboard & Rewards"
                 width={250}
                 height={80}
-                className="hidden sm:block h-12 md:h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                className="hidden md:block h-12 md:h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                 priority
               />
             </Link>
@@ -80,40 +79,32 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 alt="MandyGG"
                 width={60}
                 height={60}
-                className="sm:hidden h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
+                className="md:hidden h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
                 priority
               />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-4 lg:space-x-6 items-center">
+          <div className="hidden lg:flex space-x-4 xl:space-x-6 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.page}
                 href={link.href}
                 className={`${
                   currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
-                } transition-colors font-bold uppercase text-lg lg:text-xl`}
-                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                } transition-colors font-bold uppercase text-lg xl:text-xl`}
               >
                 {link.label}
               </Link>
             ))}
 
-            {user ? (
+            {user && (
               <Link
                 href="/dashboard"
                 className={`${
                   currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
-                } transition-colors font-bold uppercase text-lg lg:text-xl`}
-              >
-                DASHBOARD
-              </Link>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="text-indigo-400 hover:text-indigo-300 transition-colors font-bold uppercase text-lg lg:text-xl"
+                } transition-colors font-bold uppercase text-lg xl:text-xl`}
               >
                 DASHBOARD
               </Link>
@@ -124,7 +115,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 onClick={handleSignOut}
                 variant="outline"
                 size="sm"
-                className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl transition-all duration-300 uppercase text-lg lg:text-xl px-4 py-2 bg-transparent"
+                className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl transition-all duration-300 uppercase text-lg xl:text-xl px-4 py-2 bg-transparent"
               >
                 SIGN OUT
               </Button>
@@ -133,7 +124,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 <Button
                   variant="default"
                   size="sm"
-                  className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/30 uppercase text-lg lg:text-xl px-4 py-2"
+                  className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/30 uppercase text-lg xl:text-xl px-4 py-2"
                 >
                   SIGN IN
                 </Button>
@@ -142,7 +133,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Button
               variant="ghost"
               size="icon"
@@ -161,7 +152,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-3 p-3 border-t border-white/20">
+          <div className="lg:hidden mt-3 p-3 border-t border-white/20">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <Link
@@ -171,27 +162,18 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                     currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
                   } transition-colors font-bold uppercase text-lg py-2`}
                   onClick={() => setIsMenuOpen(false)}
-                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 >
                   {link.label}
                 </Link>
               ))}
 
-              {/* Dashboard Link Mobile */}
-              {user ? (
+              {/* Dashboard Link Mobile - only show if logged in */}
+              {user && (
                 <Link
                   href="/dashboard"
                   className={`${
                     currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
                   } transition-colors font-bold uppercase text-lg py-2`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  DASHBOARD
-                </Link>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="text-indigo-400 hover:text-indigo-300 transition-colors font-bold uppercase text-lg py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   DASHBOARD

@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
 
-export function ComingSoonPage() {
+interface ComingSoonPageProps {
+  currentPage?: string
+}
+
+export function ComingSoonPage({ currentPage }: ComingSoonPageProps) {
   const [scrollY, setScrollY] = useState(0)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY)
@@ -31,7 +34,7 @@ export function ComingSoonPage() {
       />
 
       <div className="relative z-10">
-        <SiteNavigation currentPage="tutorials" />
+        <SiteNavigation currentPage={currentPage} />
 
         <div className="flex items-center justify-center min-h-[calc(100vh-140px)] px-4">
           <Card

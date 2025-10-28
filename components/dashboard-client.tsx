@@ -208,6 +208,16 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         const response = await fetch("/api/player-wager-history")
         const data = await response.json()
 
+        if (response.status === 429) {
+          console.log("[v0] Rate limited, using cached data if available")
+          if (data.last7Days !== undefined && data.last30Days !== undefined) {
+            setWagerHistory(data)
+          } else {
+            setWagerHistory({ last7Days: 0, last30Days: 0, status: "rate_limited" })
+          }
+          return
+        }
+
         if (!response.ok) {
           throw new Error(data.error || "Failed to fetch wager history")
         }
@@ -215,14 +225,16 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         setWagerHistory(data)
       } catch (err) {
         console.error("[v0] Error fetching wager history:", err)
-        setWagerHistory(null)
+        if (!wagerHistory) {
+          setWagerHistory({ last7Days: 0, last30Days: 0, status: "error" })
+        }
       } finally {
         setIsLoadingWagerHistory(false)
       }
     }
 
     fetchWagerHistory()
-  }, [profile?.thrill_username])
+  }, [])
 
   useEffect(() => {
     async function fetchMonthlyWager() {
@@ -236,19 +248,26 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         const response = await fetch("/api/player-wager-history")
         const data = await response.json()
 
+        if (response.status === 429) {
+          console.log("[v0] Rate limited for monthly wager")
+          if (data.last30Days !== undefined) {
+            setMonthlyWager(data.last30Days)
+          }
+          return
+        }
+
         if (response.ok) {
           setMonthlyWager(data.last30Days || 0)
         }
       } catch (err) {
         console.error("[v0] Error fetching monthly wager:", err)
-        setMonthlyWager(0)
       } finally {
         setIsLoadingMonthlyWager(false)
       }
     }
 
     fetchMonthlyWager()
-  }, [profile?.thrill_username])
+  }, [])
 
   const handleSaveProfile = async () => {
     setIsSaving(true)
