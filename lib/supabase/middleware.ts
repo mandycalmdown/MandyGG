@@ -7,6 +7,9 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/rewards") ||
     request.nextUrl.pathname.startsWith("/leaderboard") ||
     request.nextUrl.pathname.startsWith("/tutorials") ||
+    request.nextUrl.pathname.startsWith("/how-to-join") ||
+    request.nextUrl.pathname.startsWith("/privacy") ||
+    request.nextUrl.pathname.startsWith("/terms") ||
     request.nextUrl.pathname.startsWith("/api") ||
     request.nextUrl.pathname === "/"
 

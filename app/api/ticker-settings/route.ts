@@ -13,7 +13,16 @@ const DEFAULT_SETTINGS = {
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    let supabase
+    try {
+      supabase = await createClient()
+    } catch (clientError) {
+      console.error("[v0] Failed to create Supabase client:", clientError)
+      return NextResponse.json({
+        settings: DEFAULT_SETTINGS,
+        error: "Database connection failed",
+      })
+    }
 
     const { data: settings, error } = await supabase
       .from("ticker_settings")
@@ -23,7 +32,16 @@ export async function GET() {
       .single()
 
     if (error) {
-      if (error.code === "PGRST205" || error.message?.includes("Could not find the table")) {
+      if (error.code === "PGRST116" || error.code === "PGRST116") {
+        // No rows returned
+        console.log("[v0] No ticker settings found, using defaults")
+        return NextResponse.json({
+          settings: DEFAULT_SETTINGS,
+          tableExists: true,
+        })
+      }
+
+      if (error.code === "42P01" || error.message?.includes("does not exist")) {
         console.log(
           "[v0] Ticker settings table not found, using defaults. Run scripts/004_add_ticker_settings.sql to enable customization.",
         )

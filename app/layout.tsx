@@ -109,7 +109,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${robotoCondensed.variable} ${poppins.variable} antialiased bg-black`}>
+    <html lang="en" className={`${robotoCondensed.variable} ${poppins.variable} antialiased bg-black shadow-none`}>
       <body>
         <StructuredData />
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>

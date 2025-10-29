@@ -3,7 +3,13 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    let supabase
+    try {
+      supabase = await createClient()
+    } catch (clientError) {
+      console.error("[v0] Failed to create Supabase client:", clientError)
+      return NextResponse.json({ announcements: [], error: "Database connection failed" })
+    }
 
     const { data: announcements, error } = await supabase
       .from("announcements")
