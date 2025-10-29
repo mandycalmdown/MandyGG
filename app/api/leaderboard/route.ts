@@ -66,29 +66,61 @@ function getPrizeForRank(rank: number): number {
 }
 
 function getThursdayRaceStart(): Date {
+  // Get current time in Central Time (handles DST automatically)
   const now = new Date()
-  const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
+  const centralTime = new Date(
+    now.toLocaleString("en-US", {
+      timeZone: "America/Chicago",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }),
+  )
 
-  // Find the most recent Thursday at 10am
-  const currentDay = centralTime.getDay() // 0 = Sunday, 4 = Thursday
-  const daysBack = currentDay >= 4 ? currentDay - 4 : currentDay + 3 // Days back to Thursday
+  console.log("[v0] Current Central Time:", centralTime.toISOString())
+
+  // Get the current day of week (0 = Sunday, 4 = Thursday)
+  const currentDay = centralTime.getDay()
+  const currentHour = centralTime.getHours()
+
+  // Calculate days since last Thursday 10am
+  let daysToSubtract: number
+
+  if (currentDay === 4 && currentHour >= 10) {
+    // It's Thursday after 10am - we're in the current race period
+    daysToSubtract = 0
+  } else if (currentDay === 4 && currentHour < 10) {
+    // It's Thursday before 10am - we're still in last week's race
+    daysToSubtract = 7
+  } else if (currentDay > 4) {
+    // Friday (5), Saturday (6) - go back to this week's Thursday
+    daysToSubtract = currentDay - 4
+  } else {
+    // Sunday (0), Monday (1), Tuesday (2), Wednesday (3) - go back to last Thursday
+    daysToSubtract = currentDay + 3
+  }
 
   const thursdayStart = new Date(centralTime)
-  thursdayStart.setDate(centralTime.getDate() - daysBack)
-  thursdayStart.setHours(10, 0, 0, 0) // 10:00 AM
+  thursdayStart.setDate(centralTime.getDate() - daysToSubtract)
+  thursdayStart.setHours(10, 0, 0, 0) // Set to 10:00:00 AM
 
-  // If we're before Thursday 10am this week, go to previous Thursday
-  if (centralTime < thursdayStart) {
-    thursdayStart.setDate(thursdayStart.getDate() - 7)
-  }
+  console.log("[v0] Calculated Thursday race start:", thursdayStart.toISOString())
+  console.log("[v0] Days subtracted:", daysToSubtract)
 
   return thursdayStart
 }
 
 function getNextThursdayRaceEnd(thursdayStart: Date): Date {
   const nextThursdayEnd = new Date(thursdayStart)
-  nextThursdayEnd.setDate(thursdayStart.getDate() + 7) // Next Thursday (7 days later)
-  nextThursdayEnd.setHours(10, 0, 0, 0) // 10:00 AM
+  nextThursdayEnd.setDate(thursdayStart.getDate() + 7) // Exactly 7 days later
+  nextThursdayEnd.setHours(10, 0, 0, 0) // 10:00:00 AM
+
+  console.log("[v0] Calculated Thursday race end:", nextThursdayEnd.toISOString())
+
   return nextThursdayEnd
 }
 
@@ -103,6 +135,8 @@ function censorUsername(username: string): string {
 export async function GET(request: NextRequest) {
   try {
     console.log("[v0] Starting leaderboard API request")
+
+    // TODO: Replace THRILL_API_TOKEN environment variable every 30 days to maintain API access
 
     const { searchParams } = new URL(request.url)
     const period = searchParams.get("period") || "current"
@@ -167,17 +201,33 @@ export async function GET(request: NextRequest) {
       const pastThursdayEnd = new Date(currentThursdayEnd)
       pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 7)
 
+      // Use ISO format with time to ensure we capture the exact 10am-10am window
       fromDate = pastThursdayStart.toISOString().split("T")[0]
       toDate = pastThursdayEnd.toISOString().split("T")[0]
+
+      console.log("[v0] Past week period:", {
+        start: pastThursdayStart.toISOString(),
+        end: pastThursdayEnd.toISOString(),
+        fromDate,
+        toDate,
+      })
     } else {
       fromDate = currentThursdayStart.toISOString().split("T")[0]
       toDate = currentThursdayEnd.toISOString().split("T")[0]
+
+      console.log("[v0] Current week period:", {
+        start: currentThursdayStart.toISOString(),
+        end: currentThursdayEnd.toISOString(),
+        fromDate,
+        toDate,
+      })
     }
 
     const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
 
     console.log("[v0] Calling Thrill API with URL:", apiUrl)
     console.log("[v0] Date range:", fromDate, "to", toDate, "for period:", period)
+    console.log("[v0] Current time (Central):", new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }))
 
     const response = await fetch(apiUrl, {
       method: "GET",

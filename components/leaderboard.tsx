@@ -87,19 +87,40 @@ export function Leaderboard() {
   useEffect(() => {
     const calculateCountdown = () => {
       const now = new Date()
-      const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
+      // Get current time in Central Time (automatically handles DST)
+      const centralTime = new Date(
+        now.toLocaleString("en-US", {
+          timeZone: "America/Chicago",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }),
+      )
 
       const currentDay = centralTime.getDay() // 0 = Sunday, 4 = Thursday
-      const daysUntilNextThursday = currentDay <= 4 ? 4 - currentDay : 11 - currentDay // Days until next Thursday
+      const currentHour = centralTime.getHours()
+
+      // Calculate next Thursday at 10am
+      let daysUntilNextThursday: number
+
+      if (currentDay === 4 && currentHour < 10) {
+        // It's Thursday before 10am - end is today at 10am
+        daysUntilNextThursday = 0
+      } else if (currentDay < 4) {
+        // Sunday-Wednesday - days until this week's Thursday
+        daysUntilNextThursday = 4 - currentDay
+      } else {
+        // Thursday after 10am, Friday, Saturday - days until next Thursday
+        daysUntilNextThursday = 7 - (currentDay - 4)
+      }
 
       const nextThursday = new Date(centralTime)
       nextThursday.setDate(centralTime.getDate() + daysUntilNextThursday)
-      nextThursday.setHours(10, 0, 0, 0) // 10:00 AM
-
-      // If it's Thursday and past 10 AM, target next Thursday
-      if (currentDay === 4 && centralTime.getHours() >= 10) {
-        nextThursday.setDate(nextThursday.getDate() + 7)
-      }
+      nextThursday.setHours(10, 0, 0, 0) // 10:00 AM Central
 
       const timeDiff = nextThursday.getTime() - centralTime.getTime()
 
