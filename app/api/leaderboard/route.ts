@@ -65,61 +65,75 @@ function getPrizeForRank(rank: number): number {
   return prizeMap[rank] || 0
 }
 
+// The Thrill API uses UTC and toDate is EXCLUSIVE
+// Contest runs Thursday 10am CST to Thursday 10am CST
+// We adjust dates to compensate for timezone difference
 function getThursdayRaceStart(): Date {
   // Get current time in Central Time (handles DST automatically)
   const now = new Date()
+  const centralTimeString = now.toLocaleString("en-US", {
+    timeZone: "America/Chicago",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+
+  const [datePart, timePart] = centralTimeString.split(", ")
+  const [month, day, year] = datePart.split("/")
+  const [hour, minute, second] = timePart.split(":")
+
   const centralTime = new Date(
-    now.toLocaleString("en-US", {
-      timeZone: "America/Chicago",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    }),
+    Number.parseInt(year),
+    Number.parseInt(month) - 1,
+    Number.parseInt(day),
+    Number.parseInt(hour),
+    Number.parseInt(minute),
+    Number.parseInt(second),
   )
 
   console.log("[v0] Current Central Time:", centralTime.toISOString())
 
-  // Get the current day of week (0 = Sunday, 4 = Thursday)
   const currentDay = centralTime.getDay()
   const currentHour = centralTime.getHours()
 
-  // Calculate days since last Thursday 10am
+  console.log("[v0] Current day of week:", currentDay, "Current hour:", currentHour)
+
   let daysToSubtract: number
 
   if (currentDay === 4 && currentHour >= 10) {
-    // It's Thursday after 10am - we're in the current race period
     daysToSubtract = 0
+    console.log("[v0] Thursday after 10am - current race period")
   } else if (currentDay === 4 && currentHour < 10) {
-    // It's Thursday before 10am - we're still in last week's race
     daysToSubtract = 7
+    console.log("[v0] Thursday before 10am - last week's race period")
   } else if (currentDay > 4) {
-    // Friday (5), Saturday (6) - go back to this week's Thursday
     daysToSubtract = currentDay - 4
+    console.log("[v0] Friday/Saturday - going back", daysToSubtract, "days")
   } else {
-    // Sunday (0), Monday (1), Tuesday (2), Wednesday (3) - go back to last Thursday
     daysToSubtract = currentDay + 3
+    console.log("[v0] Sunday-Wednesday - going back", daysToSubtract, "days")
   }
 
   const thursdayStart = new Date(centralTime)
   thursdayStart.setDate(centralTime.getDate() - daysToSubtract)
-  thursdayStart.setHours(10, 0, 0, 0) // Set to 10:00:00 AM
+  thursdayStart.setHours(10, 0, 0, 0)
 
-  console.log("[v0] Calculated Thursday race start:", thursdayStart.toISOString())
-  console.log("[v0] Days subtracted:", daysToSubtract)
+  console.log("[v0] Calculated Thursday race start (Central):", thursdayStart.toString())
+  console.log("[v0] Race start date:", thursdayStart.toLocaleDateString("en-US", { timeZone: "America/Chicago" }))
 
   return thursdayStart
 }
 
 function getNextThursdayRaceEnd(thursdayStart: Date): Date {
   const nextThursdayEnd = new Date(thursdayStart)
-  nextThursdayEnd.setDate(thursdayStart.getDate() + 7) // Exactly 7 days later
-  nextThursdayEnd.setHours(10, 0, 0, 0) // 10:00:00 AM
+  nextThursdayEnd.setDate(thursdayStart.getDate() + 7)
+  nextThursdayEnd.setHours(10, 0, 0, 0)
 
-  console.log("[v0] Calculated Thursday race end:", nextThursdayEnd.toISOString())
+  console.log("[v0] Calculated Thursday race end (Central):", nextThursdayEnd.toString())
 
   return nextThursdayEnd
 }
@@ -135,8 +149,13 @@ function censorUsername(username: string): string {
 export async function GET(request: NextRequest) {
   try {
     console.log("[v0] Starting leaderboard API request")
+    console.log("[v0] Current server time (UTC):", new Date().toISOString())
+    console.log("[v0] Current Central time:", new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }))
 
-    // TODO: Replace THRILL_API_TOKEN environment variable every 30 days to maintain API access
+    // TODO: Replace THRILL_API_TOKEN cookie every 30 days
+    // Last updated: ~2 weeks ago (mid-October 2025)
+    // Next update due: ~mid-November 2025
+    // Cookie expires after 30 days per Thrill API documentation
 
     const { searchParams } = new URL(request.url)
     const period = searchParams.get("period") || "current"
@@ -147,7 +166,6 @@ export async function GET(request: NextRequest) {
 
     if (!forceRefresh) {
       const cached = await kv.get(cacheKey)
-
       if (cached) {
         console.log(`[v0] Returning cached ${period} leaderboard data from Redis`)
         return NextResponse.json(cached)
@@ -201,33 +219,44 @@ export async function GET(request: NextRequest) {
       const pastThursdayEnd = new Date(currentThursdayEnd)
       pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 7)
 
-      // Use ISO format with time to ensure we capture the exact 10am-10am window
+      // Thrill API uses UTC and toDate is EXCLUSIVE
+      // Contest: Oct 16 10am CST to Oct 23 10am CST
+      // Oct 16 10am CST = Oct 16 15:00 UTC (CDT) or 16:00 UTC (CST)
+      // We send Oct 16 as fromDate (includes from 00:00 UTC = 7pm previous day CST)
+      // We send Oct 24 as toDate (exclusive, so includes up to Oct 23 23:59:59 UTC = 6:59pm CST)
+      // This is slightly imperfect but ensures we don't miss wagers
       fromDate = pastThursdayStart.toISOString().split("T")[0]
-      toDate = pastThursdayEnd.toISOString().split("T")[0]
+      const adjustedPastEnd = new Date(pastThursdayEnd)
+      adjustedPastEnd.setDate(pastThursdayEnd.getDate() + 1) // Add 1 day since toDate is exclusive
+      toDate = adjustedPastEnd.toISOString().split("T")[0]
 
-      console.log("[v0] Past week period:", {
-        start: pastThursdayStart.toISOString(),
-        end: pastThursdayEnd.toISOString(),
-        fromDate,
-        toDate,
-      })
+      console.log("[v0] ===== PAST WEEK PERIOD =====")
+      console.log("[v0] Past week start (Central):", pastThursdayStart.toString())
+      console.log("[v0] Past week end (Central):", pastThursdayEnd.toString())
+      console.log("[v0] API fromDate:", fromDate, "(inclusive, UTC midnight)")
+      console.log("[v0] API toDate:", toDate, "(exclusive, UTC midnight)")
+      console.log("[v0] Expected: Oct 16 10am - Oct 23 10am CST")
+      console.log("[v0] Note: Thrill API uses UTC, toDate is EXCLUSIVE")
     } else {
+      // Contest: Oct 23 10am CST to Oct 30 10am CST
+      // We send Oct 23 as fromDate and Oct 31 as toDate (exclusive)
       fromDate = currentThursdayStart.toISOString().split("T")[0]
-      toDate = currentThursdayEnd.toISOString().split("T")[0]
+      const adjustedCurrentEnd = new Date(currentThursdayEnd)
+      adjustedCurrentEnd.setDate(currentThursdayEnd.getDate() + 1) // Add 1 day since toDate is exclusive
+      toDate = adjustedCurrentEnd.toISOString().split("T")[0]
 
-      console.log("[v0] Current week period:", {
-        start: currentThursdayStart.toISOString(),
-        end: currentThursdayEnd.toISOString(),
-        fromDate,
-        toDate,
-      })
+      console.log("[v0] ===== CURRENT WEEK PERIOD =====")
+      console.log("[v0] Current week start (Central):", currentThursdayStart.toString())
+      console.log("[v0] Current week end (Central):", currentThursdayEnd.toString())
+      console.log("[v0] API fromDate:", fromDate, "(inclusive, UTC midnight)")
+      console.log("[v0] API toDate:", toDate, "(exclusive, UTC midnight)")
+      console.log("[v0] Expected: Oct 23 10am - Oct 30 10am CST")
+      console.log("[v0] Note: Thrill API uses UTC, toDate is EXCLUSIVE")
     }
 
     const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
 
     console.log("[v0] Calling Thrill API with URL:", apiUrl)
-    console.log("[v0] Date range:", fromDate, "to", toDate, "for period:", period)
-    console.log("[v0] Current time (Central):", new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }))
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -249,7 +278,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           ...staleCache,
           status: "stale_cache_rate_limited",
-          message: "Using cached data due to API rate limit",
+          message: "Using cached data due to API rate limit (max 1 call per 2 minutes)",
         })
       }
     }

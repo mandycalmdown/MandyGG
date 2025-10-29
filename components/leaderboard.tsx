@@ -87,35 +87,51 @@ export function Leaderboard() {
   useEffect(() => {
     const calculateCountdown = () => {
       const now = new Date()
+
       // Get current time in Central Time (automatically handles DST)
+      const centralTimeString = now.toLocaleString("en-US", {
+        timeZone: "America/Chicago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+
+      // Parse the Central Time string back to a Date object
+      const [datePart, timePart] = centralTimeString.split(", ")
+      const [month, day, year] = datePart.split("/")
+      const [hour, minute, second] = timePart.split(":")
+
       const centralTime = new Date(
-        now.toLocaleString("en-US", {
-          timeZone: "America/Chicago",
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        }),
+        Number.parseInt(year),
+        Number.parseInt(month) - 1,
+        Number.parseInt(day),
+        Number.parseInt(hour),
+        Number.parseInt(minute),
+        Number.parseInt(second),
       )
 
       const currentDay = centralTime.getDay() // 0 = Sunday, 4 = Thursday
       const currentHour = centralTime.getHours()
 
-      // Calculate next Thursday at 10am
+      // Calculate next Thursday at 10am Central
       let daysUntilNextThursday: number
 
       if (currentDay === 4 && currentHour < 10) {
         // It's Thursday before 10am - end is today at 10am
         daysUntilNextThursday = 0
-      } else if (currentDay < 4) {
-        // Sunday-Wednesday - days until this week's Thursday
-        daysUntilNextThursday = 4 - currentDay
-      } else {
-        // Thursday after 10am, Friday, Saturday - days until next Thursday
+      } else if (currentDay === 4 && currentHour >= 10) {
+        // It's Thursday at or after 10am - next end is in 7 days
+        daysUntilNextThursday = 7
+      } else if (currentDay > 4) {
+        // Friday (5), Saturday (6) - days until next Thursday
         daysUntilNextThursday = 7 - (currentDay - 4)
+      } else {
+        // Sunday (0), Monday (1), Tuesday (2), Wednesday (3) - days until this week's Thursday
+        daysUntilNextThursday = 4 - currentDay
       }
 
       const nextThursday = new Date(centralTime)

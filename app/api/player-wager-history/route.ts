@@ -92,12 +92,18 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Thrill API uses UTC and toDate is EXCLUSIVE
+    // Add 1 day to toDate to ensure we capture all wagers up to now
     const now = new Date()
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(now.getDate() - 30)
 
     const fromDate30 = thirtyDaysAgo.toISOString().split("T")[0]
-    const toDate = now.toISOString().split("T")[0]
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
+    const toDate = tomorrow.toISOString().split("T")[0] // Exclusive, so add 1 day
+
+    console.log("[v0] Fetching wager history from", fromDate30, "to", toDate, "(toDate is exclusive)")
 
     const apiUrl30 = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate30}&toDate=${toDate}`
 
@@ -117,7 +123,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           ...staleCache,
           status: "stale_cache_rate_limited",
-          message: "Using cached data due to API rate limit",
+          message: "Using cached data due to API rate limit (max 1 call per 2 minutes)",
         })
       }
       return NextResponse.json(

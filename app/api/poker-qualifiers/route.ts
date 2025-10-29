@@ -102,7 +102,11 @@ export async function GET(request: Request) {
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(now.getDate() - 30)
     const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
-    const toDate = now.toISOString().split("T")[0]
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
+    const toDate = tomorrow.toISOString().split("T")[0] // Exclusive, so add 1 day
+
+    console.log("[v0] Fetching poker qualifiers from", fromDate, "to", toDate, "(toDate is exclusive)")
 
     const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
     const response = await fetch(apiUrl, {
@@ -206,9 +210,17 @@ export async function POST(request: Request) {
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setDate(now.getDate() - 30)
     const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
-    const toDate = now.toISOString().split("T")[0]
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
+    const toDate = tomorrow.toISOString().split("T")[0] // Exclusive, so add 1 day
 
-    console.log("[v0] Fetching wager data from Thrill API for date range:", fromDate, "to", toDate)
+    console.log(
+      "[v0] Fetching wager data from Thrill API for date range:",
+      fromDate,
+      "to",
+      toDate,
+      "(toDate is exclusive)",
+    )
 
     const apiUrl = `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`
     const response = await fetch(apiUrl, {

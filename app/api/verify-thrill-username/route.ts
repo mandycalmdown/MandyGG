@@ -78,15 +78,19 @@ export async function POST(request: Request) {
     thirtyDaysAgo.setDate(now.getDate() - 30)
 
     const fromDate = thirtyDaysAgo.toISOString().split("T")[0]
-    const toDate = now.toISOString().split("T")[0]
+    const tomorrow = new Date(now)
+    tomorrow.setDate(now.getDate() + 1)
+    const toDate = tomorrow.toISOString().split("T")[0] // Exclusive, so add 1 day
 
-    console.log("[v0] Fetching leaderboard data from", fromDate, "to", toDate)
+    console.log("[v0] Fetching leaderboard data from", fromDate, "to", toDate, "(toDate is exclusive)")
 
     const response = await fetch(
       `https://api.thrill.com/referral/v1/referral-links/streamers?fromDate=${fromDate}&toDate=${toDate}`,
       {
         headers: {
-          Authorization: `Bearer ${apiToken}`,
+          Cookie: `token=${apiToken}`,
+          "Content-Type": "application/json",
+          "User-Agent": "Mozilla/5.0 (compatible; MandyGG-Leaderboard/1.0)",
         },
       },
     )
