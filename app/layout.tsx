@@ -20,10 +20,12 @@ const poppins = Poppins({
 export const metadata = {
   title: {
     template: "%s | Mandy.gg",
-    default: "Mandy.gg - Premier Crypto Casino & Gaming Platform",
+    default: "Mandy.gg - More perks, less regret | Weekly $3500 Wager Race",
   },
-  description: "Premier crypto casino and gaming platform partnered with Thrill Casino",
-  keywords: "crypto casino, bitcoin casino, thrill casino, mandy.gg, crypto gambling",
+  description:
+    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you’re going to Plinko your crypto away, get the most out of it!",
+  keywords:
+    "crypto casino, bitcoin gambling, weekly wager battle, thrill casino, code MANDY, crypto bonuses, lossback, VIP perks, cryptocurrency betting, mandy.gg, bitcoin casino, crypto gaming, blockchain casino, cryptocurrency betting, crypto slots, bitcoin slots, live casino battles, crypto leaderboard, exclusive casino bonuses, crypto rewards, gambling influencer, casino streamer",
   authors: [{ name: "Mandy.gg" }],
   creator: "Mandy.gg",
   publisher: "Mandy.gg",
@@ -56,8 +58,12 @@ function StructuredData() {
     url: "https://mandy.gg",
     logo: "https://mandy.gg/images/mandy-logo-menu-icon-white.svg",
     description:
-      "Premier crypto casino and gaming platform partnered with Thrill Casino offering exclusive bonuses, weekly wager battles, and VIP perks",
-    sameAs: ["https://t.me/Mandythrill", "https://t.me/MandyggChat", "https://t.me/MandySupport_bot"],
+      "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you’re going to Plinko your crypto away, get the most out of it!",
+    sameAs: [
+      "https://t.me/Mandythrill",
+      "https://t.me/MandyggChat",
+      "https://t.me/MandySupport_bot",
+    ],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
@@ -66,14 +72,14 @@ function StructuredData() {
     offers: [
       {
         "@type": "Offer",
-        name: "Weekly Wager Battle",
-        description: "Compete in weekly wager battles for crypto prizes",
+        name: "Weekly $3500 Wager Race",
+        description: "Compete in weekly $3500 wager battles for crypto prizes and get extra perks for using code MANDY.",
         category: "Gaming Competition",
       },
       {
         "@type": "Offer",
-        name: "Exclusive Casino Bonuses",
-        description: "Exclusive crypto casino bonuses with code MANDY including lossback access and VIP perks",
+        name: "Exclusive Casino Bonuses & Lossback",
+        description: "Exclusive crypto casino bonuses with code MANDY including lossback access and VIP perks. More perks, less regret!",
         priceSpecification: {
           "@type": "PriceSpecification",
           priceCurrency: "BTC",
