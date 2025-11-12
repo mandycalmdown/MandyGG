@@ -120,10 +120,10 @@ export function Leaderboard() {
       // Calculate next Thursday at 10am Central
       let daysUntilNextThursday: number
 
-      if (currentDay === 4 && currentHour < 10) {
+      if (currentDay === 4 && currentHour < 18) {
         // It's Thursday before 10am - end is today at 10am
         daysUntilNextThursday = 0
-      } else if (currentDay === 4 && currentHour >= 10) {
+      } else if (currentDay === 4 && currentHour >= 18) {
         // It's Thursday at or after 10am - next end is in 7 days
         daysUntilNextThursday = 7
       } else if (currentDay > 4) {
@@ -136,7 +136,7 @@ export function Leaderboard() {
 
       const nextThursday = new Date(centralTime)
       nextThursday.setDate(centralTime.getDate() + daysUntilNextThursday)
-      nextThursday.setHours(10, 0, 0, 0) // 10:00 AM Central
+      nextThursday.setHours(18, 0, 0, 0) // 10:00 AM Central
 
       const timeDiff = nextThursday.getTime() - centralTime.getTime()
 

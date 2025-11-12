@@ -4,7 +4,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Mandy.gg - More perks, less regret | Weekly $3500 Wager Race",
   description:
-    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you’re going to Plinko your crypto away, get the most out of it!",
+    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses at the best online crypto casinos . If you’re going to Plinko your crypto away, get the most out of it!",
   keywords:
     "crypto casino, bitcoin gambling, weekly wager battle, thrill casino, code MANDY, crypto bonuses, lossback, VIP perks, cryptocurrency betting, mandy.gg, bitcoin casino, crypto gaming, blockchain casino, cryptocurrency betting, crypto slots, bitcoin slots, live casino battles, crypto leaderboard, exclusive casino bonuses, crypto rewards, gambling influencer, casino streamer",
   authors: [{ name: "Mandy.gg" }],

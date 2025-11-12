@@ -28,16 +28,12 @@ export function Homepage() {
 
   useEffect(() => {
     async function checkUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
     }
     checkUser()
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
@@ -241,6 +237,55 @@ export function Homepage() {
           </div>
         </section>
 
+        {/* Casino Comparison Table (NEW, non-intrusive) */}
+        <section className="py-4 px-4 my-3">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-black text-indigo-200 mb-4 text-center uppercase">
+              Top Crypto Casinos Compared
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border border-white/15 rounded-xl bg-gray-900">
+                <thead>
+                  <tr className="bg-indigo-800/30 text-indigo-100 font-bold">
+                    <th className="px-3 py-2">Casino</th>
+                    <th className="px-3 py-2">Bonuses</th>
+                    <th className="px-3 py-2">VIP Perks</th>
+                    <th className="px-3 py-2">Lossback</th>
+                    <th className="px-3 py-2">Promo Code</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="px-3 py-2 font-bold">Stake</td>
+                    <td className="px-3 py-2">Up to $2,000 Weekly</td>
+                    <td className="px-3 py-2">Leaderboard, rakeback</td>
+                    <td className="px-3 py-2">Yes</td>
+                    <td className="px-3 py-2">MANDY</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-bold">Thrill</td>
+                    <td className="px-3 py-2">$3,500 Weekly Race</td>
+                    <td className="px-3 py-2">Boosted bonuses, VIP club</td>
+                    <td className="px-3 py-2">Yes</td>
+                    <td className="px-3 py-2">MANDY</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-bold">Shuffle</td>
+                    <td className="px-3 py-2">Daily bonus spin</td>
+                    <td className="px-3 py-2">Lossback, crypto drops</td>
+                    <td className="px-3 py-2">Yes</td>
+                    <td className="px-3 py-2">MANDY</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p className="text-xs md:text-sm text-gray-400 mt-2 mb-4 italic">
+                All sites listed have been tested and offer instant payouts, bonus perks and real support.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
         <section id="faq" className="py-4 px-4 gap-px my-[-39px] md:py-[5px] mt-12 md:mt-0">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-4 md:mb-6 text-center uppercase">
@@ -249,11 +294,27 @@ export function Homepage() {
             <div className="space-y-3 md:space-y-4">
               {[
                 {
+                  question: "How can I get the best casino bonuses?",
+                  answer: "Sign up through Mandy.gg with code 'MANDY' for exclusive perks—weekly races, instant lossback, and VIP upgrades at Stake, Thrill, and Shuffle.",
+                },
+                {
+                  question: "What's the best Stake alternative?",
+                  answer: "Thrill offers the most generous bonuses and fastest payouts for crypto punters. You get extra rewards by joining with code 'MANDY'.",
+                },
+                {
+                  question: "Is lossback available instantly?",
+                  answer: "Yes! With Mandy.gg, you can request lossback at supported casinos even with low volume. Message MandySupport on Telegram with your username.",
+                },
+                {
+                  question: "How do I know if a casino is legit?",
+                  answer: "All casinos on Mandy.gg are manually vetted. They payout reliably, provide instant support, and back all bonuses shown.",
+                },
+                // (Add your original and existing FAQ entries here)
+                {
                   question: "HOW DO I CONTACT YOU?",
                   answer: (
                     <span>
-                      <strong>Join the official Telegram group</strong> first. If you can't find your answer in the
-                      group,{" "}
+                      <strong>Join the official Telegram group</strong> first. If you can't find your answer in the group,{" "}
                       <strong>
                         message the{" "}
                         <Link
@@ -278,16 +339,13 @@ export function Homepage() {
                       </p>
                       <ul className="list-disc list-inside space-y-2 mb-3">
                         <li>
-                          <strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize
-                          pool — bigger than many monthly races elsewhere.
+                          <strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize pool — bigger than many monthly races elsewhere.
                         </li>
                         <li>
-                          <strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize
-                          pool (if you hit the $50,000 monthly wagering requirement.)
+                          <strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize pool (if you hit the $50,000 monthly wagering requirement.)
                         </li>
                         <li>
-                          <strong>Lossback</strong>: You can request lossback from day one. Most casinos only offer this
-                          at high VIP levels after millions wagered. To request:{" "}
+                          <strong>Lossback</strong>: You can request lossback from day one. Most casinos only offer this at high VIP levels after millions wagered. To request:{" "}
                           <strong>Send a message to the Support Bot on Telegram</strong>.
                         </li>
                       </ul>
@@ -297,22 +355,17 @@ export function Homepage() {
                       <ul className="list-disc list-inside space-y-1 mb-3">
                         <li>
                           <strong>Random Poker Games + Crypto Drops</strong> in the Telegram group. Use the command{" "}
-                          <code className="bg-gray-800 px-1 rounded">!mandywallet</code> in the group for details on how
-                          to claim, withdraw, or even do your own drops.
+                          <code className="bg-gray-800 px-1 rounded">!mandywallet</code> in the group for details on how to claim, withdraw, or even do your own drops.
                         </li>
                         <li>
-                          <strong>Cashdrop codes a few times a week</strong> for eligible players who meet the wagering
-                          requirement.
+                          <strong>Cashdrop codes a few times a week</strong> for eligible players who meet the wagering requirement.
                         </li>
                         <li>
-                          <strong>Trivia, roll hunts, and whatever else I come up with.</strong> I enjoy hanging out
-                          with you weirdos so I like to make it a fun time.
+                          <strong>Trivia, roll hunts, and whatever else I come up with.</strong> I enjoy hanging out with you weirdos so I like to make it a fun time.
                         </li>
                       </ul>
                       <p className="text-sm italic bg-gray-800/50 p-2 rounded">
-                        <strong>Reminder on bonuses and rewards:</strong> Think of them as a small rebate for play
-                        you're already planning to do — not a way to profit. You'll almost always lose money on the way
-                        to earning them; they're just nice extras for regulars.
+                        <strong>Reminder on bonuses and rewards:</strong> Think of them as a small rebate for play you're already planning to do — not a way to profit. You'll almost always lose money on the way to earning them; they're just nice extras for regulars.
                       </p>
                     </div>
                   ),
@@ -321,10 +374,7 @@ export function Homepage() {
                   question: "WHAT CASINO IS THE BEST?",
                   answer: (
                     <span>
-                      Currently your best option is <strong>Thrill</strong>. Hands down. It's new so they are eager and
-                      the bonuses are boosted, but it's been well vetted and they are very reliable. You'll get the best
-                      deal by signing up with code <code className="bg-gray-800 px-1 rounded">mandy</code> at Thrill.
-                      For other casinos I play at, check out the <strong>Mandyland</strong> page.
+                      Currently your best option is <strong>Thrill</strong>. Hands down. It's new so they are eager and the bonuses are boosted, but it's been well vetted and they are very reliable. You'll get the best deal by signing up with code <code className="bg-gray-800 px-1 rounded">mandy</code> at Thrill. For other casinos I play at, check out the <strong>Mandyland</strong> page.
                     </span>
                   ),
                 },
@@ -332,9 +382,7 @@ export function Homepage() {
                   question: "HOW DO I BUY CRYPTO AND USE IT TO PLAY?",
                   answer: (
                     <span>
-                      Visit the <strong>Tutorials</strong> tab for step-by-step videos and guides covering crypto
-                      basics, buying, depositing, and safe gambling setup. If you need help after checking the
-                      tutorials, ask in the <strong>Telegram group</strong>, or message the{" "}
+                      Visit the <strong>Tutorials</strong> tab for step-by-step videos and guides covering crypto basics, buying, depositing, and safe gambling setup. If you need help after checking the tutorials, ask in the <strong>Telegram group</strong>, or message the{" "}
                       <Link
                         href="https://t.me/MandySupport_bot"
                         target="_blank"
@@ -371,23 +419,19 @@ export function Homepage() {
                 },
                 {
                   question: "WHEN I GO TO THE CASINO WEBSITE IT SAYS MY LOCATION IS BLOCKED.",
-                  answer:
-                    "Many people prefer to keep their degen lives private and use a VPN to mask their location. Check out the VPN tutorial video on my Tutorials page for guidance.",
+                  answer: "Many people prefer to keep their degen lives private and use a VPN to mask their location. Check out the VPN tutorial video on my Tutorials page for guidance.",
                 },
                 {
                   question: "ARE THESE CASINOS REAL? WILL THEY SCAM ME?",
-                  answer:
-                    "Any casino listed on mandy.gg has been vetted by me. If you're not breaking the terms of service or abusing promos/alts, you should have no issues withdrawing your winnings.",
+                  answer: "Any casino listed on mandy.gg has been vetted by me. If you're not breaking the terms of service or abusing promos/alts, you should have no issues withdrawing your winnings.",
                 },
                 {
                   question: "HOW DO I KNOW IF I USED CODE MANDY?",
-                  answer:
-                    "Ask support in the live chat — but do it within 24 hours of signing up. After that, you can't add or change a referral code.",
+                  answer: "Ask support in the live chat — but do it within 24 hours of signing up. After that, you can't add or change a referral code.",
                 },
                 {
                   question: "I DON'T USE TELEGRAM. WHAT SHOULD I DO?",
-                  answer:
-                    "You should download Telegram and start using it if you don't want to miss events or payouts for leaderboard wins. Right now, it's the best way to communicate and connect with the community.",
+                  answer: "You should download Telegram and start using it if you don't want to miss events or payouts for leaderboard wins. Right now, it's the best way to communicate and connect with the community.",
                 },
               ].map((faq, index) => (
                 <Card

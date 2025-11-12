@@ -120,7 +120,7 @@ function getThursdayRaceStart(): Date {
 
   const thursdayStart = new Date(centralTime)
   thursdayStart.setDate(centralTime.getDate() - daysToSubtract)
-  thursdayStart.setHours(10, 0, 0, 0)
+  thursdayStart.setHours(18, 0, 0, 0)
 
   console.log("[v0] Calculated Thursday race start (Central):", thursdayStart.toString())
   console.log("[v0] Race start date:", thursdayStart.toLocaleDateString("en-US", { timeZone: "America/Chicago" }))
@@ -131,7 +131,7 @@ function getThursdayRaceStart(): Date {
 function getNextThursdayRaceEnd(thursdayStart: Date): Date {
   const nextThursdayEnd = new Date(thursdayStart)
   nextThursdayEnd.setDate(thursdayStart.getDate() + 7)
-  nextThursdayEnd.setHours(10, 0, 0, 0)
+  nextThursdayEnd.setHours(18, 0, 0, 0)
 
   console.log("[v0] Calculated Thursday race end (Central):", nextThursdayEnd.toString())
 
