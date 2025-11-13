@@ -1,0 +1,129 @@
+"use client"
+
+import type React from "react"
+
+import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+  const router = useRouter()
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const supabase = createClient()
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
+      router.push("/dashboard")
+      router.refresh()
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(circle at 90% 90%, rgba(0, 255, 159, ${0.1 + scrollY * 0.0002}) 0%, transparent 40%),
+            radial-gradient(circle at 30% 70%, rgba(0, 255, 159, ${0.08 + scrollY * 0.0001}) 0%, transparent 30%),
+            radial-gradient(circle at 70% 30%, rgba(0, 255, 159, ${0.06 + scrollY * 0.0001}) 0%, transparent 35%)
+          `,
+          transition: "background 0.3s ease",
+        }}
+      />
+
+      <div className="w-full max-w-md relative z-10">
+        <Card
+          className="border border-white/30 rounded-xl shadow-lg backdrop-blur-sm"
+          style={{
+            backgroundColor: "rgba(10, 10, 10, 0.95)",
+            boxShadow:
+              "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+          }}
+        >
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-[#5cfec0] uppercase">Login to MandyGG</CardTitle>
+            <CardDescription className="text-gray-400">Enter your credentials to access your dashboard</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-300">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-[#1a1a1a] border-[#333] text-white placeholder:text-gray-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-300">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-[#1a1a1a] border-[#333] text-white"
+                />
+              </div>
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-[#5cfec0] text-black hover:bg-[#4de8ad] font-bold"
+                disabled={isLoading}
+              >
+                {isLoading ? "Logging in..." : "Login"}
+              </Button>
+              <div className="text-center text-sm text-gray-400">
+                Don't have an account?{" "}
+                <Link href="/auth/sign-up" className="text-[#5cfec0] hover:underline font-semibold">
+                  Sign up
+                </Link>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}

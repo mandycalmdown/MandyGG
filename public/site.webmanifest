@@ -1,0 +1,22 @@
+{
+  "name": "Mandy.gg - Premier Crypto Casino & Gaming Platform",
+  "short_name": "Mandy.gg",
+  "description": "Premier crypto casino and gaming platform partnered with Thrill Casino",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#5cfec0",
+  "background_color": "#000000",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
