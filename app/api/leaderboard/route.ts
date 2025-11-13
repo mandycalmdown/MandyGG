@@ -207,17 +207,17 @@ export async function GET(request: NextRequest) {
 
     console.log("[v0] Token found, length:", token.length)
 
-    const currentThursdayStart = getThursdayRaceStart()
-    const currentThursdayEnd = getNextThursdayRaceEnd(currentThursdayStart)
+    const currentThursdayStart = getThursdayRaceStart() + 1
+    const currentThursdayEnd = getNextThursdayRaceEnd(currentThursdayStart) + 1
 
     let fromDate: string
     let toDate: string
 
     if (period === "past") {
       const pastThursdayStart = new Date(currentThursdayStart)
-      pastThursdayStart.setDate(currentThursdayStart.getDate() - 7)
+      pastThursdayStart.setDate(currentThursdayStart.getDate() - 6)
       const pastThursdayEnd = new Date(currentThursdayEnd)
-      pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 7)
+      pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 6)
 
       // Thrill API uses UTC and toDate is EXCLUSIVE
       // Contest: Oct 16 10am CST to Oct 23 10am CST
