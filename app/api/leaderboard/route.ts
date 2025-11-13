@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { kv } from "@/lib/kv"
 
+// Updated:hi
+
 interface ThrillApiResponse {
   items: Array<{
     username: string
@@ -11,16 +13,7 @@ interface ThrillApiResponse {
       currency: string
       decimals: number
     }
-    earning: {
-      value: string
-      currency: string
-      decimals: number
-    }
-    xp: {
-      value: string
-      decimals: number
-    }
-  }>
+    }>
   isLastBatch: boolean
   totalCount: number
 }
