@@ -522,7 +522,7 @@ export function Leaderboard() {
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
                   <video autoPlay loop muted className="w-32 h-32 md:w-36 md:h-36" style={{ objectFit: "contain" }}>
-                    <source src="/images/silver-mandy.webm" type="video/webm" />
+                    <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/silver_mandy-QLwCilpDVX7yYn5lwHX2x55OPkDBZZ.webm" type="video/webm" />
                   </video>
                 </div>
               </div>
@@ -553,7 +553,7 @@ export function Leaderboard() {
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
                   <video autoPlay loop muted className="w-32 h-32 md:w-40 md:h-40" style={{ objectFit: "contain" }}>
-                    <source src="/images/gold-mandy.webm" type="video/webm" />
+                    <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gold_mandy-9pX50BDoGrYOwjdjBgvDsA81XNnbzS.webm" type="video/webm" />
                   </video>
                 </div>
               </div>
@@ -584,7 +584,7 @@ export function Leaderboard() {
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
                   <video autoPlay loop muted className="w-32 h-32 md:w-36 md:h-36" style={{ objectFit: "contain" }}>
-                    <source src="/images/bronze-ezgif-new.webm" type="video/webm" />
+                    <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bronze-ezgif.com-gif-to-webm-converter-RoLVPGw8RXwCgrEfDo86QZ9Kvc24J7.webm" type="video/webm" />
                   </video>
                 </div>
               </div>

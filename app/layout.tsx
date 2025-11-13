@@ -70,6 +70,7 @@ export const metadata = {
   other: {
     "theme-color": "#5cfec0",
   },
+    generator: 'v0.app'
 }
 
 function StructuredData() {

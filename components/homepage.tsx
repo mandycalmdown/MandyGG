@@ -77,7 +77,7 @@ export function Homepage() {
              object-contain"
               preload="metadata"
             >
-              <source src="/images/mandygg-video-banner-final.webm" type="video/webm" />
+              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_VIDEO_BANNER_FINAL-ptsvWmFNYXFpHriXVQD0mLp5P3ohqU.webm" type="video/webm" />
             </video>
 
             <video
