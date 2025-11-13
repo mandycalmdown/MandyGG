@@ -97,17 +97,17 @@ function getThursdayRaceStart(): Date {
 
   let daysToSubtract: number
 
-  if (currentDay === 4 && currentHour >= 10) {
+  if (currentDay === 5) {
     daysToSubtract = 0
     console.log("[v0] Thursday after 10am - current race period")
-  } else if (currentDay === 4 && currentHour < 10) {
+  } else if (currentDay === 5) {
     daysToSubtract = 7
     console.log("[v0] Thursday before 10am - last week's race period")
-  } else if (currentDay > 4) {
-    daysToSubtract = currentDay - 4
+  } else if (currentDay > 5) {
+    daysToSubtract = currentDay - 5
     console.log("[v0] Friday/Saturday - going back", daysToSubtract, "days")
   } else {
-    daysToSubtract = currentDay + 3
+    daysToSubtract = currentDay + 2
     console.log("[v0] Sunday-Wednesday - going back", daysToSubtract, "days")
   }
 
@@ -200,17 +200,17 @@ export async function GET(request: NextRequest) {
 
     console.log("[v0] Token found, length:", token.length)
 
-    const currentThursdayStart = getThursdayRaceStart() + 1
-    const currentThursdayEnd = getNextThursdayRaceEnd(currentThursdayStart) + 1
+    const currentThursdayStart = getThursdayRaceStart()
+    const currentThursdayEnd = getNextThursdayRaceEnd(currentThursdayStart)
 
     let fromDate: string
     let toDate: string
 
     if (period === "past") {
       const pastThursdayStart = new Date(currentThursdayStart)
-      pastThursdayStart.setDate(currentThursdayStart.getDate() - 6)
+      pastThursdayStart.setDate(currentThursdayStart.getDate() - 7)
       const pastThursdayEnd = new Date(currentThursdayEnd)
-      pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 6)
+      pastThursdayEnd.setDate(currentThursdayEnd.getDate() - 7)
 
       // Thrill API uses UTC and toDate is EXCLUSIVE
       // Contest: Oct 16 10am CST to Oct 23 10am CST
