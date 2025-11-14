@@ -97,39 +97,33 @@ function getThursdayRaceStart(): Date {
 
   let daysToSubtract: number
 
-  if (currentDay === 5) {
-    daysToSubtract = 0
-    console.log("[v0] Thursday after 10am - current race period")
-  } else if (currentDay === 5) {
-    daysToSubtract = 7
-    console.log("[v0] Thursday before 10am - last week's race period")
-  } else if (currentDay > 5) {
-    daysToSubtract = currentDay - 5
-    console.log("[v0] Friday/Saturday - going back", daysToSubtract, "days")
+  if (currentDay >= 5) {
+    // Friday (5) or Saturday (6)
+    daysToSubtract = currentDay - 5;
+    console.log("[v0] Fri–Sat: subtract", daysToSubtract);
   } else {
-    daysToSubtract = currentDay + 2
-    console.log("[v0] Sunday-Wednesday - going back", daysToSubtract, "days")
+    // Sunday (0) → Thursday (4)
+    daysToSubtract = currentDay + 2; // moves back to previous Friday
+    console.log("[v0] Sun–Thu: subtract", daysToSubtract);
   }
 
-  const thursdayStart = new Date(centralTime)
-  thursdayStart.setDate(centralTime.getDate() - daysToSubtract)
-  thursdayStart.setHours(18, 0, 0, 0)
+  const thursdayStart = new Date(centralTime);
+  thursdayStart.setDate(centralTime.getDate() - daysToSubtract);
+  thursdayStart.setHours(0, 0, 0, 0);
 
-  console.log("[v0] Calculated Thursday race start (Central):", thursdayStart.toString())
-  console.log("[v0] Race start date:", thursdayStart.toLocaleDateString("en-US", { timeZone: "America/Chicago" }))
-
-  return thursdayStart
+  console.log("[v0] Calculated Friday start:", thursdayStart.toString());
+  return thursdayStart;
 }
 
 function getNextThursdayRaceEnd(thursdayStart: Date): Date {
-  const nextThursdayEnd = new Date(thursdayStart)
-  nextThursdayEnd.setDate(thursdayStart.getDate() + 7)
-  nextThursdayEnd.setHours(18, 0, 0, 0)
+  const nextThursdayEnd = new Date(thursdayStart);
+  nextThursdayEnd.setDate(thursdayStart.getDate() + 7);
+  nextThursdayEnd.setHours(0, 0, 0, 0);
 
-  console.log("[v0] Calculated Thursday race end (Central):", nextThursdayEnd.toString())
-
-  return nextThursdayEnd
+  console.log("[v0] Calculated next Friday end:", nextThursdayEnd.toString());
+  return nextThursdayEnd;
 }
+
 
 function censorUsername(username: string): string {
   if (!username || username.length <= 2) return username
