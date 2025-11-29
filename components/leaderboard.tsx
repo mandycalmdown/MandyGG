@@ -460,7 +460,7 @@ export function Leaderboard() {
                       <path
                         className="opacity-75"
                         fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                       />
                     </svg>
                     Refreshing...
@@ -521,7 +521,17 @@ export function Leaderboard() {
             >
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
-                  <video autoPlay loop muted className="w-32 h-32 md:w-36 md:h-36" style={{ objectFit: "contain" }}>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    controlsList="nodownload nofullscreen noremoteplayback"
+                    className="w-32 h-32 md:w-36 md:h-36 pointer-events-none"
+                    style={{ objectFit: "contain" }}
+                  >
                     <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/silver_mandy-QLwCilpDVX7yYn5lwHX2x55OPkDBZZ.webm" type="video/webm" />
                   </video>
                 </div>
@@ -552,7 +562,17 @@ export function Leaderboard() {
             >
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
-                  <video autoPlay loop muted className="w-32 h-32 md:w-40 md:h-40" style={{ objectFit: "contain" }}>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    controlsList="nodownload nofullscreen noremoteplayback"
+                    className="w-32 h-32 md:w-40 md:h-40 pointer-events-none"
+                    style={{ objectFit: "contain" }}
+                  >
                     <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gold_mandy-9pX50BDoGrYOwjdjBgvDsA81XNnbzS.webm" type="video/webm" />
                   </video>
                 </div>
@@ -583,7 +603,17 @@ export function Leaderboard() {
             >
               <div className="absolute -top-12 md:-top-16 left-1/2 transform -translate-x-1/2 z-30">
                 <div className="hidden md:block">
-                  <video autoPlay loop muted className="w-32 h-32 md:w-36 md:h-36" style={{ objectFit: "contain" }}>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    controlsList="nodownload nofullscreen noremoteplayback"
+                    className="w-32 h-32 md:w-36 md:h-36 pointer-events-none"
+                    style={{ objectFit: "contain" }}
+                  >
                     <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/bronze-ezgif.com-gif-to-webm-converter-RoLVPGw8RXwCgrEfDo86QZ9Kvc24J7.webm" type="video/webm" />
                   </video>
                 </div>
