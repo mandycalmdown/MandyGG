@@ -10,6 +10,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/how-to-join") ||
     request.nextUrl.pathname.startsWith("/privacy") ||
     request.nextUrl.pathname.startsWith("/terms") ||
+    request.nextUrl.pathname.startsWith("/christmas") || // Added Christmas page to public paths
     request.nextUrl.pathname.startsWith("/api") ||
     request.nextUrl.pathname === "/"
 

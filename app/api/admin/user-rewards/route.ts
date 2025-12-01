@@ -10,8 +10,7 @@ export async function GET() {
       .from("user_rewards")
       .select(`
         *,
-        reward:rewards(*),
-        profile:profiles(id, display_name, thrill_username)
+        reward:rewards(*)
       `)
       .order("date_granted", { ascending: false })
 
@@ -20,7 +19,33 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ userRewards })
+    const userIds = [...new Set(userRewards?.map((ur) => ur.user_id).filter(Boolean) || [])]
+
+    let profilesMap: Record<string, any> = {}
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, display_name, thrill_username")
+        .in("id", userIds)
+
+      if (profiles) {
+        profilesMap = profiles.reduce(
+          (acc, p) => {
+            acc[p.id] = p
+            return acc
+          },
+          {} as Record<string, any>,
+        )
+      }
+    }
+
+    const enrichedRewards =
+      userRewards?.map((ur) => ({
+        ...ur,
+        profile: profilesMap[ur.user_id] || null,
+      })) || []
+
+    return NextResponse.json({ userRewards: enrichedRewards })
   } catch (error) {
     console.error("[v0] Error in user-rewards GET route:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

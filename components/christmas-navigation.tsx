@@ -9,11 +9,11 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
 
-interface SiteNavigationProps {
+interface ChristmasNavigationProps {
   currentPage?: string
 }
 
-export function SiteNavigation({ currentPage }: SiteNavigationProps) {
+export function ChristmasNavigation({ currentPage }: ChristmasNavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
@@ -49,38 +49,37 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
     { href: "/rewards", label: "REWARDS", page: "rewards" },
     { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
     { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "/christmas", label: "CHRISTMAS", page: "christmas" },
   ]
 
   return (
     <nav className="mx-2 md:mx-4 mt-2 md:mt-4 mb-2">
       <Card
-        className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/30 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
+        className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.01]"
         style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+          backgroundColor: "rgba(10, 8, 5, 0.95)",
+          borderColor: "rgba(255, 200, 100, 0.25)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 200, 100, 0.08)",
         }}
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Link href="/">
               <Image
-                src="/images/mandygg_menu_logo.svg"
-                alt="MandyGG - Premier Crypto Casino Leaderboard & Rewards"
-                width={250}
-                height={80}
-                className="hidden md:block h-12 md:h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                src="/images/goldmandy.svg"
+                alt="MandyGG"
+                width={180}
+                height={60}
+                className="hidden md:block h-10 md:h-14 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                 priority
               />
             </Link>
             <Link href="/">
               <Image
-                src="/images/mandygg_m_logo.svg"
+                src="/images/goldmandy.svg"
                 alt="MandyGG"
-                width={60}
-                height={60}
-                className="md:hidden h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
+                width={100}
+                height={40}
+                className="md:hidden h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                 priority
               />
             </Link>
@@ -93,7 +92,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 key={link.page}
                 href={link.href}
                 className={`${
-                  currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
+                  currentPage === link.page ? "text-amber-300" : "text-white/80 hover:text-amber-300"
                 } transition-colors font-bold uppercase text-lg xl:text-xl`}
               >
                 {link.label}
@@ -104,7 +103,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
               <Link
                 href="/dashboard"
                 className={`${
-                  currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
+                  currentPage === "dashboard" ? "text-amber-400" : "text-amber-400/80 hover:text-amber-300"
                 } transition-colors font-bold uppercase text-lg xl:text-xl`}
               >
                 DASHBOARD
@@ -116,7 +115,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 onClick={handleSignOut}
                 variant="outline"
                 size="sm"
-                className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl transition-all duration-300 uppercase text-lg xl:text-xl px-4 py-2 bg-transparent"
+                className="border-amber-400/50 text-amber-300 hover:bg-amber-400/20 hover:text-amber-200 font-bold rounded-xl transition-all duration-300 uppercase text-lg xl:text-xl px-4 py-2 bg-transparent"
               >
                 SIGN OUT
               </Button>
@@ -125,7 +124,11 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 <Button
                   variant="default"
                   size="sm"
-                  className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/30 uppercase text-lg xl:text-xl px-4 py-2"
+                  className="font-bold rounded-xl transition-all duration-300 hover:scale-105 uppercase text-lg xl:text-xl px-4 py-2"
+                  style={{
+                    background: "linear-gradient(135deg, #FFD700 0%, #B8860B 100%)",
+                    color: "#1a1a1a",
+                  }}
                 >
                   SIGN IN
                 </Button>
@@ -139,13 +142,13 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-white/20 p-2"
+              className="text-white hover:bg-white/10 p-2"
               aria-label="Toggle mobile menu"
             >
               <div className="flex flex-col space-y-1">
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
+                <div className="w-5 h-0.5 bg-amber-300/80"></div>
+                <div className="w-5 h-0.5 bg-amber-300/80"></div>
+                <div className="w-5 h-0.5 bg-amber-300/80"></div>
               </div>
             </Button>
           </div>
@@ -153,14 +156,14 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-3 p-3 border-t border-white/20">
+          <div className="lg:hidden mt-3 p-3 border-t border-amber-400/20">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.page}
                   href={link.href}
                   className={`${
-                    currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
+                    currentPage === link.page ? "text-amber-300" : "text-white/80 hover:text-amber-300"
                   } transition-colors font-bold uppercase text-lg py-2`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -168,12 +171,11 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 </Link>
               ))}
 
-              {/* Dashboard Link Mobile - only show if logged in */}
               {user && (
                 <Link
                   href="/dashboard"
                   className={`${
-                    currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
+                    currentPage === "dashboard" ? "text-amber-400" : "text-amber-400/80 hover:text-amber-300"
                   } transition-colors font-bold uppercase text-lg py-2`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -181,7 +183,6 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                 </Link>
               )}
 
-              {/* Sign In/Out Button Mobile */}
               {user ? (
                 <Button
                   onClick={() => {
@@ -190,7 +191,7 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                   }}
                   variant="outline"
                   size="sm"
-                  className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl w-full uppercase text-lg mt-2 bg-transparent"
+                  className="border-amber-400/50 text-amber-300 hover:bg-amber-400/20 font-bold rounded-xl w-full uppercase text-lg mt-2 bg-transparent"
                 >
                   SIGN OUT
                 </Button>
@@ -199,7 +200,11 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
                   <Button
                     variant="default"
                     size="sm"
-                    className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl w-full uppercase text-lg mt-2"
+                    className="font-bold rounded-xl w-full uppercase text-lg mt-2"
+                    style={{
+                      background: "linear-gradient(135deg, #FFD700 0%, #B8860B 100%)",
+                      color: "#1a1a1a",
+                    }}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     SIGN IN

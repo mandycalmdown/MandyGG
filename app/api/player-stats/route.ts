@@ -53,31 +53,40 @@ export async function GET(request: NextRequest) {
     let uncensoredData = await kv.get<LeaderboardEntry[]>(uncensoredCacheKey)
 
     if (!uncensoredData) {
-      console.log("[v0] No cached data, fetching fresh leaderboard data")
+      console.log("[v0] No cached leaderboard data, triggering fetch")
 
       try {
-        // Trigger the leaderboard API to fetch and cache data
-        const leaderboardUrl = new URL("/api/leaderboard", request.url)
-        leaderboardUrl.searchParams.set("period", period)
+        const baseUrl = request.headers.get("host") || "localhost:3000"
+        const protocol = baseUrl.includes("localhost") ? "http" : "https"
+        const leaderboardUrl = `${protocol}://${baseUrl}/api/leaderboard?period=${period}`
 
-        const leaderboardResponse = await fetch(leaderboardUrl.toString())
+        console.log("[v0] Fetching leaderboard from:", leaderboardUrl)
+
+        const leaderboardResponse = await fetch(leaderboardUrl, {
+          headers: {
+            // Pass through cookies for auth if needed
+            cookie: request.headers.get("cookie") || "",
+          },
+        })
 
         if (leaderboardResponse.ok) {
           console.log("[v0] Leaderboard data fetched successfully")
-          // Try to get the cached data again
+          // Wait a moment for cache to be set
+          await new Promise((resolve) => setTimeout(resolve, 500))
           uncensoredData = await kv.get<LeaderboardEntry[]>(uncensoredCacheKey)
+        } else {
+          console.log("[v0] Leaderboard fetch failed:", leaderboardResponse.status)
         }
       } catch (fetchError) {
         console.error("[v0] Error fetching leaderboard data:", fetchError)
       }
 
-      // If still no data after fetch attempt, return 503
       if (!uncensoredData) {
         console.log("[v0] No leaderboard data available after fetch attempt")
         return NextResponse.json(
           {
             error: "Leaderboard data not available",
-            message: "Unable to fetch leaderboard data. Please try again in a moment.",
+            message: "Data is being refreshed. Please try again in a moment.",
           },
           { status: 503 },
         )

@@ -79,6 +79,10 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
   const [isLoadingMonthlyWager, setIsLoadingMonthlyWager] = useState(false)
   const POKER_REQUIREMENT = 50000 // $50,000 requirement for poker night
 
+  const [christmasRaffleTickets, setChristmasRaffleTickets] = useState<number>(0)
+  const [christmasWager, setChristmasWager] = useState<number>(0)
+  const [isLoadingChristmasRaffle, setIsLoadingChristmasRaffle] = useState(false)
+
   const [pokerCountdown, setPokerCountdown] = useState({
     days: 0,
     hours: 0,
@@ -268,6 +272,33 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
     fetchMonthlyWager()
   }, [])
+
+  useEffect(() => {
+    async function fetchChristmasRaffle() {
+      if (!profile?.thrill_username) {
+        setChristmasRaffleTickets(0)
+        setChristmasWager(0)
+        return
+      }
+
+      setIsLoadingChristmasRaffle(true)
+      try {
+        const response = await fetch("/api/christmas-raffle")
+        const data = await response.json()
+
+        if (response.ok) {
+          setChristmasRaffleTickets(data.raffleTickets || 0)
+          setChristmasWager(data.wager || 0)
+        }
+      } catch (err) {
+        console.error("[v0] Error fetching Christmas raffle:", err)
+      } finally {
+        setIsLoadingChristmasRaffle(false)
+      }
+    }
+
+    fetchChristmasRaffle()
+  }, [profile?.thrill_username])
 
   const handleSaveProfile = async () => {
     setIsSaving(true)
@@ -601,6 +632,42 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                     Resets on the 1st Sunday of each month at 6 PM CST
                   </p>
                 </div>
+              </Card>
+
+              <Card
+                className="p-6 rounded-xl border mb-6"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  borderColor: "rgba(212, 175, 55, 0.5)",
+                  boxShadow:
+                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.25), 0 0 40px rgba(185, 28, 28, 0.1)",
+                }}
+              >
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <span className="text-2xl">🎄</span>
+                  <h3 className="text-2xl font-bold text-[#D4AF37] uppercase text-center">Christmas Raffle</h3>
+                  <span className="text-2xl">🎁</span>
+                </div>
+                <p className="text-gray-400 text-sm text-center mb-4">
+                  December 1-25, 2025 | Every $1,000 wagered = 1 raffle ticket
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-[#D4AF37]/30">
+                    <p className="text-gray-400 text-sm uppercase mb-2">December Wager</p>
+                    <p className="text-3xl font-bold text-[#D4AF37]">
+                      {isLoadingChristmasRaffle ? "..." : formatCurrency(christmasWager)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-[#B91C1C]/30">
+                    <p className="text-gray-400 text-sm uppercase mb-2">Raffle Tickets</p>
+                    <p className="text-3xl font-bold text-[#B91C1C]">
+                      {isLoadingChristmasRaffle ? "..." : christmasRaffleTickets}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 text-center mt-4 italic">
+                  Must be signed up under code MANDY to participate
+                </p>
               </Card>
 
               <Card
