@@ -1,7 +1,23 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description:
+    "Learn how Mandy.gg collects, uses, and protects your personal information. Our commitment to your privacy and data security.",
+  openGraph: {
+    title: "Privacy Policy | Mandy.gg",
+    description: "Learn how Mandy.gg collects, uses, and protects your personal information.",
+    type: "website",
+    url: "https://mandy.gg/privacy",
+  },
+  alternates: {
+    canonical: "https://mandy.gg/privacy",
+  },
+}
 
 export default function PrivacyPolicy() {
   return (
@@ -36,7 +52,7 @@ export default function PrivacyPolicy() {
           </Card>
         </nav>
 
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <main className="max-w-4xl mx-auto px-4 py-8">
           <Card
             className="p-6 md:p-8 rounded-xl border border-white/30"
             style={{
@@ -225,7 +241,7 @@ export default function PrivacyPolicy() {
               </section>
             </div>
           </Card>
-        </div>
+        </main>
       </div>
     </div>
   )

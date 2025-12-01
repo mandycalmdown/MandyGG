@@ -1,7 +1,23 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Read the Mandy.gg Terms of Service. Understand your rights and responsibilities when using our platform for crypto casino rewards and leaderboard tracking.",
+  openGraph: {
+    title: "Terms of Service | Mandy.gg",
+    description: "Read the Mandy.gg Terms of Service for using our crypto casino rewards platform.",
+    type: "website",
+    url: "https://mandy.gg/terms",
+  },
+  alternates: {
+    canonical: "https://mandy.gg/terms",
+  },
+}
 
 export default function TermsOfService() {
   return (
@@ -36,7 +52,7 @@ export default function TermsOfService() {
           </Card>
         </nav>
 
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <main className="max-w-4xl mx-auto px-4 py-8">
           <Card
             className="p-6 md:p-8 rounded-xl border border-white/30"
             style={{
@@ -184,7 +200,7 @@ export default function TermsOfService() {
               </section>
             </div>
           </Card>
-        </div>
+        </main>
       </div>
     </div>
   )

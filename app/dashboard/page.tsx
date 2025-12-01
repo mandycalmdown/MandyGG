@@ -1,6 +1,14 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { DashboardClient } from "@/components/dashboard-client"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Degen Dashboard",
+  description:
+    "Track your wager stats, XP progress, poker qualifications, and Christmas raffle tickets. Your personal hub for Mandy.gg rewards and competitions.",
+  robots: "noindex, nofollow", // Private page, don't index
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()

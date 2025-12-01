@@ -50,6 +50,7 @@ function AdventCard({
   onOpen,
   canOpen,
   isLocked,
+  isPastDay,
   glowColor,
   tintColor,
   hasSparkle,
@@ -59,6 +60,7 @@ function AdventCard({
   onOpen: () => void
   canOpen: boolean
   isLocked: boolean
+  isPastDay: boolean
   glowColor: "gold" | "red"
   tintColor: "green" | "red" | "gold"
   hasSparkle: boolean
@@ -66,7 +68,14 @@ function AdventCard({
   const [isFlipped, setIsFlipped] = useState(false)
 
   const handleClick = () => {
-    if (isLocked || isOpen) return
+    if (isLocked) return
+
+    // If already opened or past day, just trigger onOpen to show modal
+    if (isOpen || isPastDay) {
+      onOpen()
+      return
+    }
+
     if (!canOpen) return
     if (!isFlipped) {
       setIsFlipped(true)
@@ -75,6 +84,7 @@ function AdventCard({
   }
 
   const getTintBackground = () => {
+    // Greyed out for opened days
     if (isOpen) {
       return "rgba(30, 30, 30, 0.85), rgba(50, 50, 50, 0.4)"
     }
@@ -93,9 +103,13 @@ function AdventCard({
     <motion.div
       className="relative w-full aspect-square cursor-pointer"
       style={{ perspective: "1000px" }}
-      whileHover={canOpen && !isLocked && !isOpen ? { scale: 1.05, y: -4 } : {}}
-      whileTap={canOpen && !isLocked && !isOpen ? { scale: 0.95 } : {}}
+      whileHover={!isLocked ? { scale: 1.05, y: -4 } : {}}
+      whileTap={!isLocked ? { scale: 0.95 } : {}}
       onClick={handleClick}
+      role="button"
+      aria-label={`Day ${day} advent gift${isLocked ? " - locked" : isOpen ? " - opened" : ""}`}
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && handleClick()}
     >
       {/* Glow behind card - only for available unopened cards */}
       {canOpen && !isLocked && !isOpen && (
@@ -149,14 +163,18 @@ function AdventCard({
           {/* Locked indicator for future days */}
           {isLocked && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white/20 text-2xl">🔒</span>
+              <span className="text-white/20 text-2xl" aria-hidden="true">
+                🔒
+              </span>
             </div>
           )}
 
           {/* Opened checkmark */}
           {isOpen && (
             <div className="absolute top-2 right-2">
-              <span className="text-green-500/60 text-lg">✓</span>
+              <span className="text-green-500/60 text-lg" aria-hidden="true">
+                ✓
+              </span>
             </div>
           )}
         </div>
@@ -173,7 +191,9 @@ function AdventCard({
             border: isOpen ? "1.5px solid rgba(100, 100, 100, 0.2)" : "1.5px solid rgba(212, 175, 55, 0.3)",
           }}
         >
-          <span className={`text-3xl ${isOpen ? "opacity-50" : ""}`}>🎁</span>
+          <span className={`text-3xl ${isOpen ? "opacity-50" : ""}`} aria-hidden="true">
+            🎁
+          </span>
         </div>
       </motion.div>
     </motion.div>
@@ -184,10 +204,14 @@ function DayModal({
   gift,
   isOpen,
   onClose,
+  isPastDay,
+  currentDay,
 }: {
   gift: AdventGift | null
   isOpen: boolean
   onClose: () => void
+  isPastDay: boolean
+  currentDay: number
 }) {
   if (!gift) return null
 
@@ -199,11 +223,14 @@ function DayModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
         >
           <motion.div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
           <motion.div
-            className="relative w-full max-w-md rounded-2xl p-6 text-center"
+            className="relative w-full max-w-md rounded-2xl p-6 text-center max-h-[90vh] overflow-y-auto"
             style={{
               background: "linear-gradient(180deg, rgba(20, 20, 20, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%)",
               border: "1px solid rgba(212, 175, 55, 0.2)",
@@ -216,6 +243,7 @@ function DayModal({
             <button
               onClick={onClose}
               className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+              aria-label="Close modal"
             >
               <X className="w-6 h-6" />
             </button>
@@ -225,11 +253,13 @@ function DayModal({
               initial={{ scale: 0 }}
               animate={{ scale: 1, rotate: [0, -10, 10, 0] }}
               transition={{ delay: 0.2, duration: 0.5 }}
+              aria-hidden="true"
             >
               🎁
             </motion.div>
 
             <h2
+              id="modal-title"
               className="text-4xl font-bold mb-2"
               style={{
                 color: "#D4AF37",
@@ -238,6 +268,12 @@ function DayModal({
             >
               Day {gift.day}
             </h2>
+
+            {isPastDay && gift.day < currentDay && (
+              <p className="text-red-400/80 text-sm mb-3 italic">
+                This gift has expired. The reward is no longer available.
+              </p>
+            )}
 
             <h3 className="text-xl font-semibold text-white mb-4">{gift.title}</h3>
 
@@ -248,20 +284,29 @@ function DayModal({
                 src={gift.image_url || "/placeholder.svg"}
                 alt={gift.title}
                 className="w-full max-h-48 object-contain rounded-lg mb-4"
+                loading="lazy"
               />
             )}
 
             <Card
-              className="p-4 mb-6"
+              className={`p-4 mb-6 ${isPastDay && gift.day < currentDay ? "opacity-50" : ""}`}
               style={{
                 background: "rgba(212, 175, 55, 0.05)",
                 borderColor: "rgba(212, 175, 55, 0.15)",
               }}
             >
               <div className="flex items-center justify-center gap-2">
-                <span className="text-amber-500/60">✦</span>
-                <span className="text-white font-medium">{gift.reward}</span>
-                <span className="text-amber-500/60">✦</span>
+                <span className="text-amber-500/60" aria-hidden="true">
+                  ✦
+                </span>
+                <span
+                  className={`font-medium ${isPastDay && gift.day < currentDay ? "text-gray-500 line-through" : "text-white"}`}
+                >
+                  {gift.reward}
+                </span>
+                <span className="text-amber-500/60" aria-hidden="true">
+                  ✦
+                </span>
               </div>
             </Card>
 
@@ -273,7 +318,7 @@ function DayModal({
                 color: "#0d0d0d",
               }}
             >
-              AWESOME!
+              {isPastDay && gift.day < currentDay ? "GOT IT" : "AWESOME!"}
             </Button>
           </motion.div>
         </motion.div>
@@ -354,15 +399,11 @@ export function ChristmasAdventCalendar() {
   const currentDay = getCurrentDayUTC()
 
   const handleOpenDay = async (day: number) => {
-    if (openedDays.includes(day)) {
-      // Already opened, just show the content
-      const gift = gifts.find((g) => g.day === day)
-      if (gift) setSelectedGift(gift)
-      return
-    }
+    const gift = gifts.find((g) => g.day === day)
+    if (!gift) return
 
-    // Record the open if user is logged in
-    if (userId) {
+    // If not already opened and user is logged in, record the open
+    if (!openedDays.includes(day) && userId) {
       try {
         await fetch("/api/advent-gifts", {
           method: "POST",
@@ -373,13 +414,13 @@ export function ChristmasAdventCalendar() {
       } catch (error) {
         console.error("Error recording open:", error)
       }
-    } else {
+    } else if (!openedDays.includes(day)) {
       // For non-logged in users, just track locally
       setOpenedDays([...openedDays, day])
     }
 
-    const gift = gifts.find((g) => g.day === day)
-    if (gift) setSelectedGift(gift)
+    // Always show the gift modal (even for past/opened days)
+    setSelectedGift(gift)
   }
 
   const canOpenDay = (day: number) => {
@@ -390,6 +431,10 @@ export function ChristmasAdventCalendar() {
   const isLockedDay = (day: number) => {
     // Locked if day is in the future
     return day > currentDay
+  }
+
+  const isPastDay = (day: number) => {
+    return day < currentDay
   }
 
   const redGlowDays = [5, 12, 19, 24]
@@ -456,8 +501,9 @@ export function ChristmasAdventCalendar() {
           >
             <img
               src={LOGO_URL || "/placeholder.svg"}
-              alt="Mandy Christmas"
+              alt="Mandy Christmas Advent Calendar"
               className="mx-auto w-auto h-auto max-w-[90%] md:max-w-[600px]"
+              loading="eager"
             />
           </motion.div>
 
@@ -467,10 +513,11 @@ export function ChristmasAdventCalendar() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
+            <h1 className="sr-only">Mandy Christmas Advent Calendar - Daily Rewards</h1>
             <h2 className="text-lg md:text-xl font-semibold mb-2" style={{ color: "#D4AF37" }}>
               How It Works
             </h2>
-            <p className="text-white/90 text-sm md:text-base leading-relaxed">
+            <p className="text-white text-sm md:text-base leading-relaxed">
               Open a new gift every day in December and enjoy! You must be under code{" "}
               <span style={{ color: "#D4AF37" }} className="font-semibold">
                 MANDY
@@ -490,6 +537,8 @@ export function ChristmasAdventCalendar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
+              role="list"
+              aria-label="Advent calendar days"
             >
               {Array.from({ length: 24 }, (_, i) => i + 1).map((day) => (
                 <AdventCard
@@ -499,6 +548,7 @@ export function ChristmasAdventCalendar() {
                   onOpen={() => handleOpenDay(day)}
                   canOpen={canOpenDay(day)}
                   isLocked={isLockedDay(day)}
+                  isPastDay={isPastDay(day)}
                   glowColor={redGlowDays.includes(day) ? "red" : "gold"}
                   tintColor={getTintColor(day)}
                   hasSparkle={sparkleDays.includes(day)}
@@ -509,7 +559,13 @@ export function ChristmasAdventCalendar() {
         </div>
       </main>
 
-      <DayModal gift={selectedGift} isOpen={!!selectedGift} onClose={() => setSelectedGift(null)} />
+      <DayModal
+        gift={selectedGift}
+        isOpen={!!selectedGift}
+        onClose={() => setSelectedGift(null)}
+        isPastDay={selectedGift ? isPastDay(selectedGift.day) : false}
+        currentDay={currentDay}
+      />
     </div>
   )
 }

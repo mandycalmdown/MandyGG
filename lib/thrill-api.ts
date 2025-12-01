@@ -4,6 +4,7 @@ import { kv } from "@/lib/kv"
 const RATE_LIMIT_SECONDS = 120
 const LOCK_KEY = "thrill-api:lock"
 const LAST_CALL_KEY = "thrill-api:last-call"
+const UNIFIED_CACHE_KEY = "thrill-api:unified-data"
 
 interface ThrillApiResponse {
   items: Array<{
@@ -36,6 +37,84 @@ interface CachedThrillData {
   toDate: string
 }
 
+interface UnifiedPlayerData {
+  username: string
+  totalWager: number
+  totalEarnings: number
+  totalXP: number
+  createdAt: string
+  campaignName: string
+}
+
+interface UnifiedCache {
+  players: Record<string, UnifiedPlayerData>
+  lastUpdated: number
+  dateRanges: Record<string, ThrillApiResponse>
+}
+
+async function getUnifiedCache(): Promise<UnifiedCache | null> {
+  return await kv.get<UnifiedCache>(UNIFIED_CACHE_KEY)
+}
+
+async function updateUnifiedCache(fromDate: string, toDate: string, data: ThrillApiResponse): Promise<void> {
+  let cache = await getUnifiedCache()
+
+  if (!cache) {
+    cache = {
+      players: {},
+      lastUpdated: Date.now(),
+      dateRanges: {},
+    }
+  }
+
+  // Store the raw response for this date range
+  cache.dateRanges[`${fromDate}:${toDate}`] = data
+
+  // Update player aggregates
+  for (const item of data.items || []) {
+    const wager = convertAtomicValue(item.wager.value, item.wager.decimals)
+    const earnings = convertAtomicValue(item.earning.value, item.earning.decimals)
+    const xp = convertAtomicValue(item.xp.value, item.xp.decimals)
+
+    if (!cache.players[item.username]) {
+      cache.players[item.username] = {
+        username: item.username,
+        totalWager: 0,
+        totalEarnings: 0,
+        totalXP: 0,
+        createdAt: item.createdAt,
+        campaignName: item.campaignName,
+      }
+    }
+
+    // Update with latest data (don't accumulate, replace for the same date range)
+    cache.players[item.username] = {
+      ...cache.players[item.username],
+      totalWager: wager,
+      totalEarnings: earnings,
+      totalXP: xp,
+    }
+  }
+
+  cache.lastUpdated = Date.now()
+
+  // Cache for 30 minutes
+  await kv.set(UNIFIED_CACHE_KEY, cache, { ex: 1800 })
+}
+
+export async function getCachedDateRange(fromDate: string, toDate: string): Promise<ThrillApiResponse | null> {
+  const cache = await getUnifiedCache()
+  if (!cache) return null
+
+  const key = `${fromDate}:${toDate}`
+  return cache.dateRanges[key] || null
+}
+
+export async function getCachedPlayers(): Promise<Record<string, UnifiedPlayerData> | null> {
+  const cache = await getUnifiedCache()
+  return cache?.players || null
+}
+
 export async function fetchThrillData(
   fromDate: string,
   toDate: string,
@@ -43,8 +122,15 @@ export async function fetchThrillData(
 ): Promise<{ data: ThrillApiResponse | null; fromCache: boolean; error?: string }> {
   const cacheKey = `thrill-api:data:${fromDate}:${toDate}`
 
-  // Check cache first
+  // Check unified cache first
   if (!forceRefresh) {
+    const cachedRange = await getCachedDateRange(fromDate, toDate)
+    if (cachedRange) {
+      console.log("[v0] Thrill API: Returning unified cached data for", fromDate, "-", toDate)
+      return { data: cachedRange, fromCache: true }
+    }
+
+    // Also check individual cache
     const cached = await kv.get<CachedThrillData>(cacheKey)
     if (cached) {
       console.log("[v0] Thrill API: Returning cached data for", fromDate, "-", toDate)
@@ -155,6 +241,8 @@ export async function fetchThrillData(
     await kv.set(cacheKey, cacheData, { ex: 600 })
     await kv.set(`${cacheKey}:stale`, cacheData, { ex: 86400 })
 
+    await updateUnifiedCache(fromDate, toDate, data)
+
     await kv.del(LOCK_KEY)
     return { data, fromCache: false }
   } catch (error) {
@@ -182,4 +270,40 @@ export function convertAtomicValue(value: string, decimals: number): number {
     console.error("[v0] Error converting atomic value:", value, decimals, error)
     return 0
   }
+}
+
+export async function prefetchCommonRanges(): Promise<void> {
+  const now = new Date()
+
+  // Get current week range (Thursday to Thursday)
+  const getCurrentWeekRange = () => {
+    const today = new Date(now)
+    const dayOfWeek = today.getUTCDay()
+    const hourOfDay = today.getUTCHours()
+
+    // Thursday is day 4, contest resets at 3pm UTC (10am CST)
+    let daysToLastThursday = (dayOfWeek - 4 + 7) % 7
+    if (dayOfWeek === 4 && hourOfDay < 15) {
+      daysToLastThursday = 7
+    }
+    if (daysToLastThursday === 0 && hourOfDay >= 15) {
+      daysToLastThursday = 0
+    }
+
+    const startDate = new Date(today)
+    startDate.setUTCDate(today.getUTCDate() - daysToLastThursday)
+    startDate.setUTCHours(15, 0, 0, 0)
+
+    const endDate = new Date(now)
+    endDate.setUTCDate(endDate.getUTCDate() + 1)
+
+    return {
+      fromDate: startDate.toISOString().split("T")[0],
+      toDate: endDate.toISOString().split("T")[0],
+    }
+  }
+
+  // Prefetch current week
+  const { fromDate, toDate } = getCurrentWeekRange()
+  await fetchThrillData(fromDate, toDate)
 }
