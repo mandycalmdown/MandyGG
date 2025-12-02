@@ -398,52 +398,33 @@ export function Leaderboard() {
             </div>
           </div>
 
-          <div className="flex justify-center mb-4">
-            <div className="flex bg-gray-800/50 rounded-lg p-1 border border-white/20">
-              <button
-                onClick={() => setActiveTab("current")}
-                className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                  activeTab === "current"
-                    ? "bg-primary text-black shadow-lg"
-                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                }`}
-              >
-                Current Week
-              </button>
-              <button
-                onClick={() => setActiveTab("past")}
-                className={`px-4 py-2 rounded-md font-bold uppercase text-sm transition-all duration-200 ${
-                  activeTab === "past"
-                    ? "bg-primary text-black shadow-lg"
-                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                }`}
-              >
-                Past Week
-              </button>
-            </div>
-          </div>
-
-          {isAdmin && dataStatus && (
-            <div className="flex justify-center mb-2">
-              <div className="px-3 py-1 bg-gray-900/80 border border-white/10 rounded-lg text-xs flex items-center gap-2">
-                <span className="text-gray-400">Status:</span>
-                <span className={`font-bold ${getStatusColor(dataStatus)}`}>{getStatusLabel(dataStatus)}</span>
-                {lastUpdated && (
-                  <>
-                    <span className="text-gray-600">|</span>
-                    <span className="text-gray-400">Updated: {new Date(lastUpdated).toLocaleTimeString()}</span>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {isAdmin && (
-            <div className="flex justify-center mb-4">
+          {/* Tab Buttons */}
+          <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8 flex-wrap">
+            <button
+              onClick={() => setActiveTab("current")}
+              className={`px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold uppercase text-xs md:text-sm transition-all duration-300 ${
+                activeTab === "current"
+                  ? "bg-gradient-to-r from-indigo-600 to-primary text-white shadow-lg shadow-indigo-500/25"
+                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-white/10"
+              }`}
+            >
+              Current Week
+            </button>
+            <button
+              onClick={() => setActiveTab("past")}
+              className={`px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-bold uppercase text-xs md:text-sm transition-all duration-300 ${
+                activeTab === "past"
+                  ? "bg-gradient-to-r from-indigo-600 to-primary text-white shadow-lg shadow-indigo-500/25"
+                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 border border-white/10"
+              }`}
+            >
+              Past Week
+            </button>
+            {isAdmin && (
               <button
                 onClick={handleManualRefresh}
                 disabled={isRefreshing}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-lg font-bold uppercase text-sm transition-all duration-200 flex items-center gap-2"
+                className="px-3 md:px-6 py-2 md:py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-lg md:rounded-xl font-bold uppercase text-xs md:text-sm transition-all duration-300 flex items-center gap-2 z-50"
               >
                 {isRefreshing ? (
                   <>
@@ -475,28 +456,12 @@ export function Leaderboard() {
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                       />
                     </svg>
-                    Refresh Data
+                    Admin Refresh
                   </>
                 )}
               </button>
-            </div>
-          )}
-
-          {!isAdmin && (
-            <div className="flex justify-center mb-4">
-              <div className="px-4 py-2 bg-gray-800/50 border border-white/10 rounded-lg text-xs md:text-sm text-gray-400 flex items-center gap-2">
-                <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Leaderboard updates every 10 minutes</span>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {isLoading && <p className="text-sm text-gray-400 mt-2">Loading {activeTab} leaderboard data...</p>}
           {error && <p className="text-sm text-red-400 mt-2">Using cached data - API temporarily unavailable</p>}
