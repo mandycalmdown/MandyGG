@@ -146,6 +146,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [dailyLeaderboard, setDailyLeaderboard] = useState<Array<{ username: string; wager: number; rank: number }>>([])
   const [isLoadingDailyLeaderboard, setIsLoadingDailyLeaderboard] = useState(false)
   const [dailyDateRange, setDailyDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
+  const [dailyLastUpdated, setDailyLastUpdated] = useState<number | null>(null)
 
   const [isForceRefreshing, setIsForceRefreshing] = useState(false)
   const [forceRefreshStatus, setForceRefreshStatus] = useState<string | null>(null)
@@ -227,29 +228,45 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   // Fetch ticker settings, announcements, and Christmas raffle data on mount
   useEffect(() => {
     fetchTickerSettings()
-    fetchAllAnnouncements()
-    fetchChristmasRaffle()
+    // fetchAllAnnouncements() // Moved to below
+    // fetchChristmasRaffle() // Moved to below
   }, [])
 
-  useEffect(() => {
-    async function fetchDailyLeaderboard() {
-      setIsLoadingDailyLeaderboard(true)
-      try {
-        const response = await fetch("/api/daily-leaderboard?uncensored=true")
-        const data = await response.json()
+  const fetchDailyLeaderboard = async (force = false) => {
+    setIsLoadingDailyLeaderboard(true)
+    try {
+      const response = await fetch(`/api/daily-leaderboard?uncensored=true${force ? "&force=true" : ""}`)
+      const data = await response.json()
 
-        if (response.ok && data.leaderboard) {
-          setDailyLeaderboard(data.leaderboard)
-          setDailyDateRange(data.dateRange)
-        }
-      } catch (error) {
-        console.error("[v0] Error fetching daily leaderboard:", error)
-      } finally {
-        setIsLoadingDailyLeaderboard(false)
+      if (response.ok && data.leaderboard) {
+        setDailyLeaderboard(data.leaderboard)
+        setDailyDateRange(data.dateRange)
+        setDailyLastUpdated(data.lastUpdated || Date.now())
       }
+    } catch (error) {
+      console.error("[v0] Error fetching daily leaderboard:", error)
+    } finally {
+      setIsLoadingDailyLeaderboard(false)
     }
+  }
 
-    fetchDailyLeaderboard()
+  useEffect(() => {
+    // fetchDailyLeaderboard() // Moved to below
+
+    const interval = setInterval(() => {
+      if (activeTab === "daily") {
+        fetchDailyLeaderboard()
+      }
+    }, 120000) // 2 minutes
+
+    return () => clearInterval(interval)
+  }, [activeTab])
+
+  useEffect(() => {
+    fetchTickerSettings()
+    fetchAllAnnouncements()
+    fetchChristmasRaffle()
+    fetchDailyLeaderboard() // Fetch initial daily leaderboard data
   }, [])
 
   const fetchTickerSettings = async () => {
@@ -865,25 +882,19 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                         Date range: {dailyDateRange.fromDate} to {dailyDateRange.toDate}
                       </p>
                     )}
+                    {dailyLastUpdated && (
+                      <p className="text-amber-500/70 text-xs mt-1">
+                        Last updated: {new Date(dailyLastUpdated).toLocaleString()} (auto-refreshes every 2 min)
+                      </p>
+                    )}
                   </div>
                   <Button
-                    onClick={() => {
-                      setIsLoadingDailyLeaderboard(true)
-                      fetch("/api/daily-leaderboard?uncensored=true&force=true")
-                        .then((res) => res.json())
-                        .then((data) => {
-                          if (data.leaderboard) {
-                            setDailyLeaderboard(data.leaderboard)
-                            setDailyDateRange(data.dateRange)
-                          }
-                        })
-                        .finally(() => setIsLoadingDailyLeaderboard(false))
-                    }}
+                    onClick={() => fetchDailyLeaderboard(true)}
                     disabled={isLoadingDailyLeaderboard}
                     className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingDailyLeaderboard ? "animate-spin" : ""}`} />
-                    Refresh
+                    Force Refresh
                   </Button>
                 </div>
 

@@ -30,29 +30,50 @@ export async function GET(request: NextRequest) {
     let toDate: string
 
     if (customFromDate && customToDate) {
-      // Use custom date range
       fromDate = customFromDate
       toDate = customToDate
       console.log("[v0] Daily Leaderboard: Using custom date range", fromDate, "to", toDate)
     } else {
-      // Get 24-hour date range (midnight UTC to midnight UTC)
       const dateRange = get24HourDateRange()
       fromDate = dateRange.fromDate
       toDate = dateRange.toDate
       console.log("[v0] Daily Leaderboard: Using 24hr date range", fromDate, "to", toDate)
     }
 
+    const cacheKey = customFromDate ? `daily-lb:${fromDate}:${toDate}` : "daily-leaderboard:today"
+
+    if (!forceRefresh) {
+      // Check local cache first (short TTL of 2 minutes)
+      const cached = await kv.get<{ leaderboard: LeaderboardEntry[]; timestamp: number }>(cacheKey)
+      if (cached && Date.now() - cached.timestamp < 120000) {
+        // 2 minutes
+        console.log(
+          "[v0] Daily Leaderboard: Returning local cache, age:",
+          Math.floor((Date.now() - cached.timestamp) / 1000),
+          "s",
+        )
+        return NextResponse.json({
+          leaderboard: cached.leaderboard,
+          fromCache: true,
+          cacheAge: Math.floor((Date.now() - cached.timestamp) / 1000),
+          dateRange: { fromDate, toDate },
+          lastUpdated: cached.timestamp,
+        })
+      }
+    }
+
     const { data, fromCache, error } = await fetchThrillData(fromDate, toDate, forceRefresh)
 
     if (error && !data) {
-      // Try to get cached data
-      const cacheKey = customFromDate ? `custom-leaderboard:${fromDate}:${toDate}` : "daily-leaderboard:cache"
-      const cachedLeaderboard = await kv.get<LeaderboardEntry[]>(cacheKey)
-      if (cachedLeaderboard) {
+      // Return stale cache if available
+      const staleCache = await kv.get<{ leaderboard: LeaderboardEntry[]; timestamp: number }>(`${cacheKey}:stale`)
+      if (staleCache) {
         return NextResponse.json({
-          leaderboard: cachedLeaderboard,
+          leaderboard: staleCache.leaderboard,
           fromCache: true,
+          stale: true,
           dateRange: { fromDate, toDate },
+          lastUpdated: staleCache.timestamp,
           warning: error,
         })
       }
@@ -64,6 +85,7 @@ export async function GET(request: NextRequest) {
         leaderboard: [],
         fromCache,
         dateRange: { fromDate, toDate },
+        lastUpdated: Date.now(),
         message: "No wager data for this period yet",
       })
     }
@@ -80,7 +102,7 @@ export async function GET(request: NextRequest) {
     // Sort by wager and create leaderboard
     const sortedPlayers = Object.entries(playerWagers)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, customFromDate ? 100 : 20) // Top 100 for custom, Top 20 for daily
+      .slice(0, customFromDate ? 100 : 20)
 
     const leaderboard: LeaderboardEntry[] = sortedPlayers.map(([username, wager], index) => ({
       id: index + 1,
@@ -89,15 +111,18 @@ export async function GET(request: NextRequest) {
       rank: index + 1,
     }))
 
-    // Cache the leaderboard
-    const cacheKey = customFromDate ? `custom-leaderboard:${fromDate}:${toDate}` : "daily-leaderboard:cache"
-    await kv.set(cacheKey, leaderboard, { ex: 300 }) // 5 min cache
+    const now = Date.now()
+
+    const cacheData = { leaderboard, timestamp: now }
+    await kv.set(cacheKey, cacheData, { ex: 120 }) // 2 minute cache
+    await kv.set(`${cacheKey}:stale`, cacheData, { ex: 3600 }) // 1 hour stale backup
 
     return NextResponse.json({
       leaderboard,
       fromCache,
       dateRange: { fromDate, toDate },
       totalPlayers: Object.keys(playerWagers).length,
+      lastUpdated: now,
     })
   } catch (error) {
     console.error("[v0] Daily Leaderboard error:", error)
