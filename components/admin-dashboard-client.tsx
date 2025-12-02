@@ -22,6 +22,7 @@ import {
   Gamepad2,
   RefreshCw,
   Calendar,
+  Clock,
 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
@@ -102,9 +103,9 @@ interface AdminDashboardClientProps {
 }
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
-  // Updated activeTab type to include "advent"
+  // Updated activeTab type to include "advent" and "daily"
   const [activeTab, setActiveTab] = useState<
-    "users" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
+    "users" | "daily" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -141,6 +142,13 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [editingGift, setEditingGift] = useState<AdventGift | null>(null)
   const [adventSaveStatus, setAdventSaveStatus] = useState<string | null>(null)
 
+  const [dailyLeaderboard, setDailyLeaderboard] = useState<Array<{ username: string; wager: number; rank: number }>>([])
+  const [isLoadingDailyLeaderboard, setIsLoadingDailyLeaderboard] = useState(false)
+  const [dailyDateRange, setDailyDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
+
+  const [isForceRefreshing, setIsForceRefreshing] = useState(false)
+  const [forceRefreshStatus, setForceRefreshStatus] = useState<string | null>(null)
+
   const router = useRouter()
   const supabase = createClient()
 
@@ -151,6 +159,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     }
   }, [activeTab])
 
+  // Fetch user stats
   useEffect(() => {
     async function fetchAllUserStats() {
       const usersWithThrill = profiles.filter((p) => p.thrill_username)
@@ -180,6 +189,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     fetchAllUserStats()
   }, [profiles, selectedPeriod])
 
+  // Fetch poker qualifiers
   useEffect(() => {
     async function fetchPokerQualifiers() {
       setIsLoadingQualifiers(true)
@@ -201,10 +211,32 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     fetchPokerQualifiers()
   }, [])
 
+  // Fetch ticker settings, announcements, and Christmas raffle data on mount
   useEffect(() => {
     fetchTickerSettings()
     fetchAllAnnouncements()
     fetchChristmasRaffle()
+  }, [])
+
+  useEffect(() => {
+    async function fetchDailyLeaderboard() {
+      setIsLoadingDailyLeaderboard(true)
+      try {
+        const response = await fetch("/api/daily-leaderboard?uncensored=true")
+        const data = await response.json()
+
+        if (response.ok && data.leaderboard) {
+          setDailyLeaderboard(data.leaderboard)
+          setDailyDateRange(data.dateRange)
+        }
+      } catch (error) {
+        console.error("[v0] Error fetching daily leaderboard:", error)
+      } finally {
+        setIsLoadingDailyLeaderboard(false)
+      }
+    }
+
+    fetchDailyLeaderboard()
   }, [])
 
   const fetchTickerSettings = async () => {
@@ -300,6 +332,30 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     } catch (error) {
       console.error("Error saving advent gift:", error)
       setAdventSaveStatus("Error saving")
+    }
+  }
+
+  const handleForceRefresh = async () => {
+    setIsForceRefreshing(true)
+    setForceRefreshStatus("Refreshing...")
+
+    try {
+      const response = await fetch("/api/admin/force-refresh", { method: "POST" })
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        setForceRefreshStatus("Stats refreshed successfully!")
+        // Reload all data
+        window.location.reload()
+      } else {
+        setForceRefreshStatus(data.message || "Failed to refresh stats")
+      }
+    } catch (error) {
+      console.error("[v0] Force refresh error:", error)
+      setForceRefreshStatus("Error refreshing stats")
+    } finally {
+      setIsForceRefreshing(false)
+      setTimeout(() => setForceRefreshStatus(null), 5000)
     }
   }
 
@@ -529,6 +585,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   // Added Advent Gifts tab to tabs array
   const tabs = [
     { id: "users" as const, label: "User Management", icon: Users },
+    { id: "daily" as const, label: "24hr Race", icon: Clock }, // Added 24hr tab
     { id: "rewards" as const, label: "Rewards", icon: Gift },
     { id: "announcements" as const, label: "Announcements", icon: Bell },
     { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
@@ -599,6 +656,24 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
             </Card>
           </div>
 
+          <div className="flex justify-end mb-4">
+            <Button
+              onClick={handleForceRefresh}
+              disabled={isForceRefreshing}
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isForceRefreshing ? "animate-spin" : ""}`} />
+              {isForceRefreshing ? "Refreshing..." : "Force Pull Stats"}
+            </Button>
+            {forceRefreshStatus && (
+              <span
+                className={`ml-4 text-sm self-center ${forceRefreshStatus.includes("success") ? "text-green-500" : "text-yellow-500"}`}
+              >
+                {forceRefreshStatus}
+              </span>
+            )}
+          </div>
+
           {/* Tabbed Navigation */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2 bg-[#1a1a1a] p-2 rounded-xl border border-teal-500/30">
@@ -660,6 +735,136 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
               {/* User List */}
               {/* The detailed user cards with leaderboard rankings are no longer shown here */}
               {/* This section is now handled by UserManagementSection */}
+            </div>
+          )}
+
+          {activeTab === "daily" && (
+            <div className="space-y-6">
+              <Card
+                className="p-6 rounded-xl border border-amber-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.25)",
+                }}
+              >
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-amber-500 uppercase mb-2">24 Hour Wager Race</h2>
+                    <p className="text-gray-400 text-sm">
+                      Top 20 players by wager amount today (Midnight UTC - Midnight UTC)
+                    </p>
+                    {dailyDateRange && (
+                      <p className="text-gray-500 text-xs mt-1">
+                        Date range: {dailyDateRange.fromDate} to {dailyDateRange.toDate}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    onClick={() => {
+                      setIsLoadingDailyLeaderboard(true)
+                      fetch("/api/daily-leaderboard?uncensored=true&force=true")
+                        .then((res) => res.json())
+                        .then((data) => {
+                          if (data.leaderboard) {
+                            setDailyLeaderboard(data.leaderboard)
+                            setDailyDateRange(data.dateRange)
+                          }
+                        })
+                        .finally(() => setIsLoadingDailyLeaderboard(false))
+                    }}
+                    disabled={isLoadingDailyLeaderboard}
+                    className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingDailyLeaderboard ? "animate-spin" : ""}`} />
+                    Refresh
+                  </Button>
+                </div>
+
+                {isLoadingDailyLeaderboard ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="h-8 w-8 animate-spin text-amber-500 mx-auto mb-2" />
+                    <p className="text-gray-400">Loading daily leaderboard...</p>
+                  </div>
+                ) : dailyLeaderboard.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Clock className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No wager data for today yet</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-amber-500/30">
+                          <th className="text-left py-3 px-4 text-amber-500 font-bold uppercase text-sm">Rank</th>
+                          <th className="text-left py-3 px-4 text-amber-500 font-bold uppercase text-sm">Username</th>
+                          <th className="text-right py-3 px-4 text-amber-500 font-bold uppercase text-sm">
+                            Wager (USD)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dailyLeaderboard.map((player, index) => (
+                          <tr
+                            key={player.username}
+                            className={`border-b border-gray-800 ${index < 3 ? "bg-amber-500/10" : ""}`}
+                          >
+                            <td className="py-3 px-4">
+                              <span
+                                className={`font-bold ${
+                                  index === 0
+                                    ? "text-yellow-400"
+                                    : index === 1
+                                      ? "text-gray-300"
+                                      : index === 2
+                                        ? "text-amber-600"
+                                        : "text-gray-400"
+                                }`}
+                              >
+                                #{player.rank}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-white font-medium">{player.username}</td>
+                            <td className="py-3 px-4 text-right text-amber-400 font-bold">
+                              ${player.wager.toLocaleString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Daily Summary Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-amber-500/30">
+                  <div className="text-center">
+                    <p className="text-gray-400 text-xs uppercase mb-1">Total Players</p>
+                    <p className="text-2xl font-bold text-white">{dailyLeaderboard.length}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-400 text-xs uppercase mb-1">Total Wagered</p>
+                    <p className="text-2xl font-bold text-amber-500">
+                      ${dailyLeaderboard.reduce((sum, p) => sum + p.wager, 0).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
+                    <p className="text-2xl font-bold text-yellow-400">
+                      ${(dailyLeaderboard[0]?.wager || 0).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-400 text-xs uppercase mb-1">Avg Wager</p>
+                    <p className="text-2xl font-bold text-gray-300">
+                      $
+                      {dailyLeaderboard.length > 0
+                        ? Math.round(
+                            dailyLeaderboard.reduce((sum, p) => sum + p.wager, 0) / dailyLeaderboard.length,
+                          ).toLocaleString()
+                        : 0}
+                    </p>
+                  </div>
+                </div>
+              </Card>
             </div>
           )}
 

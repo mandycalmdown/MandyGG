@@ -142,7 +142,7 @@ export async function fetchThrillData(
   const lastCall = await kv.get<number>(LAST_CALL_KEY)
   const now = Date.now()
 
-  if (lastCall && now - lastCall < RATE_LIMIT_SECONDS * 1000) {
+  if (!forceRefresh && lastCall && now - lastCall < RATE_LIMIT_SECONDS * 1000) {
     const waitTime = Math.ceil((RATE_LIMIT_SECONDS * 1000 - (now - lastCall)) / 1000)
     console.log("[v0] Thrill API: Rate limited, must wait", waitTime, "seconds")
 
@@ -164,7 +164,7 @@ export async function fetchThrillData(
   // Try to acquire lock to prevent parallel calls
   const lockAcquired = await kv.set(LOCK_KEY, "locked", { ex: 30, nx: true })
 
-  if (!lockAcquired) {
+  if (!lockAcquired && !forceRefresh) {
     console.log("[v0] Thrill API: Another request in progress, waiting for cache")
     // Another request is in progress, wait a bit and check cache
     await new Promise((resolve) => setTimeout(resolve, 2000))
@@ -175,6 +175,12 @@ export async function fetchThrillData(
     }
 
     return { data: null, fromCache: false, error: "Request in progress, please try again." }
+  }
+
+  // If force refresh, delete the lock first
+  if (forceRefresh) {
+    await kv.del(LOCK_KEY)
+    await kv.set(LOCK_KEY, "locked", { ex: 30 })
   }
 
   try {
@@ -272,38 +278,136 @@ export function convertAtomicValue(value: string, decimals: number): number {
   }
 }
 
-export async function prefetchCommonRanges(): Promise<void> {
+export function get24HourDateRange(): { fromDate: string; toDate: string } {
   const now = new Date()
 
-  // Get current week range (Thursday to Thursday)
-  const getCurrentWeekRange = () => {
-    const today = new Date(now)
-    const dayOfWeek = today.getUTCDay()
-    const hourOfDay = today.getUTCHours()
+  // Get today's midnight UTC
+  const todayMidnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0))
 
-    // Thursday is day 4, contest resets at 3pm UTC (10am CST)
-    let daysToLastThursday = (dayOfWeek - 4 + 7) % 7
-    if (dayOfWeek === 4 && hourOfDay < 15) {
-      daysToLastThursday = 7
+  // Tomorrow's midnight UTC (exclusive end)
+  const tomorrowMidnight = new Date(todayMidnight)
+  tomorrowMidnight.setUTCDate(tomorrowMidnight.getUTCDate() + 1)
+
+  return {
+    fromDate: todayMidnight.toISOString().split("T")[0],
+    toDate: tomorrowMidnight.toISOString().split("T")[0],
+  }
+}
+
+export async function prefetchAllCommonRanges(forceRefresh = false): Promise<{
+  success: boolean
+  ranges: string[]
+  error?: string
+}> {
+  const now = new Date()
+  const ranges: string[] = []
+
+  try {
+    // 1. Get 24-hour range (today midnight UTC to tomorrow midnight UTC)
+    const { fromDate: today24hFrom, toDate: today24hTo } = get24HourDateRange()
+    ranges.push(`24h: ${today24hFrom} to ${today24hTo}`)
+
+    // 2. Get current week range (Thursday to Thursday CST)
+    const getCurrentWeekRange = () => {
+      const centralTimeString = now.toLocaleString("en-US", {
+        timeZone: "America/Chicago",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+
+      const [datePart, timePart] = centralTimeString.split(", ")
+      const [month, day, year] = datePart.split("/")
+      const [hour] = timePart.split(":")
+
+      const centralTime = new Date(
+        Number.parseInt(year),
+        Number.parseInt(month) - 1,
+        Number.parseInt(day),
+        Number.parseInt(hour),
+        0,
+        0,
+      )
+
+      const currentDay = centralTime.getDay()
+      const currentHour = centralTime.getHours()
+
+      // Thursday is day 4, contest resets at 10am CST
+      let daysToLastThursday = (currentDay - 4 + 7) % 7
+      if (currentDay === 4 && currentHour < 10) {
+        daysToLastThursday = 7
+      }
+
+      const startDate = new Date(centralTime)
+      startDate.setDate(centralTime.getDate() - daysToLastThursday)
+
+      // Convert 10am CST to UTC for API call
+      const startUTC = new Date(startDate)
+      startUTC.setHours(startUTC.getHours() + 6) // CST is UTC-6
+
+      const endDate = new Date(now)
+      endDate.setUTCDate(endDate.getUTCDate() + 1)
+
+      return {
+        fromDate: startUTC.toISOString().split("T")[0],
+        toDate: endDate.toISOString().split("T")[0],
+      }
     }
-    if (daysToLastThursday === 0 && hourOfDay >= 15) {
-      daysToLastThursday = 0
+
+    const currentWeek = getCurrentWeekRange()
+    ranges.push(`Current week: ${currentWeek.fromDate} to ${currentWeek.toDate}`)
+
+    // 3. Get past week range
+    const getPastWeekRange = () => {
+      const current = getCurrentWeekRange()
+      const startDate = new Date(current.fromDate)
+      startDate.setDate(startDate.getDate() - 7)
+
+      return {
+        fromDate: startDate.toISOString().split("T")[0],
+        toDate: current.fromDate,
+      }
     }
 
-    const startDate = new Date(today)
-    startDate.setUTCDate(today.getUTCDate() - daysToLastThursday)
-    startDate.setUTCHours(15, 0, 0, 0)
+    const pastWeek = getPastWeekRange()
+    ranges.push(`Past week: ${pastWeek.fromDate} to ${pastWeek.toDate}`)
 
-    const endDate = new Date(now)
-    endDate.setUTCDate(endDate.getUTCDate() + 1)
+    // 4. Get Christmas raffle range (Dec 1-25, 2025)
+    const christmasRange = {
+      fromDate: "2025-12-01",
+      toDate: "2025-12-26", // Exclusive
+    }
+    ranges.push(`Christmas: ${christmasRange.fromDate} to ${christmasRange.toDate}`)
 
+    // 5. Get 30-day range for wager history
+    const thirtyDaysAgo = new Date(now)
+    thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30)
+    const thirtyDayRange = {
+      fromDate: thirtyDaysAgo.toISOString().split("T")[0],
+      toDate: new Date(now.getTime() + 86400000).toISOString().split("T")[0],
+    }
+    ranges.push(`30 days: ${thirtyDayRange.fromDate} to ${thirtyDayRange.toDate}`)
+
+    // Fetch the most comprehensive range first (30 days covers most needs)
+    const result = await fetchThrillData(thirtyDayRange.fromDate, thirtyDayRange.toDate, forceRefresh)
+
+    if (result.error && !result.data) {
+      return { success: false, ranges, error: result.error }
+    }
+
+    return { success: true, ranges }
+  } catch (error) {
     return {
-      fromDate: startDate.toISOString().split("T")[0],
-      toDate: endDate.toISOString().split("T")[0],
+      success: false,
+      ranges,
+      error: error instanceof Error ? error.message : "Unknown error",
     }
   }
+}
 
-  // Prefetch current week
-  const { fromDate, toDate } = getCurrentWeekRange()
-  await fetchThrillData(fromDate, toDate)
+export async function prefetchCommonRanges(): Promise<void> {
+  await prefetchAllCommonRanges(false)
 }

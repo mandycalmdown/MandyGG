@@ -83,6 +83,9 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
   const [christmasWager, setChristmasWager] = useState<number>(0)
   const [isLoadingChristmasRaffle, setIsLoadingChristmasRaffle] = useState(false)
 
+  const [dailyWager, setDailyWager] = useState<number>(0)
+  const [isLoadingDailyWager, setIsLoadingDailyWager] = useState(false)
+
   const [pokerCountdown, setPokerCountdown] = useState({
     days: 0,
     hours: 0,
@@ -298,6 +301,35 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     }
 
     fetchChristmasRaffle()
+  }, [profile?.thrill_username])
+
+  useEffect(() => {
+    async function fetchDailyWager() {
+      if (!profile?.thrill_username) {
+        setDailyWager(0)
+        return
+      }
+
+      setIsLoadingDailyWager(true)
+      try {
+        const response = await fetch("/api/daily-leaderboard?uncensored=true")
+        const data = await response.json()
+
+        if (response.ok && data.leaderboard) {
+          const userEntry = data.leaderboard.find(
+            (entry: { username: string; wager: number }) =>
+              entry.username.toLowerCase() === profile.thrill_username?.toLowerCase(),
+          )
+          setDailyWager(userEntry?.wager || 0)
+        }
+      } catch (err) {
+        console.error("[v0] Error fetching daily wager:", err)
+      } finally {
+        setIsLoadingDailyWager(false)
+      }
+    }
+
+    fetchDailyWager()
   }, [profile?.thrill_username])
 
   const handleSaveProfile = async () => {
@@ -670,6 +702,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 </p>
               </Card>
 
+              {/* Wager Stats Card */}
               <Card
                 className="p-6 rounded-xl border border-white/30 mb-6"
                 style={{
@@ -679,7 +712,14 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">Wager Stats</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
+                    <p className="text-gray-400 text-sm uppercase mb-2">24 Hour Wager (USD)</p>
+                    <p className="text-3xl font-bold text-amber-500">
+                      {isLoadingDailyWager ? "..." : formatCurrency(dailyWager)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">Midnight UTC - Midnight UTC</p>
+                  </div>
                   <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
                     <p className="text-gray-400 text-sm uppercase mb-2">7 Day Wager (USD)</p>
                     <p className="text-3xl font-bold text-teal-500">
