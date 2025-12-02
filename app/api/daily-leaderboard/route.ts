@@ -23,16 +23,31 @@ export async function GET(request: NextRequest) {
     const forceRefresh = searchParams.get("force") === "true"
     const uncensored = searchParams.get("uncensored") === "true"
 
-    // Get 24-hour date range (midnight UTC to midnight UTC)
-    const { fromDate, toDate } = get24HourDateRange()
+    const customFromDate = searchParams.get("fromDate")
+    const customToDate = searchParams.get("toDate")
 
-    console.log("[v0] Daily Leaderboard: Fetching", fromDate, "to", toDate)
+    let fromDate: string
+    let toDate: string
+
+    if (customFromDate && customToDate) {
+      // Use custom date range
+      fromDate = customFromDate
+      toDate = customToDate
+      console.log("[v0] Daily Leaderboard: Using custom date range", fromDate, "to", toDate)
+    } else {
+      // Get 24-hour date range (midnight UTC to midnight UTC)
+      const dateRange = get24HourDateRange()
+      fromDate = dateRange.fromDate
+      toDate = dateRange.toDate
+      console.log("[v0] Daily Leaderboard: Using 24hr date range", fromDate, "to", toDate)
+    }
 
     const { data, fromCache, error } = await fetchThrillData(fromDate, toDate, forceRefresh)
 
     if (error && !data) {
       // Try to get cached data
-      const cachedLeaderboard = await kv.get<LeaderboardEntry[]>("daily-leaderboard:cache")
+      const cacheKey = customFromDate ? `custom-leaderboard:${fromDate}:${toDate}` : "daily-leaderboard:cache"
+      const cachedLeaderboard = await kv.get<LeaderboardEntry[]>(cacheKey)
       if (cachedLeaderboard) {
         return NextResponse.json({
           leaderboard: cachedLeaderboard,
@@ -49,7 +64,7 @@ export async function GET(request: NextRequest) {
         leaderboard: [],
         fromCache,
         dateRange: { fromDate, toDate },
-        message: "No wager data for today yet",
+        message: "No wager data for this period yet",
       })
     }
 
@@ -65,7 +80,7 @@ export async function GET(request: NextRequest) {
     // Sort by wager and create leaderboard
     const sortedPlayers = Object.entries(playerWagers)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 20) // Top 20 for daily
+      .slice(0, customFromDate ? 100 : 20) // Top 100 for custom, Top 20 for daily
 
     const leaderboard: LeaderboardEntry[] = sortedPlayers.map(([username, wager], index) => ({
       id: index + 1,
@@ -75,7 +90,8 @@ export async function GET(request: NextRequest) {
     }))
 
     // Cache the leaderboard
-    await kv.set("daily-leaderboard:cache", leaderboard, { ex: 300 }) // 5 min cache
+    const cacheKey = customFromDate ? `custom-leaderboard:${fromDate}:${toDate}` : "daily-leaderboard:cache"
+    await kv.set(cacheKey, leaderboard, { ex: 300 }) // 5 min cache
 
     return NextResponse.json({
       leaderboard,

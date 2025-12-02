@@ -23,6 +23,7 @@ import {
   RefreshCw,
   Calendar,
   Clock,
+  Calculator,
 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
@@ -105,7 +106,7 @@ interface AdminDashboardClientProps {
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
   // Updated activeTab type to include "advent" and "daily"
   const [activeTab, setActiveTab] = useState<
-    "users" | "daily" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
+    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -148,6 +149,18 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
   const [isForceRefreshing, setIsForceRefreshing] = useState(false)
   const [forceRefreshStatus, setForceRefreshStatus] = useState<string | null>(null)
+
+  const [customFromDate, setCustomFromDate] = useState("")
+  const [customToDate, setCustomToDate] = useState("")
+  const [customStats, setCustomStats] = useState<any[]>([])
+  const [isLoadingCustomStats, setIsLoadingCustomStats] = useState(false)
+  const [customStatsError, setCustomStatsError] = useState<string | null>(null)
+  const [customStatsDateRange, setCustomStatsDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
+
+  const [cstDate, setCstDate] = useState("")
+  const [cstTime, setCstTime] = useState("")
+  const [cstAmPm, setCstAmPm] = useState<"AM" | "PM">("AM")
+  const [convertedUtc, setConvertedUtc] = useState<string | null>(null)
 
   const router = useRouter()
   const supabase = createClient()
@@ -532,6 +545,99 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     }
   }
 
+  const fetchCustomStats = async () => {
+    if (!customFromDate || !customToDate) {
+      setCustomStatsError("Please select both start and end dates")
+      return
+    }
+
+    setIsLoadingCustomStats(true)
+    setCustomStatsError(null)
+
+    try {
+      // The API expects toDate to be exclusive, so we add 1 day
+      const toDatePlusOne = new Date(customToDate)
+      toDatePlusOne.setDate(toDatePlusOne.getDate() + 1)
+      const adjustedToDate = toDatePlusOne.toISOString().split("T")[0]
+
+      const response = await fetch(
+        `/api/daily-leaderboard?uncensored=true&force=true&fromDate=${customFromDate}&toDate=${adjustedToDate}`,
+      )
+      const data = await response.json()
+
+      if (data.error) {
+        setCustomStatsError(data.error)
+      } else {
+        setCustomStats(data.leaderboard || [])
+        setCustomStatsDateRange({ fromDate: customFromDate, toDate: customToDate })
+      }
+    } catch (error) {
+      setCustomStatsError("Failed to fetch custom stats")
+    } finally {
+      setIsLoadingCustomStats(false)
+    }
+  }
+
+  const convertCstToUtc = () => {
+    if (!cstDate || !cstTime) {
+      setConvertedUtc(null)
+      return
+    }
+
+    try {
+      // Parse the CST time
+      let hour = Number.parseInt(cstTime.split(":")[0])
+      const minute = Number.parseInt(cstTime.split(":")[1]) || 0
+
+      // Convert 12-hour to 24-hour
+      if (cstAmPm === "PM" && hour !== 12) {
+        hour += 12
+      } else if (cstAmPm === "AM" && hour === 12) {
+        hour = 0
+      }
+
+      // Create date in CST
+      const [year, month, day] = cstDate.split("-").map(Number)
+
+      // CST is UTC-6, CDT is UTC-5
+      // For simplicity, we'll assume CST (UTC-6) since that's what the user mentioned
+      // In reality, you'd want to check if DST is in effect
+      const cstOffsetHours = 6
+
+      // Convert to UTC by adding 6 hours
+      let utcHour = hour + cstOffsetHours
+      let utcDay = day
+      let utcMonth = month
+      let utcYear = year
+
+      if (utcHour >= 24) {
+        utcHour -= 24
+        utcDay += 1
+        // Handle month overflow (simplified)
+        const daysInMonth = new Date(utcYear, utcMonth, 0).getDate()
+        if (utcDay > daysInMonth) {
+          utcDay = 1
+          utcMonth += 1
+          if (utcMonth > 12) {
+            utcMonth = 1
+            utcYear += 1
+          }
+        }
+      }
+
+      const utcDateStr = `${utcYear}-${String(utcMonth).padStart(2, "0")}-${String(utcDay).padStart(2, "0")}`
+      const utcTimeStr = `${String(utcHour).padStart(2, "0")}:${String(minute).padStart(2, "0")} UTC`
+
+      setConvertedUtc(`${utcDateStr} ${utcTimeStr}`)
+    } catch (error) {
+      setConvertedUtc("Invalid date/time")
+    }
+  }
+
+  useEffect(() => {
+    convertCstToUtc()
+  }, [cstDate, cstTime, cstAmPm])
+
   const filteredProfiles = profiles.filter((profile) => {
     const query = searchQuery.toLowerCase()
     return (
@@ -586,6 +692,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const tabs = [
     { id: "users" as const, label: "User Management", icon: Users },
     { id: "daily" as const, label: "24hr Race", icon: Clock }, // Added 24hr tab
+    { id: "custom" as const, label: "Custom Stats", icon: Calculator }, // New tab
     { id: "rewards" as const, label: "Rewards", icon: Gift },
     { id: "announcements" as const, label: "Announcements", icon: Bell },
     { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
@@ -864,6 +971,272 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     </p>
                   </div>
                 </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Custom Stats tab panel */}
+          {activeTab === "custom" && (
+            <div className="space-y-6">
+              {/* Timezone Converter Card */}
+              <Card
+                className="p-6 rounded-xl border border-purple-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25)",
+                }}
+              >
+                <h2 className="text-xl font-bold text-purple-500 uppercase mb-4">CST to UTC Converter</h2>
+                <p className="text-gray-400 text-sm mb-4">
+                  Convert your local CST time to UTC for API queries. The Thrill API only accepts dates (not times), so
+                  use this to figure out which UTC dates to query.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">Date (CST)</label>
+                    <input
+                      type="date"
+                      value={cstDate}
+                      onChange={(e) => setCstDate(e.target.value)}
+                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">Time (CST)</label>
+                    <input
+                      type="text"
+                      placeholder="HH:MM"
+                      value={cstTime}
+                      onChange={(e) => setCstTime(e.target.value)}
+                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">AM/PM</label>
+                    <select
+                      value={cstAmPm}
+                      onChange={(e) => setCstAmPm(e.target.value as "AM" | "PM")}
+                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">UTC Result</label>
+                    <div className="w-full bg-[#0a0a0a] border border-purple-500/50 rounded-lg px-4 py-2 text-purple-400 font-mono">
+                      {convertedUtc || "Enter date/time"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#1a1a1a] rounded-lg p-4 text-sm">
+                  <p className="text-gray-400 mb-2">
+                    <strong className="text-purple-400">Remember:</strong> The API uses exclusive end dates.
+                  </p>
+                  <p className="text-gray-400">
+                    To get stats for Dec 2, 2025 (midnight to midnight UTC), query:
+                    <code className="text-purple-400 ml-2">fromDate=2025-12-02 toDate=2025-12-03</code>
+                  </p>
+                </div>
+              </Card>
+
+              {/* Custom Stats Query Card */}
+              <Card
+                className="p-6 rounded-xl border border-cyan-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.25)",
+                }}
+              >
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-cyan-500 uppercase mb-2">Custom Date Range Stats</h2>
+                    <p className="text-gray-400 text-sm">
+                      Pull leaderboard stats for any date range. Dates are in UTC.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">From Date (UTC)</label>
+                    <input
+                      type="date"
+                      value={customFromDate}
+                      onChange={(e) => setCustomFromDate(e.target.value)}
+                      className="w-full bg-[#1a1a1a] border border-cyan-500/30 rounded-lg px-4 py-2 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-400 text-sm mb-2">To Date (UTC)</label>
+                    <input
+                      type="date"
+                      value={customToDate}
+                      onChange={(e) => setCustomToDate(e.target.value)}
+                      className="w-full bg-[#1a1a1a] border border-cyan-500/30 rounded-lg px-4 py-2 text-white"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      onClick={fetchCustomStats}
+                      disabled={isLoadingCustomStats || !customFromDate || !customToDate}
+                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl"
+                    >
+                      <Search className={`h-4 w-4 mr-2 ${isLoadingCustomStats ? "animate-spin" : ""}`} />
+                      {isLoadingCustomStats ? "Loading..." : "Pull Stats"}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Quick presets */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="text-gray-400 text-sm">Quick presets:</span>
+                  <button
+                    onClick={() => {
+                      const now = new Date()
+                      const today = now.toISOString().split("T")[0]
+                      setCustomFromDate(today)
+                      setCustomToDate(today)
+                    }}
+                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
+                  >
+                    Today
+                  </button>
+                  <button
+                    onClick={() => {
+                      const now = new Date()
+                      const yesterday = new Date(now)
+                      yesterday.setDate(yesterday.getDate() - 1)
+                      setCustomFromDate(yesterday.toISOString().split("T")[0])
+                      setCustomToDate(yesterday.toISOString().split("T")[0])
+                    }}
+                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
+                  >
+                    Yesterday
+                  </button>
+                  <button
+                    onClick={() => {
+                      const now = new Date()
+                      const weekAgo = new Date(now)
+                      weekAgo.setDate(weekAgo.getDate() - 7)
+                      setCustomFromDate(weekAgo.toISOString().split("T")[0])
+                      setCustomToDate(now.toISOString().split("T")[0])
+                    }}
+                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
+                  >
+                    Last 7 Days
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCustomFromDate("2025-12-01")
+                      setCustomToDate("2025-12-25")
+                    }}
+                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
+                  >
+                    Christmas (Dec 1-25)
+                  </button>
+                </div>
+
+                {customStatsError && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+                    <p className="text-red-400">{customStatsError}</p>
+                  </div>
+                )}
+
+                {customStatsDateRange && (
+                  <p className="text-gray-500 text-xs mb-4">
+                    Showing results for: {customStatsDateRange.fromDate} to {customStatsDateRange.toDate} (UTC)
+                  </p>
+                )}
+
+                {isLoadingCustomStats ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-2" />
+                    <p className="text-gray-400">Loading custom stats...</p>
+                  </div>
+                ) : customStats.length === 0 && customStatsDateRange ? (
+                  <div className="text-center py-8">
+                    <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No wager data found for this date range</p>
+                  </div>
+                ) : customStats.length > 0 ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-cyan-500/30">
+                            <th className="text-left py-3 px-4 text-cyan-500 font-bold uppercase text-sm">Rank</th>
+                            <th className="text-left py-3 px-4 text-cyan-500 font-bold uppercase text-sm">Username</th>
+                            <th className="text-right py-3 px-4 text-cyan-500 font-bold uppercase text-sm">
+                              Wager (USD)
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {customStats.map((player, index) => (
+                            <tr
+                              key={player.username}
+                              className={`border-b border-gray-800 ${index < 3 ? "bg-cyan-500/10" : ""}`}
+                            >
+                              <td className="py-3 px-4">
+                                <span
+                                  className={`font-bold ${
+                                    index === 0
+                                      ? "text-yellow-400"
+                                      : index === 1
+                                        ? "text-gray-300"
+                                        : index === 2
+                                          ? "text-amber-600"
+                                          : "text-gray-400"
+                                  }`}
+                                >
+                                  #{player.rank}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-white font-medium">{player.username}</td>
+                              <td className="py-3 px-4 text-right text-cyan-400 font-bold">
+                                ${player.wager.toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Summary Stats */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-cyan-500/30">
+                      <div className="text-center">
+                        <p className="text-gray-400 text-xs uppercase mb-1">Total Players</p>
+                        <p className="text-2xl font-bold text-white">{customStats.length}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-gray-400 text-xs uppercase mb-1">Total Wagered</p>
+                        <p className="text-2xl font-bold text-cyan-500">
+                          ${customStats.reduce((sum, p) => sum + p.wager, 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
+                        <p className="text-2xl font-bold text-yellow-400">
+                          ${(customStats[0]?.wager || 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-gray-400 text-xs uppercase mb-1">Avg Wager</p>
+                        <p className="text-2xl font-bold text-gray-300">
+                          $
+                          {customStats.length > 0
+                            ? Math.round(
+                                customStats.reduce((sum, p) => sum + p.wager, 0) / customStats.length,
+                              ).toLocaleString()
+                            : 0}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
               </Card>
             </div>
           )}
