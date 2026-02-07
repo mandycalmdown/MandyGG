@@ -49,7 +49,6 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
     { href: "/rewards", label: "REWARDS", page: "rewards" },
     { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
     { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "/christmas", label: "CHRISTMAS", page: "christmas" },
   ]
 
   return (

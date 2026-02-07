@@ -57,9 +57,9 @@ export function Homepage() {
         className="fixed inset-0 pointer-events-none"
         style={{
           background: `
-            radial-gradient(circle at 90% 90%, rgba(0, 255, 159, ${0.1 + scrollY * 0.0002}) 0%, transparent 40%),
-            radial-gradient(circle at 30% 70%, rgba(0, 255, 159, ${0.08 + scrollY * 0.0001}) 0%, transparent 30%),
-            radial-gradient(circle at 70% 30%, rgba(0, 255, 159, ${0.06 + scrollY * 0.0001}) 0%, transparent 35%)
+            radial-gradient(circle at 90% 90%, rgba(99, 102, 241, ${0.1 + scrollY * 0.0002}) 0%, transparent 40%),
+            radial-gradient(circle at 30% 70%, rgba(99, 102, 241, ${0.08 + scrollY * 0.0001}) 0%, transparent 30%),
+            radial-gradient(circle at 70% 30%, rgba(129, 140, 248, ${0.06 + scrollY * 0.0001}) 0%, transparent 35%)
           `,
           transition: "background 0.3s ease",
         }}
@@ -235,6 +235,23 @@ export function Homepage() {
                 </div>
               </Card>
             </div>
+          </div>
+        </section>
+
+        {/* Play at Thrill CTA */}
+        <section className="py-6 px-4 md:py-10">
+          <div className="max-w-2xl mx-auto text-center">
+            <Link href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
+              <Button
+                size="lg"
+                className="bg-indigo-500 hover:bg-indigo-400 text-white font-black px-12 md:px-20 py-6 md:py-8 rounded-2xl transition-all duration-300 hover:scale-105 uppercase text-2xl md:text-4xl w-full sm:w-auto"
+                style={{
+                  boxShadow: "0 0 30px rgba(99, 102, 241, 0.5), 0 0 60px rgba(99, 102, 241, 0.25), 0 8px 32px rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                PLAY AT THRILL!
+              </Button>
+            </Link>
           </div>
         </section>
 
