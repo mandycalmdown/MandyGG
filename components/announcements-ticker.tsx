@@ -2,94 +2,70 @@
 
 import { useEffect, useState } from "react"
 
-interface Announcement {
-  id: string
-  message: string
-  is_active: boolean
-  created_at: string
-}
-
 interface TickerSettings {
-  text_color: string
-  background_color: string
-  background_gradient: string
-  speed: number
-  font_family: string
-  font_size: string
-  font_weight: string
+  ticker_1_text?: string
+  ticker_2_text?: string
+  ticker_3_text?: string
 }
 
-export function AnnouncementsTicker() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [settings, setSettings] = useState<TickerSettings>({
-    text_color: "#ffffff",
-    background_color: "#6366f1",
-    background_gradient: "linear-gradient(to right, #6366f1, #a855f7, #6366f1)",
-    speed: 8000,
-    font_family: "inherit",
-    font_size: "1rem",
-    font_weight: "bold",
-  })
+const DEFAULT_TICKER_TEXT = "USE CODE MANDY ON THRILL.COM \u2013 USE CODE MANDY \u2013 USE CODE MANDY ON THRILL.COM \u2013 USE CODE MANDY"
+
+interface AnnouncementsTickerProps {
+  tickerKey?: "ticker_1_text" | "ticker_2_text" | "ticker_3_text"
+}
+
+export function AnnouncementsTicker({ tickerKey = "ticker_1_text" }: AnnouncementsTickerProps) {
+  const [tickerText, setTickerText] = useState(DEFAULT_TICKER_TEXT)
 
   useEffect(() => {
-    fetchAnnouncements()
-    fetchSettings()
+    fetchTickerText()
   }, [])
 
-  const fetchAnnouncements = async () => {
-    try {
-      const response = await fetch("/api/announcements")
-      const data = await response.json()
-      if (data.announcements && data.announcements.length > 0) {
-        setAnnouncements(data.announcements)
-      }
-    } catch (error) {
-      console.error("[v0] Error fetching announcements:", error)
-    }
-  }
-
-  const fetchSettings = async () => {
+  const fetchTickerText = async () => {
     try {
       const response = await fetch("/api/ticker-settings")
       const data = await response.json()
       if (data.settings) {
-        setSettings(data.settings)
+        // Support legacy format (announcements array) and new format (ticker settings)
+        if (data.settings[tickerKey]) {
+          setTickerText(data.settings[tickerKey])
+        }
+      }
+      // Also try legacy announcements endpoint
+      const announcementsResponse = await fetch("/api/announcements")
+      const announcementsData = await announcementsResponse.json()
+      if (announcementsData.announcements && announcementsData.announcements.length > 0) {
+        const combinedMessage = announcementsData.announcements
+          .map((a: { message: string }) => a.message)
+          .join(" \u2013 ")
+        setTickerText(combinedMessage)
       }
     } catch (error) {
-      console.error("[v0] Error fetching ticker settings:", error)
+      // Silently fail, use default text
     }
   }
 
-  if (announcements.length === 0) {
-    return null
-  }
-
-  const combinedMessage = announcements.map((a) => a.message).join(" • ")
-
-  const animationDuration = `${settings.speed / 1000}s`
-
   return (
     <div
-      className="w-full py-3 overflow-hidden relative"
-      style={{
-        background: settings.background_gradient || settings.background_color,
-      }}
+      className="w-full py-2 overflow-hidden relative"
+      style={{ backgroundColor: "#0085FF" }}
     >
-      <div className="absolute inset-0 bg-black/20" />
-      <div className="relative z-10 flex whitespace-nowrap">
-        {[...Array(3)].map((_, index) => (
+      <div className="flex whitespace-nowrap">
+        {[...Array(4)].map((_, index) => (
           <div
             key={index}
             className="inline-block px-8 animate-marquee-scroll"
             style={{
-              color: settings.text_color,
-              fontFamily: settings.font_family,
-              fontSize: settings.font_size,
-              fontWeight: settings.font_weight,
-              animationDuration: animationDuration,
+              color: "#FFFFFF",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "12px",
+              fontWeight: 400,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              animationDuration: "20s",
             }}
           >
-            {combinedMessage}
+            {tickerText}
           </div>
         ))}
       </div>

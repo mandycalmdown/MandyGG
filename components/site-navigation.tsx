@@ -1,10 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
@@ -45,89 +43,62 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
   const navLinks = [
     { href: "/", label: "HOME", page: "home" },
-    { href: "/how-to-join", label: "HOW TO JOIN", page: "how-to-join" },
+    { href: "/how-to-join", label: "HOW TO", page: "how-to-join" },
     { href: "/rewards", label: "REWARDS", page: "rewards" },
-    { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
     { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "/christmas", label: "CHRISTMAS", page: "christmas" },
+    { href: "/dashboard", label: "DASHBOARD", page: "dashboard" },
   ]
 
   return (
-    <nav className="mx-2 md:mx-4 mt-2 md:mt-4 mb-2">
-      <Card
-        className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/30 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-        }}
-      >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <Link href="/">
-              <Image
-                src="/images/mandygg_menu_logo.svg"
-                alt="MandyGG - Premier Crypto Casino Leaderboard & Rewards"
-                width={250}
-                height={80}
-                className="hidden md:block h-12 md:h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </Link>
-            <Link href="/">
-              <Image
-                src="/images/mandygg_m_logo.svg"
-                alt="MandyGG"
-                width={60}
-                height={60}
-                className="md:hidden h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </Link>
-          </div>
+    <nav className="w-full bg-[#000000] sticky top-0 z-50 border-b border-[#333]">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="flex justify-between items-center h-16 md:h-20">
+          {/* Left: Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-logo-small-REJQ74xYMktKwzxz1LsyZINIDXNKJs.webp"
+              alt="Mandy.gg logo"
+              width={120}
+              height={48}
+              className="h-10 md:h-12 w-auto"
+            />
+          </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex space-x-4 xl:space-x-6 items-center">
+          {/* Center: Nav Links (Desktop) */}
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.page}
                 href={link.href}
-                className={`${
-                  currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
-                } transition-colors font-bold uppercase text-lg xl:text-xl`}
+                className={`text-sm uppercase tracking-wider transition-colors ${
+                  currentPage === link.page
+                    ? "text-[#CCFF00]"
+                    : "text-[#FFFFFF] hover:text-[#CCFF00]"
+                }`}
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 {link.label}
               </Link>
             ))}
+          </div>
 
-            {user && (
-              <Link
-                href="/dashboard"
-                className={`${
-                  currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
-                } transition-colors font-bold uppercase text-lg xl:text-xl`}
-              >
-                DASHBOARD
-              </Link>
-            )}
-
+          {/* Right: Auth Button (Desktop) */}
+          <div className="hidden lg:flex items-center">
             {user ? (
               <Button
                 onClick={handleSignOut}
-                variant="outline"
-                size="sm"
-                className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl transition-all duration-300 uppercase text-lg xl:text-xl px-4 py-2 bg-transparent"
+                className="bg-transparent border-2 border-[#CCFF00] text-[#FFFFFF] hover:bg-[#CCFF00] hover:text-[#000000] rounded transition-all duration-300 uppercase text-sm px-6 py-2"
+                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
               >
                 SIGN OUT
               </Button>
             ) : (
               <Link href="/auth/login">
                 <Button
-                  variant="default"
-                  size="sm"
-                  className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/30 uppercase text-lg xl:text-xl px-4 py-2"
+                  className="bg-[#CCFF00] text-[#000000] hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] rounded transition-all duration-300 uppercase text-sm px-6 py-2"
+                  style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
                 >
-                  SIGN IN
+                  LOGIN
                 </Button>
               </Link>
             )}
@@ -135,81 +106,67 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-white/20 p-2"
+              className="text-[#CCFF00] p-2 focus:outline-none"
               aria-label="Toggle mobile menu"
             >
-              <div className="flex flex-col space-y-1">
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
+              <div className="flex flex-col gap-1.5">
+                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-transform ${isMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
+                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-opacity ${isMenuOpen ? "opacity-0" : ""}`} />
+                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-transform ${isMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
               </div>
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-3 p-3 border-t border-white/20">
-            <div className="flex flex-col space-y-2">
+          <div className="lg:hidden pb-4 border-t border-[#333]">
+            <div className="flex flex-col pt-4 gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.page}
                   href={link.href}
-                  className={`${
-                    currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
-                  } transition-colors font-bold uppercase text-lg py-2`}
+                  className={`py-3 px-2 text-sm uppercase tracking-wider transition-colors ${
+                    currentPage === link.page
+                      ? "text-[#CCFF00]"
+                      : "text-[#FFFFFF] hover:text-[#CCFF00]"
+                  }`}
+                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
 
-              {/* Dashboard Link Mobile - only show if logged in */}
-              {user && (
-                <Link
-                  href="/dashboard"
-                  className={`${
-                    currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
-                  } transition-colors font-bold uppercase text-lg py-2`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  DASHBOARD
-                </Link>
-              )}
-
-              {/* Sign In/Out Button Mobile */}
-              {user ? (
-                <Button
-                  onClick={() => {
-                    handleSignOut()
-                    setIsMenuOpen(false)
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl w-full uppercase text-lg mt-2 bg-transparent"
-                >
-                  SIGN OUT
-                </Button>
-              ) : (
-                <Link href="/auth/login">
+              <div className="pt-3 mt-2 border-t border-[#333]">
+                {user ? (
                   <Button
-                    variant="default"
-                    size="sm"
-                    className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl w-full uppercase text-lg mt-2"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      handleSignOut()
+                      setIsMenuOpen(false)
+                    }}
+                    className="w-full bg-transparent border-2 border-[#CCFF00] text-[#FFFFFF] hover:bg-[#CCFF00] hover:text-[#000000] rounded uppercase text-sm"
+                    style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
                   >
-                    SIGN IN
+                    SIGN OUT
                   </Button>
-                </Link>
-              )}
+                ) : (
+                  <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button
+                      className="w-full bg-[#CCFF00] text-[#000000] hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] rounded uppercase text-sm"
+                      style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+                    >
+                      LOGIN
+                    </Button>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         )}
-      </Card>
+      </div>
     </nav>
   )
 }
