@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { Leaderboard } from "@/components/leaderboard"
 
 export const metadata: Metadata = {
-  title: "Weekly $3500 Wager Race Leaderboard",
+  title: "Weekly $3500 Wager Race Leaderboard | Mandy.gg",
   description:
-    "Compete in the weekly $3500 wager race on Thrill Casino with code MANDY. Track your position, view live rankings, and win crypto prizes every Thursday.",
+    "Live weekly $3500 crypto casino wager race leaderboard. Use code MANDY on Thrill to compete and win cash prizes every week.",
   keywords: [
     "crypto wager race",
     "thrill casino leaderboard",
@@ -18,15 +18,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Weekly $3500 Wager Race Leaderboard | Mandy.gg",
     description:
-      "Compete in the weekly $3500 wager race on Thrill Casino with code MANDY. Track your position and win crypto prizes every Thursday.",
+      "Live weekly $3500 crypto casino wager race leaderboard. Use code MANDY on Thrill to compete and win cash prizes every week.",
     type: "website",
-    url: "https://mandy.gg/leaderboard",
+    url: "https://www.mandy.gg/leaderboard",
     images: [
       {
-        url: "/images/linkpreview.png",
+        url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
         width: 1200,
         height: 630,
-        alt: "Mandy.gg Weekly Wager Race Leaderboard",
+        alt: "Mandy.gg - More Perks, Less Regret",
       },
     ],
   },
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Weekly $3500 Wager Race | Mandy.gg",
     description: "Compete for $3500 in weekly prizes with code MANDY on Thrill Casino.",
-    images: ["/images/linkpreview.png"],
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
   },
   alternates: {
-    canonical: "https://mandy.gg/leaderboard",
+    canonical: "https://www.mandy.gg/leaderboard",
   },
 }
 

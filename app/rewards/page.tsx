@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { RewardsPage } from "@/components/rewards-page"
 
 export const metadata: Metadata = {
-  title: "Exclusive Rewards & Bonuses",
+  title: "Exclusive Crypto Casino Rewards & Bonuses | Mandy.gg",
   description:
-    "Unlock exclusive rewards, bonuses, and VIP perks as a Mandy.gg community member. Use code MANDY on Thrill Casino for lossback, cashback, and special promotions.",
+    "Exclusive crypto casino bonuses and rewards for Mandy.gg community. Use code MANDY on Thrill for bonus codes, cash drops, and weekly wager race prizes.",
   keywords: [
     "crypto casino rewards",
     "thrill casino bonuses",
@@ -15,16 +15,16 @@ export const metadata: Metadata = {
     "mandy.gg rewards",
   ],
   openGraph: {
-    title: "Exclusive Rewards & Bonuses | Mandy.gg",
-    description: "Unlock exclusive rewards, bonuses, and VIP perks as a Mandy.gg community member with code MANDY.",
+    title: "Exclusive Crypto Casino Rewards & Bonuses | Mandy.gg",
+    description: "Exclusive crypto casino bonuses and rewards for Mandy.gg community. Use code MANDY on Thrill.",
     type: "website",
-    url: "https://mandy.gg/rewards",
+    url: "https://www.mandy.gg/rewards",
     images: [
       {
-        url: "/images/linkpreview.png",
+        url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
         width: 1200,
         height: 630,
-        alt: "Mandy.gg Exclusive Rewards",
+        alt: "Mandy.gg - More Perks, Less Regret",
       },
     ],
   },
@@ -32,10 +32,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Exclusive Rewards | Mandy.gg",
     description: "Unlock VIP perks and bonuses with code MANDY on Thrill Casino.",
-    images: ["/images/linkpreview.png"],
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
   },
   alternates: {
-    canonical: "https://mandy.gg/rewards",
+    canonical: "https://www.mandy.gg/rewards",
   },
 }
 

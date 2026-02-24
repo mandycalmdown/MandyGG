@@ -80,33 +80,14 @@ interface Announcement {
   created_at: string
 }
 
-interface ChristmasRafflePlayer {
-  username: string
-  wager: number
-  raffleTickets: number
-  status: string
-}
-
-// Added AdventGift interface
-interface AdventGift {
-  id: string
-  day: number
-  title: string
-  description: string
-  reward: string
-  image_url?: string
-  updated_at: string
-}
-
 interface AdminDashboardClientProps {
   user: User
   profiles: Profile[]
 }
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
-  // Updated activeTab type to include "advent" and "daily"
   const [activeTab, setActiveTab] = useState<
-    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
+    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -133,16 +114,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
   const [tickerTableExists, setTickerTableExists] = useState(true)
-  const [christmasRafflePlayers, setChristmasRafflePlayers] = useState<ChristmasRafflePlayer[]>([])
-  const [isLoadingChristmasRaffle, setIsLoadingChristmasRaffle] = useState(false)
-  const [totalRaffleTickets, setTotalRaffleTickets] = useState(0)
-
-  // Added advent gifts state
-  const [adventGifts, setAdventGifts] = useState<AdventGift[]>([])
-  const [isLoadingAdventGifts, setIsLoadingAdventGifts] = useState(false)
-  const [editingGift, setEditingGift] = useState<AdventGift | null>(null)
-  const [adventSaveStatus, setAdventSaveStatus] = useState<string | null>(null)
-
   const [dailyLeaderboard, setDailyLeaderboard] = useState<Array<{ username: string; wager: number; rank: number }>>([])
   const [isLoadingDailyLeaderboard, setIsLoadingDailyLeaderboard] = useState(false)
   const [dailyDateRange, setDailyDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
@@ -165,13 +136,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
   const router = useRouter()
   const supabase = createClient()
-
-  // Fetch advent gifts when the "advent" tab is selected
-  useEffect(() => {
-    if (activeTab === "advent") {
-      fetchAdventGifts()
-    }
-  }, [activeTab])
 
   // Fetch user stats
   useEffect(() => {
@@ -225,11 +189,11 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     fetchPokerQualifiers()
   }, [])
 
-  // Fetch ticker settings, announcements, and Christmas raffle data on mount
+  // Fetch ticker settings and announcements on mount
   useEffect(() => {
     fetchTickerSettings()
     // fetchAllAnnouncements() // Moved to below
-    // fetchChristmasRaffle() // Moved to below
+
   }, [])
 
   const fetchDailyLeaderboard = async (force = false) => {
@@ -265,7 +229,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   useEffect(() => {
     fetchTickerSettings()
     fetchAllAnnouncements()
-    fetchChristmasRaffle()
     fetchDailyLeaderboard() // Fetch initial daily leaderboard data
   }, [])
 
@@ -296,72 +259,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
       console.error("[v0] Error fetching announcements:", error)
     } finally {
       setIsLoadingAnnouncements(false)
-    }
-  }
-
-  const fetchChristmasRaffle = async () => {
-    setIsLoadingChristmasRaffle(true)
-    try {
-      const response = await fetch("/api/christmas-raffle", {
-        method: "POST",
-      })
-      const data = await response.json()
-
-      if (response.ok && data.players) {
-        setChristmasRafflePlayers(data.players)
-        setTotalRaffleTickets(data.players.reduce((sum: number, p: ChristmasRafflePlayer) => sum + p.raffleTickets, 0))
-      }
-    } catch (err) {
-      console.error("[v0] Error fetching Christmas raffle:", err)
-    } finally {
-      setIsLoadingChristmasRaffle(false)
-    }
-  }
-
-  // Added fetchAdventGifts function
-  const fetchAdventGifts = async () => {
-    setIsLoadingAdventGifts(true)
-    try {
-      const response = await fetch("/api/advent-gifts")
-      const data = await response.json()
-      if (data.gifts) {
-        setAdventGifts(data.gifts)
-      }
-    } catch (error) {
-      console.error("Error fetching advent gifts:", error)
-    } finally {
-      setIsLoadingAdventGifts(false)
-    }
-  }
-
-  // Added handleSaveAdventGift function
-  const handleSaveAdventGift = async (gift: AdventGift) => {
-    setAdventSaveStatus("Saving...")
-    try {
-      const response = await fetch("/api/advent-gifts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          day: gift.day,
-          title: gift.title,
-          description: gift.description,
-          reward: gift.reward,
-          image_url: gift.image_url,
-        }),
-      })
-
-      if (response.ok) {
-        setAdventSaveStatus("Saved!")
-        setEditingGift(null)
-        fetchAdventGifts()
-        setTimeout(() => setAdventSaveStatus(null), 2000)
-      } else {
-        setAdventSaveStatus("Error saving")
-      }
-    } catch (error) {
-      console.error("Error saving advent gift:", error)
-      setAdventSaveStatus("Error saving")
     }
   }
 
@@ -705,7 +602,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const totalWager = Object.values(userStats).reduce((sum, stats) => sum + stats.wager, 0)
   const totalPrizes = Object.values(userStats).reduce((sum, stats) => sum + stats.prize, 0)
 
-  // Added Advent Gifts tab to tabs array
   const tabs = [
     { id: "users" as const, label: "User Management", icon: Users },
     { id: "daily" as const, label: "24hr Race", icon: Clock }, // Added 24hr tab
@@ -713,8 +609,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     { id: "rewards" as const, label: "Rewards", icon: Gift },
     { id: "announcements" as const, label: "Announcements", icon: Bell },
     { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
-    { id: "christmas" as const, label: "Christmas Raffle", icon: Gift },
-    { id: "advent" as const, label: "Advent Gifts", icon: Calendar }, // Added Advent Gifts tab
     { id: "settings" as const, label: "Settings", icon: Settings },
   ]
 
@@ -1139,15 +1033,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   >
                     Last 7 Days
                   </button>
-                  <button
-                    onClick={() => {
-                      setCustomFromDate("2025-12-01")
-                      setCustomToDate("2025-12-25")
-                    }}
-                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
-                  >
-                    Christmas (Dec 1-25)
-                  </button>
+
                 </div>
 
                 {customStatsError && (
@@ -1613,221 +1499,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
                     <p className="text-gray-400">No qualified players yet</p>
                     <p className="text-gray-500 text-sm mt-1">Players need to wager $50,000 to qualify</p>
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "christmas" && (
-            <div className="space-y-6">
-              <Card
-                className="p-6 rounded-xl border"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  borderColor: "rgba(212, 175, 55, 0.5)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.25)",
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <span className="text-3xl">🎄</span>
-                  <h2 className="text-3xl font-bold text-[#D4AF37] uppercase">Christmas Raffle 2025</h2>
-                  <span className="text-3xl">🎁</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <Card
-                    className="p-4 rounded-xl border border-[#D4AF37]/50 text-center"
-                    style={{ backgroundColor: "rgba(20, 20, 20, 0.95)" }}
-                  >
-                    <p className="text-gray-400 text-xs uppercase mb-2">Total Participants</p>
-                    <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isLoadingChristmasRaffle ? "..." : christmasRafflePlayers.length}
-                    </p>
-                  </Card>
-                  <Card
-                    className="p-4 rounded-xl border border-[#B91C1C]/50 text-center"
-                    style={{ backgroundColor: "rgba(20, 20, 20, 0.95)" }}
-                  >
-                    <p className="text-gray-400 text-xs uppercase mb-2">Total Raffle Tickets</p>
-                    <p className="text-3xl font-bold text-[#B91C1C]">
-                      {isLoadingChristmasRaffle ? "..." : totalRaffleTickets}
-                    </p>
-                  </Card>
-                </div>
-
-                <p className="text-gray-400 text-sm text-center mb-4">
-                  December 1-25, 2025 UTC | Every $1,000 wagered = 1 raffle ticket
-                </p>
-
-                {isLoadingChristmasRaffle ? (
-                  <div className="text-center py-8">
-                    <RefreshCw className="h-8 w-8 animate-spin text-[#D4AF37] mx-auto" />
-                    <p className="text-gray-400 mt-2">Loading raffle data...</p>
-                  </div>
-                ) : christmasRafflePlayers.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">No participants yet</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-[#D4AF37]/30">
-                          <th className="text-left py-3 px-4 text-[#D4AF37] font-bold">#</th>
-                          <th className="text-left py-3 px-4 text-[#D4AF37] font-bold">Username</th>
-                          <th className="text-right py-3 px-4 text-[#D4AF37] font-bold">December Wager</th>
-                          <th className="text-right py-3 px-4 text-[#D4AF37] font-bold">Raffle Tickets</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {christmasRafflePlayers.map((player, index) => (
-                          <tr
-                            key={player.username}
-                            className="border-b border-white/10 hover:bg-white/5 transition-colors"
-                          >
-                            <td className="py-3 px-4 text-gray-400">{index + 1}</td>
-                            <td className="py-3 px-4 text-white font-medium">{player.username}</td>
-                            <td className="py-3 px-4 text-right text-[#D4AF37]">{formatCurrency(player.wager)}</td>
-                            <td className="py-3 px-4 text-right">
-                              <span className="bg-[#B91C1C]/20 text-[#B91C1C] px-3 py-1 rounded-full font-bold">
-                                {player.raffleTickets}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {/* Added Advent Gifts tab panel */}
-          {activeTab === "advent" && (
-            <div className="space-y-6">
-              <Card
-                className="p-6 rounded-xl border"
-                style={{
-                  borderColor: "rgba(212, 175, 55, 0.5)",
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.15)",
-                }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold uppercase mb-2" style={{ color: "#D4AF37" }}>
-                      Advent Calendar Gifts
-                    </h2>
-                    <p className="text-gray-400 text-sm">
-                      Manage the daily gifts for the Christmas advent calendar. Changes are live immediately.
-                    </p>
-                  </div>
-                  {adventSaveStatus && (
-                    <span
-                      className={`text-sm font-medium ${adventSaveStatus === "Saved!" ? "text-green-500" : adventSaveStatus === "Saving..." ? "text-yellow-500" : "text-red-500"}`}
-                    >
-                      {adventSaveStatus}
-                    </span>
-                  )}
-                </div>
-
-                {isLoadingAdventGifts ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">Loading advent gifts...</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {adventGifts.map((gift) => (
-                      <div
-                        key={gift.id}
-                        className="p-4 rounded-lg border transition-all hover:border-amber-500/50"
-                        style={{
-                          backgroundColor: "rgba(26, 26, 26, 0.8)",
-                          borderColor:
-                            editingGift?.day === gift.day ? "rgba(212, 175, 55, 0.6)" : "rgba(50, 50, 50, 0.5)",
-                        }}
-                      >
-                        {editingGift?.day === gift.day ? (
-                          // Edit mode
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-2xl font-bold" style={{ color: "#D4AF37" }}>
-                                Day {gift.day}
-                              </span>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleSaveAdventGift(editingGift)}
-                                  style={{ backgroundColor: "#D4AF37", color: "#000" }}
-                                >
-                                  Save
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => setEditingGift(null)}
-                                  className="border-gray-600 text-gray-300"
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                            <Input
-                              value={editingGift.title}
-                              onChange={(e) => setEditingGift({ ...editingGift, title: e.target.value })}
-                              placeholder="Title"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                            <Textarea
-                              value={editingGift.description}
-                              onChange={(e) => setEditingGift({ ...editingGift, description: e.target.value })}
-                              placeholder="Description"
-                              className="bg-[#0a0a0a] border-gray-700 text-white min-h-[80px]"
-                            />
-                            <Input
-                              value={editingGift.reward}
-                              onChange={(e) => setEditingGift({ ...editingGift, reward: e.target.value })}
-                              placeholder="Reward"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                            <Input
-                              value={editingGift.image_url || ""}
-                              onChange={(e) => setEditingGift({ ...editingGift, image_url: e.target.value })}
-                              placeholder="Image URL (optional)"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                          </div>
-                        ) : (
-                          // View mode
-                          <div>
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-2xl font-bold" style={{ color: "#D4AF37" }}>
-                                Day {gift.day}
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setEditingGift(gift)}
-                                className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                            <h3 className="text-white font-semibold mb-1">{gift.title}</h3>
-                            <p className="text-gray-400 text-sm mb-2 line-clamp-2">{gift.description}</p>
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="text-amber-500/60">✦</span>
-                              <span className="text-amber-400 font-medium">{gift.reward}</span>
-                            </div>
-                            {gift.image_url && (
-                              <p className="text-gray-500 text-xs mt-2 truncate">Image: {gift.image_url}</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    ))}
                   </div>
                 )}
               </Card>
