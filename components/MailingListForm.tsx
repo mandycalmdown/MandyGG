@@ -66,14 +66,14 @@ export default function MailingListForm() {
         <Button
           type="submit"
           disabled={status === "loading"}
-          className="bg-[#5cfec0] text-black hover:bg-[#4de8ad] font-bold rounded-xl uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#CCFF00] text-[#000000] hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] font-bold rounded uppercase disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
           {status === "loading" ? "Subscribing..." : "Subscribe"}
         </Button>
       </form>
 
       {message && (
-        <p className={`text-sm mt-3 text-center ${status === "success" ? "text-[#5cfec0]" : "text-red-400"}`}>
+        <p className={`text-sm mt-3 text-center ${status === "success" ? "text-[#CCFF00]" : "text-red-400"}`}>
           {message}
         </p>
       )}

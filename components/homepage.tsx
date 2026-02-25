@@ -196,7 +196,7 @@ export function Homepage() {
       <SiteNavigation currentPage="home" />
 
       {/* ─── Hero Section ─── */}
-      <section className="relative flex flex-col items-center justify-center min-h-screen bg-[#000000] px-4">
+      <section className="relative flex flex-col items-center justify-center bg-[#000000] px-4 pt-6 pb-4 md:pt-10 md:pb-6">
         <div className="relative z-10 flex flex-col items-center">
           {/* Desktop Video */}
           <video
@@ -205,7 +205,7 @@ export function Homepage() {
             loop
             playsInline
             poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-RTSxD1gcEtHc9brgcBI9zl3PDxWQIw.webp"
-            className="hidden md:block w-[600px] max-w-[90vw] mx-auto"
+            className="hidden md:block w-[420px] max-w-[80vw] mx-auto"
             style={{ opacity: 1 }}
           >
             <source
@@ -224,7 +224,7 @@ export function Homepage() {
             loop
             playsInline
             poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-mobile-DiBeX3jrK9MO4xUQw66jdtzMrVdeCx.webp"
-            className="md:hidden w-[300px] max-w-[90vw] mx-auto"
+            className="md:hidden w-[220px] max-w-[70vw] mx-auto"
             style={{ opacity: 1 }}
           >
             <source
@@ -238,13 +238,13 @@ export function Homepage() {
           </video>
 
           <h1
-            className="text-4xl md:text-6xl text-[#FFFFFF] uppercase mt-6 tracking-wide text-center"
+            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase mt-3 tracking-wide text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             MANDY.GG
           </h1>
           <p
-            className="text-base md:text-lg text-[#FFFFFF] mt-3 text-center"
+            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
             {"Yes, I'm a girl... and I gamble."}
@@ -252,9 +252,8 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* ─── Cards Section with Holographic Background ─── */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
-        {/* Holographic background */}
+      {/* ─── Holographic Sticky Background ─── */}
+      <div className="sticky top-0 z-0 w-full h-screen overflow-hidden" aria-hidden="true">
         <picture>
           <source
             media="(max-width: 768px)"
@@ -263,23 +262,19 @@ export function Homepage() {
           <img
             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
             alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ zIndex: 0 }}
+            className="w-full h-full object-cover"
           />
         </picture>
+      </div>
 
-        {/* Colored light blobs behind cards */}
-        <div className="absolute left-[10%] top-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full opacity-50 pointer-events-none" style={{ background: "radial-gradient(circle, #A538FF 0%, transparent 70%)", filter: "blur(60px)", zIndex: 0 }} />
-        <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full opacity-50 pointer-events-none" style={{ background: "radial-gradient(circle, #3C7BFF 0%, transparent 70%)", filter: "blur(60px)", zIndex: 0 }} />
-        <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full opacity-50 pointer-events-none" style={{ background: "radial-gradient(circle, #FF2FBF 0%, transparent 70%)", filter: "blur(60px)", zIndex: 0 }} />
-
-        <div className="relative z-10 max-w-6xl mx-auto px-4">
+      {/* ─── Cards Section (scrolls over holographic background) ─── */}
+      <section className="relative z-10 -mt-[100vh] pt-16 md:pt-24 pb-16 md:pb-24">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
             <div
-              className="bg-[#050505] rounded border-2 border-[#A538FF] p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(165,56,255,0.3)" }}
+              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-rewards-gift-ykpn7XT2fHgtFsELVOES2ujmpMpLog.webp"
@@ -312,8 +307,8 @@ export function Homepage() {
 
             {/* Card 2 - LEADERBOARD */}
             <div
-              className="bg-[#050505] rounded border-2 border-[#3C7BFF] p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(60,123,255,0.3)" }}
+              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-leaderboard-trophy-QMFksNixcImJvlyF5SjCLeHcOuvo11.webp"
@@ -346,8 +341,8 @@ export function Homepage() {
 
             {/* Card 3 - CONNECT */}
             <div
-              className="bg-[#050505] rounded border-2 border-[#FF2FBF] p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255,47,191,0.3)" }}
+              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-connect-chat-mM98GWnKxYIoxyjgvZyTTOGatKkYm4.webp"
@@ -382,10 +377,12 @@ export function Homepage() {
       </section>
 
       {/* Ticker 2 - Between cards and social strip */}
-      <AnnouncementsTicker tickerKey="ticker_2_text" />
+      <div className="relative z-10 bg-[#000000]">
+        <AnnouncementsTicker tickerKey="ticker_2_text" />
+      </div>
 
       {/* ─── Social Icons Strip ─── */}
-      <section className="bg-[#000000] py-8 md:py-12">
+      <section className="relative z-10 bg-[#000000] py-8 md:py-12">
         <div className="flex justify-center items-center gap-6 md:gap-10">
           {socialLinks.map(({ Icon, href, label }) => (
             <a
@@ -403,10 +400,12 @@ export function Homepage() {
       </section>
 
       {/* Ticker 3 - Between social icons and FAQ */}
-      <AnnouncementsTicker tickerKey="ticker_3_text" />
+      <div className="relative z-10 bg-[#000000]">
+        <AnnouncementsTicker tickerKey="ticker_3_text" />
+      </div>
 
       {/* ─── FAQ Section ─── */}
-      <section id="faq" className="bg-[#000000] py-12 md:py-20 px-4" style={{ zIndex: 2, position: "relative" }}>
+      <section id="faq" className="relative z-10 bg-[#000000] py-12 md:py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2
             className="text-2xl md:text-4xl text-[#FFFFFF] uppercase text-center mb-2"
@@ -481,7 +480,7 @@ export function Homepage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4">
+      <footer className="relative z-10 bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img
