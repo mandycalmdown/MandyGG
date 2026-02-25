@@ -68,7 +68,6 @@ const socialLinks = [
   { Icon: DiscordIcon, href: "https://discord.gg/mandygg", label: "Discord" },
   { Icon: TelegramIcon, href: "https://t.me/MandyggChat", label: "Telegram" },
   { Icon: KickIcon, href: "https://kick.com/mandycalmdown", label: "Kick" },
-  { Icon: WebsiteIcon, href: "https://www.mandy.gg", label: "Website" },
   { Icon: XIcon, href: "https://x.com/mandycalmdown", label: "X" },
   { Icon: TwitchIcon, href: "https://twitch.tv/mandycalmdown", label: "Twitch" },
 ]
@@ -273,15 +272,17 @@ export function Homepage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
             <div
-              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
+              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#CCFF00]/60"
+              style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.15)" }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-rewards-gift-ykpn7XT2fHgtFsELVOES2ujmpMpLog.webp"
                 alt="Mandy.gg Rewards gift box"
                 width={200}
                 height={200}
-                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4"
+                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
               />
               <h3
                 className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-2"
@@ -297,7 +298,7 @@ export function Homepage() {
               </p>
               <Link href="/rewards" className="mt-auto w-full">
                 <Button
-                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] transition-all duration-300"
+                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_25px_rgba(204,255,0,0.6)] hover:brightness-110 transition-all duration-300"
                   style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
                 >
                   TELL ME MORE
@@ -307,15 +308,17 @@ export function Homepage() {
 
             {/* Card 2 - LEADERBOARD */}
             <div
-              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
+              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#3C7BFF]/60"
+              style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(60,123,255,0.2)" }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-leaderboard-trophy-QMFksNixcImJvlyF5SjCLeHcOuvo11.webp"
                 alt="Mandy.gg Leaderboard trophy"
                 width={200}
                 height={200}
-                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4"
+                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
               />
               <h3
                 className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-2"
@@ -331,7 +334,7 @@ export function Homepage() {
               </p>
               <Link href="/leaderboard" className="mt-auto w-full">
                 <Button
-                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] transition-all duration-300"
+                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_25px_rgba(204,255,0,0.6)] hover:brightness-110 transition-all duration-300"
                   style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
                 >
                   GO TO LEADERBOARD
@@ -341,15 +344,17 @@ export function Homepage() {
 
             {/* Card 3 - CONNECT */}
             <div
-              className="bg-[#050505]/95 backdrop-blur-sm rounded-lg border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-300 hover:-translate-y-1"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)" }}
+              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#FF2FBF]/60"
+              style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(255,47,191,0.2)" }}
+              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
             >
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-connect-chat-mM98GWnKxYIoxyjgvZyTTOGatKkYm4.webp"
                 alt="Mandy.gg Connect chat bubble"
                 width={200}
                 height={200}
-                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4"
+                className="w-40 h-40 md:w-48 md:h-48 object-contain mb-4 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
               />
               <h3
                 className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-2"
@@ -365,7 +370,7 @@ export function Homepage() {
               </p>
               <Link href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="mt-auto w-full">
                 <Button
-                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] transition-all duration-300"
+                  className="w-full bg-[#CCFF00] text-[#000000] rounded uppercase text-sm hover:shadow-[0_0_25px_rgba(204,255,0,0.6)] hover:brightness-110 transition-all duration-300"
                   style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
                 >
                   TELEGRAM
@@ -382,7 +387,7 @@ export function Homepage() {
       </div>
 
       {/* ─── Mandy x Thrill Section ─── */}
-      <section className="relative z-10 bg-[#0a0a0a] py-14 md:py-20 px-4">
+      <section className="relative z-10 bg-[#0a0a0a] pt-16 pb-14 md:pt-24 md:pb-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
             {/* Logos */}
@@ -406,20 +411,20 @@ export function Homepage() {
                 at Thrill!
               </p>
               <p
-                className="text-base md:text-lg text-[#FFFFFF] mt-2 leading-snug"
+                className="text-base md:text-lg text-[#FFFFFF] mt-2 leading-snug italic"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
               >
-                {"It's like Stake,"}
+                {"(It's like Stake,"}
                 <br />
                 but with less Drake
                 <br />
-                and more bonuses!
+                {"and more bonuses!)"}
               </p>
               <div className="mt-6">
                 <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
                   <Button
-                    className="bg-transparent text-[#FFFFFF] border border-[#FFFFFF] rounded uppercase text-sm px-8 py-3 hover:bg-[#FFFFFF] hover:text-[#000000] transition-all duration-300"
-                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 500, letterSpacing: "0.1em" }}
+                    className="bg-[#CCFF00] text-[#000000] border-none rounded uppercase text-sm px-8 py-3 hover:shadow-[0_0_25px_rgba(204,255,0,0.5)] transition-all duration-300"
+                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 600, letterSpacing: "0.1em" }}
                   >
                     PLAY AT THRILL
                   </Button>
@@ -432,7 +437,7 @@ export function Homepage() {
 
       {/* ─── Social Icons Strip ─── */}
       <section className="relative z-10 bg-[#000000] py-8 md:py-12">
-        <div className="flex justify-center items-center gap-6 md:gap-10">
+        <div className="flex justify-center items-center gap-3 md:gap-5">
           {socialLinks.map(({ Icon, href, label }) => (
             <a
               key={label}
@@ -440,9 +445,10 @@ export function Homepage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="text-[#FFFFFF] hover:text-[#CCFF00] transition-all duration-300 hover:drop-shadow-[0_0_8px_#CCFF00]"
+              className="text-[#FFFFFF] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
+              style={{ transformOrigin: "bottom center" }}
             >
-              <Icon className="w-10 h-10 md:w-12 md:h-12" />
+              <Icon className="w-8 h-8 md:w-10 md:h-10" />
             </a>
           ))}
         </div>
@@ -455,13 +461,13 @@ export function Homepage() {
 
       {/* ─── I'm Mandy, Section ─── */}
       <section className="relative z-10 bg-[#000000] overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-6xl mx-auto px-4 pt-16 pb-0 md:pt-24 md:pb-0">
           <div className="flex flex-col md:flex-row items-start gap-8 md:gap-0">
             {/* Left: text */}
             <div className="flex-1 relative z-10 md:pr-8">
               <h2
-                className="text-4xl md:text-6xl text-[#FFFFFF] mb-8"
-                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700, fontStyle: "italic" }}
+                className="text-4xl md:text-6xl text-[#CCFF00] mb-8"
+                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
               >
                 {"I'm Mandy,"}
               </h2>
@@ -494,8 +500,8 @@ export function Homepage() {
           </div>
         </div>
 
-        {/* Holographic strip at bottom of about section */}
-        <div className="w-full h-[120px] md:h-[180px] overflow-hidden">
+        {/* Holographic strip at bottom - portrait overlaps into it */}
+        <div className="w-full h-[60px] md:h-[80px] -mt-[60px] md:-mt-[80px] overflow-hidden relative z-0">
           <picture>
             <source
               media="(max-width: 768px)"

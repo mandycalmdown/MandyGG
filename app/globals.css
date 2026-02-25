@@ -142,15 +142,20 @@
   }
 }
 
-/* Marquee animation for ticker */
-@keyframes marquee-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+/* Glow pulse animation for interactive elements */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(204, 255, 0, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(204, 255, 0, 0.4); }
 }
 
-.animate-marquee-scroll {
-  animation: marquee-scroll linear infinite;
-  display: inline-block;
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Shimmer effect for card borders on hover */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Flip counter animations */
@@ -246,4 +251,4 @@
   animation-delay: 1s;
 }
 
-/* On mobile, marquee speeds are controlled inline via animationDuration */
+
