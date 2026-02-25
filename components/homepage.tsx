@@ -187,15 +187,34 @@ export function Homepage() {
   }, [supabase.auth])
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div className="min-h-screen bg-[#000000] relative">
+      {/* ─── Fixed Holographic Background ─── */}
+      <div className="fixed inset-0 z-0" aria-hidden="true">
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
+          />
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </picture>
+      </div>
+
       {/* Ticker 1 - Top of page */}
-      <AnnouncementsTicker tickerKey="ticker_1_text" />
+      <div className="relative z-10">
+        <AnnouncementsTicker tickerKey="ticker_1_text" />
+      </div>
 
       {/* Navbar */}
-      <SiteNavigation currentPage="home" />
+      <div className="relative z-10">
+        <SiteNavigation currentPage="home" />
+      </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="relative flex flex-col items-center justify-center bg-[#000000] px-4 pt-1 pb-1 md:pt-2 md:pb-1">
+      <section className="relative z-10 flex flex-col items-center justify-center px-4 pt-1 pb-1 md:pt-2 md:pb-1">
         <div className="relative z-10 flex flex-col items-center">
           {/* Desktop Video */}
           <video
@@ -251,23 +270,8 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* ─── Holographic Sticky Background ─── */}
-      <div className="sticky top-0 z-0 w-full h-screen overflow-hidden" aria-hidden="true">
-        <picture>
-          <source
-            media="(max-width: 768px)"
-            srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
-          />
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </picture>
-      </div>
-
       {/* ─── Cards Section (scrolls over holographic background) ─── */}
-      <section className="relative z-10 -mt-[100vh] pt-4 md:pt-6 pb-16 md:pb-24">
+      <section className="relative z-10 pt-4 md:pt-6 pb-16 md:pb-24">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
@@ -384,12 +388,12 @@ export function Homepage() {
       </section>
 
       {/* Ticker 2 */}
-      <div className="relative z-10 bg-[#000000]">
+      <div className="relative z-10">
         <AnnouncementsTicker tickerKey="ticker_2_text" />
       </div>
 
       {/* ─── Mandy x Thrill Section ─── */}
-      <section className="relative z-10 bg-[#0a0a0a] pt-16 pb-14 md:pt-24 md:pb-20 px-4">
+      <section className="relative z-10 bg-[#000000]/80 backdrop-blur-sm pt-16 pb-14 md:pt-24 md:pb-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
             {/* Logos */}
@@ -447,7 +451,7 @@ export function Homepage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="text-[#000000] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
+              className="text-[#FFFFFF] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
               style={{ transformOrigin: "bottom center" }}
             >
               <Icon className="w-12 h-12 md:w-[60px] md:h-[60px]" />
@@ -457,12 +461,12 @@ export function Homepage() {
       </section>
 
       {/* Ticker 3 */}
-      <div className="relative z-10 bg-[#000000]">
+      <div className="relative z-10">
         <AnnouncementsTicker tickerKey="ticker_3_text" />
       </div>
 
       {/* ─── I'm Mandy, Section ─── */}
-      <section className="relative z-10 bg-[#000000] overflow-hidden">
+      <section className="relative z-10 bg-[#000000]/85 backdrop-blur-sm overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 pt-16 pb-0 md:pt-24 md:pb-0">
           <div className="flex flex-col md:flex-row items-start gap-8 md:gap-0">
             {/* Left: text */}
@@ -508,25 +512,12 @@ export function Homepage() {
           </div>
         </div>
 
-        {/* Holographic strip at bottom - portrait overlaps into it */}
-        <div className="w-full h-[60px] md:h-[80px] -mt-[60px] md:-mt-[80px] overflow-hidden relative z-0">
-          <picture>
-            <source
-              media="(max-width: 768px)"
-              srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
-            />
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover"
-            />
-          </picture>
-        </div>
+        {/* Holographic peek-through gap */}
+        <div className="w-full h-[60px] md:h-[80px] -mt-[60px] md:-mt-[80px] relative z-0" />
       </section>
 
       {/* ─── FAQ Section ─── */}
-      <section id="faq" className="relative z-10 bg-[#000000] py-12 md:py-20 px-4">
+      <section id="faq" className="relative z-10 bg-[#000000]/80 backdrop-blur-sm py-12 md:py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2
             className="text-2xl md:text-4xl text-[#FFFFFF] uppercase text-center mb-2"
@@ -601,7 +592,7 @@ export function Homepage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="relative z-10 bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4">
+      <footer className="relative z-10 bg-[#000000]/90 backdrop-blur-sm border-t border-[#CCFF00] py-10 md:py-14 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img
