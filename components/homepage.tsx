@@ -422,7 +422,7 @@ export function Homepage() {
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(60,123,255,0.15)" }}
               >
                 <img
-                  src="/images/mandy-portrait.jpg"
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-mandy-portrait-zfkn0Sl4wywWHWP77mXxhPrRJ08CwH.webp"
                   alt="Mandy.gg portrait"
                   className="w-full h-full object-cover"
                   loading="lazy"
