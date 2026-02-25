@@ -1,88 +1,143 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 
 const ALERT_COLORS = [
-  { bg: "#CCFF00", text: "#000000", label: "neon-yellow" },
-  { bg: "#2A69DB", text: "#000000", label: "electric-blue" },
-  { bg: "#FF2F8B", text: "#000000", label: "hot-pink" },
+  { bg: "#CCFF00", text: "#000000" },
+  { bg: "#2A69DB", text: "#000000" },
+  { bg: "#FF2F8B", text: "#000000" },
 ]
+
+interface LeaderboardEntry {
+  id: number
+  username: string
+  wager: number
+  prize: number
+  rank: number
+}
 
 interface FeedAlert {
   id: string
   message: string
   colorIndex: number
-  timestamp: number
 }
 
-const EVENT_TEMPLATES = [
-  { msg: (u: string) => `${u} moved up 2 spots!`, weight: 15 },
-  { msg: (u: string) => `${u} moved up 3 spots!`, weight: 8 },
-  { msg: (u: string) => `${u} has entered the Top 3!`, weight: 3 },
-  { msg: (u: string) => `${u} just hit a huge win!`, weight: 10 },
-  { msg: (u: string) => `${u} is on a hot streak!`, weight: 10 },
-  { msg: (u: string) => `${u} claimed the #1 spot!`, weight: 2 },
-  { msg: (u: string) => `${u} dropped 5 spots... ouch!`, weight: 8 },
-  { msg: (u: string) => `${u} just joined the race!`, weight: 12 },
-  { msg: (u: string) => `${u} wagered $5,000 in 10 minutes!`, weight: 6 },
-  { msg: (u: string) => `${u} is climbing the ranks fast!`, weight: 10 },
-  { msg: (u: string) => `New player alert: ${u} entered the leaderboard!`, weight: 8 },
-  { msg: (u: string) => `${u} just overtook the #2 spot!`, weight: 4 },
-  { msg: (u: string) => `${u} is closing in on the Top 5!`, weight: 7 },
-  { msg: (u: string) => `${u} unlocked a bonus reward!`, weight: 5 },
-]
+interface LeaderboardLiveFeedProps {
+  entries: LeaderboardEntry[]
+  previousEntries: LeaderboardEntry[]
+}
 
-const FAKE_USERS = [
-  "J****N", "S***L", "D****E", "C***K", "M****A",
-  "R***Y", "T****S", "A***X", "P****R", "L***E",
-  "B****N", "K***O", "V****A", "W***D", "F****Z",
-  "H***S", "G****T", "N***I", "Q****M", "X***Y",
-]
+function generateEventsFromData(
+  entries: LeaderboardEntry[],
+  previousEntries: LeaderboardEntry[]
+): FeedAlert[] {
+  const alerts: FeedAlert[] = []
+  if (entries.length === 0) return alerts
 
-function getWeightedRandom(): { msg: (u: string) => string } {
-  const total = EVENT_TEMPLATES.reduce((sum, t) => sum + t.weight, 0)
-  let rand = Math.random() * total
-  for (const template of EVENT_TEMPLATES) {
-    rand -= template.weight
-    if (rand <= 0) return template
+  const prevMap = new Map<string, number>()
+  previousEntries.forEach((e) => prevMap.set(e.username, e.rank))
+
+  for (const entry of entries) {
+    const prevRank = prevMap.get(entry.username)
+
+    if (prevRank === undefined) {
+      // New entry
+      alerts.push({
+        id: `${Date.now()}-new-${entry.username}`,
+        message: `New player alert: ${entry.username} entered the leaderboard!`,
+        colorIndex: 2,
+      })
+    } else if (prevRank > entry.rank) {
+      const moved = prevRank - entry.rank
+      if (entry.rank <= 3 && prevRank > 3) {
+        alerts.push({
+          id: `${Date.now()}-top3-${entry.username}`,
+          message: `${entry.username} has entered the Top 3!`,
+          colorIndex: 0,
+        })
+      } else if (entry.rank === 1) {
+        alerts.push({
+          id: `${Date.now()}-first-${entry.username}`,
+          message: `${entry.username} claimed the #1 spot!`,
+          colorIndex: 0,
+        })
+      } else {
+        alerts.push({
+          id: `${Date.now()}-up-${entry.username}`,
+          message: `${entry.username} moved up ${moved} spot${moved !== 1 ? "s" : ""}!`,
+          colorIndex: 1,
+        })
+      }
+    } else if (prevRank < entry.rank) {
+      const dropped = entry.rank - prevRank
+      if (dropped >= 3) {
+        alerts.push({
+          id: `${Date.now()}-drop-${entry.username}`,
+          message: `${entry.username} dropped ${dropped} spots... ouch!`,
+          colorIndex: 2,
+        })
+      }
+    }
   }
-  return EVENT_TEMPLATES[0]
+
+  // Add some context alerts from the data
+  if (entries.length > 0) {
+    const top = entries[0]
+    if (top.wager > 100000) {
+      alerts.push({
+        id: `${Date.now()}-whale-${top.username}`,
+        message: `${top.username} is on a hot streak with $${(top.wager / 1000).toFixed(0)}K wagered!`,
+        colorIndex: 0,
+      })
+    }
+    const closeFight = entries.find(
+      (e, i) => i > 0 && entries[i - 1] && entries[i - 1].wager - e.wager < 1000
+    )
+    if (closeFight) {
+      alerts.push({
+        id: `${Date.now()}-close-${closeFight.username}`,
+        message: `${closeFight.username} is closing in on the spot above!`,
+        colorIndex: 1,
+      })
+    }
+  }
+
+  return alerts
 }
 
-export function LeaderboardLiveFeed() {
+export function LeaderboardLiveFeed({ entries, previousEntries }: LeaderboardLiveFeedProps) {
   const [alerts, setAlerts] = useState<FeedAlert[]>([])
+  const isInitial = useRef(true)
 
-  const generateAlert = useCallback(() => {
-    const user = FAKE_USERS[Math.floor(Math.random() * FAKE_USERS.length)]
-    const template = getWeightedRandom()
-    const colorIndex = Math.floor(Math.random() * ALERT_COLORS.length)
-
-    const newAlert: FeedAlert = {
-      id: `${Date.now()}-${Math.random()}`,
-      message: template.msg(user),
-      colorIndex,
-      timestamp: Date.now(),
-    }
-
-    setAlerts((prev) => {
-      const updated = [newAlert, ...prev]
-      return updated.slice(0, 20)
-    })
-  }, [])
-
+  // When entries change, generate real events
   useEffect(() => {
-    // Generate initial alerts
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => generateAlert(), i * 200)
+    if (entries.length === 0) return
+
+    if (isInitial.current) {
+      // On first load, generate some summary alerts from current state
+      const initial: FeedAlert[] = entries.slice(0, 5).map((entry, i) => ({
+        id: `init-${i}-${entry.username}`,
+        message:
+          entry.rank === 1
+            ? `${entry.username} is holding the #1 spot!`
+            : entry.rank <= 3
+              ? `${entry.username} is in the Top 3!`
+              : `${entry.username} is in the race at #${entry.rank}!`,
+        colorIndex: i % 3,
+      }))
+      setAlerts(initial)
+      isInitial.current = false
+      return
     }
 
-    // Generate new alerts periodically
-    const interval = setInterval(() => {
-      generateAlert()
-    }, 3000 + Math.random() * 4000)
+    // Generate real diff-based events
+    const newAlerts = generateEventsFromData(entries, previousEntries)
+    if (newAlerts.length > 0) {
+      setAlerts((prev) => [...newAlerts, ...prev].slice(0, 20))
+    }
+  }, [entries, previousEntries])
 
-    return () => clearInterval(interval)
-  }, [generateAlert])
+  if (alerts.length === 0) return null
 
   return (
     <div className="max-w-4xl mx-auto mt-8 md:mt-12 px-2 md:px-0">
@@ -94,7 +149,6 @@ export function LeaderboardLiveFeed() {
       </h2>
 
       <div className="space-y-2 max-h-[320px] overflow-hidden relative">
-        {/* Fade-out gradient at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#000000] to-transparent z-10 pointer-events-none" />
 
         {alerts.map((alert, idx) => {

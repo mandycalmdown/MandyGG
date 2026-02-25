@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { ChevronDown } from "lucide-react"
 
 interface RaffleWinner {
   raffle_date: string
@@ -21,9 +22,14 @@ function getTimeUntilMidnightUTC(): { hours: number; minutes: number; seconds: n
   return { hours, minutes, seconds }
 }
 
-export function DailyRaffle() {
+interface DailyRaffleProps {
+  winners?: RaffleWinner[]
+}
+
+export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
   const [countdown, setCountdown] = useState(getTimeUntilMidnightUTC())
-  const [recentWinners, setRecentWinners] = useState<RaffleWinner[]>([])
+  const [recentWinners, setRecentWinners] = useState<RaffleWinner[]>(externalWinners || [])
+  const [showPreviousWinners, setShowPreviousWinners] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,25 +38,141 @@ export function DailyRaffle() {
     return () => clearInterval(timer)
   }, [])
 
+  // If winners passed externally, use them; otherwise fetch
   useEffect(() => {
+    if (externalWinners && externalWinners.length > 0) {
+      setRecentWinners(externalWinners)
+      return
+    }
     fetch("/api/raffle/winners")
       .then((res) => res.json())
       .then((data) => {
         if (data.winners) setRecentWinners(data.winners)
       })
       .catch(console.error)
-  }, [])
+  }, [externalWinners])
 
   const pad = (n: number) => String(n).padStart(2, "0")
 
+  // Latest winner (previous day's raffle)
+  const latestWinner = recentWinners.length > 0 ? recentWinners[0] : null
+  const previousWinners = recentWinners.slice(1)
+
   return (
-    <div className="max-w-4xl mx-auto mt-10 md:mt-14 px-2 md:px-0">
+    <div id="raffle" className="max-w-4xl mx-auto mt-10 md:mt-14 px-2 md:px-0">
       <h2
         className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-6 text-center"
         style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
       >
         DAILY RAFFLE
       </h2>
+
+      {/* Raffle Winner Section */}
+      <div
+        className="bg-[#000000] rounded-xl border border-[#CCFF00]/40 p-6 md:p-8 mb-6"
+        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(204,255,0,0.1)" }}
+      >
+        <h3
+          className="text-sm text-[#CCFF00] uppercase mb-4 tracking-wider"
+          style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
+        >
+          RAFFLE WINNER:
+        </h3>
+
+        {latestWinner ? (
+          <div>
+            <p
+              className="text-xs text-[#FFFFFF]/50 uppercase mb-1"
+              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            >
+              {latestWinner.raffle_date}
+            </p>
+            <p
+              className="text-lg md:text-xl text-[#FFFFFF] mb-3"
+              style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
+            >
+              {latestWinner.username}{" "}
+              <span className="text-[#CCFF00]">(Ticket #{latestWinner.winning_ticket_number})</span>
+            </p>
+            <p
+              className="text-xs text-[#FFFFFF]/60 mb-4"
+              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            >
+              Prize: ${latestWinner.prize_amount}{" "}
+              {latestWinner.claimed ? (
+                <span className="text-[#CCFF00]">- CLAIMED</span>
+              ) : (
+                <span className="text-[#FF2F8B]">- UNCLAIMED</span>
+              )}
+            </p>
+
+            {/* Expandable previous winners */}
+            {previousWinners.length > 0 && (
+              <div>
+                <button
+                  onClick={() => setShowPreviousWinners(!showPreviousWinners)}
+                  className="flex items-center gap-2 text-xs text-[#FFFFFF]/60 hover:text-[#CCFF00] transition-colors uppercase"
+                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                >
+                  Click here to see previous winners
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${showPreviousWinners ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {showPreviousWinners && (
+                  <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
+                    {previousWinners.map((winner) => (
+                      <div
+                        key={winner.raffle_date}
+                        className="flex items-center justify-between py-1.5"
+                        style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-[#FFFFFF]/40">{winner.raffle_date}</span>
+                          <span className="text-sm text-[#FFFFFF]">
+                            {winner.username}{" "}
+                            <span className="text-[#CCFF00]">(#{winner.winning_ticket_number})</span>
+                          </span>
+                        </div>
+                        <span className={`text-xs ${winner.claimed ? "text-[#CCFF00]" : "text-[#FF2F8B]"}`}>
+                          {winner.claimed ? "CLAIMED" : "UNCLAIMED"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Telegram claim reminder */}
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <p
+                className="text-xs text-[#FFFFFF]/50"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                Won the raffle? Message the{" "}
+                <a
+                  href="https://t.me/mandysupport_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#2A69DB] hover:underline"
+                >
+                  Mandy Support Bot on Telegram
+                </a>{" "}
+                to claim your prize within 7 days.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p
+            className="text-sm text-[#FFFFFF]/40"
+            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+          >
+            No winners drawn yet. Check back after the first daily draw!
+          </p>
+        )}
+      </div>
 
       {/* Raffle Info Card */}
       <div
@@ -124,43 +246,6 @@ export function DailyRaffle() {
           </ol>
         </div>
       </div>
-
-      {/* Recent Winners */}
-      {recentWinners.length > 0 && (
-        <div
-          className="bg-[#000000] rounded-xl border border-white/20 p-6 transition-all duration-500 hover:border-[#CCFF00]/40"
-          style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7)" }}
-        >
-          <h3
-            className="text-sm text-[#FFFFFF] uppercase mb-4"
-            style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-          >
-            RECENT WINNERS
-          </h3>
-          <div className="space-y-2">
-            {recentWinners.map((winner) => (
-              <div
-                key={winner.raffle_date}
-                className="flex items-center justify-between py-2 border-b border-white/10 last:border-0"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-[#FFFFFF]/50">{winner.raffle_date}</span>
-                  <span className="text-sm text-[#FFFFFF]">{winner.username}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-[#FFFFFF]/50">Ticket #{winner.winning_ticket_number}</span>
-                  {winner.claimed ? (
-                    <span className="text-xs text-[#CCFF00]">CLAIMED</span>
-                  ) : (
-                    <span className="text-xs text-[#FF2F8B]">UNCLAIMED</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

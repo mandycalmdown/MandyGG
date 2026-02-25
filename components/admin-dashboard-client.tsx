@@ -72,7 +72,10 @@ interface TickerSettings {
   font_family: string
   font_size: string
   font_weight: string
-}
+  ticker_1_text: string
+  ticker_2_text: string
+  ticker_3_text: string
+  }
 
 interface Announcement {
   id: string
@@ -122,6 +125,9 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     font_family: "inherit",
     font_size: "1rem",
     font_weight: "bold",
+    ticker_1_text: "",
+    ticker_2_text: "",
+    ticker_3_text: "",
   })
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [newAnnouncement, setNewAnnouncement] = useState("")
@@ -1249,6 +1255,35 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 }}
               >
                 <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">News Ticker Customization</h2>
+
+                {/* Individual Ticker Text Controls */}
+                <div className="mb-6 space-y-4">
+                  <h3 className="text-lg font-bold text-white uppercase">Ticker Text (Individual)</h3>
+                  <p className="text-xs text-gray-400">Each ticker can display its own message. Leave blank to use the default text.</p>
+                  {[
+                    { key: "ticker_1_text" as const, label: "Ticker 1 (Blue)", color: "#2A69DB" },
+                    { key: "ticker_2_text" as const, label: "Ticker 2 (White)", color: "#FFFFFF" },
+                    { key: "ticker_3_text" as const, label: "Ticker 3 (Neon)", color: "#CCFF00" },
+                  ].map((ticker) => (
+                    <div key={ticker.key}>
+                      <Label className="text-white mb-1.5 block text-sm flex items-center gap-2">
+                        <span
+                          className="inline-block w-3 h-3 rounded-full"
+                          style={{ backgroundColor: ticker.color }}
+                        />
+                        {ticker.label}
+                      </Label>
+                      <Input
+                        value={tickerSettings[ticker.key] || ""}
+                        onChange={(e) =>
+                          setTickerSettings({ ...tickerSettings, [ticker.key]: e.target.value })
+                        }
+                        placeholder="USE CODE MANDY ON THRILL.COM – USE CODE MANDY"
+                        className="bg-[#1a1a1a] border-[#333] text-white"
+                      />
+                    </div>
+                  ))}
+                </div>
 
                 {!tickerTableExists && (
                   <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg flex items-start gap-3">

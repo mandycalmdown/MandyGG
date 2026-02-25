@@ -50,18 +50,8 @@ export function AnnouncementsTicker({ tickerKey = "ticker_1_text" }: Announcemen
     try {
       const response = await fetch("/api/ticker-settings")
       const data = await response.json()
-      if (data.settings) {
-        if (data.settings[tickerKey]) {
-          setTickerText(data.settings[tickerKey])
-        }
-      }
-      const announcementsResponse = await fetch("/api/announcements")
-      const announcementsData = await announcementsResponse.json()
-      if (announcementsData.announcements && announcementsData.announcements.length > 0) {
-        const combinedMessage = announcementsData.announcements
-          .map((a: { message: string }) => a.message)
-          .join(" – ")
-        setTickerText(combinedMessage)
+      if (data.settings && data.settings[tickerKey]) {
+        setTickerText(data.settings[tickerKey])
       }
     } catch (error) {
       // Silently fail, use default text

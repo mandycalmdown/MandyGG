@@ -47,11 +47,14 @@ const mockData: LeaderboardEntry[] = [
 
 export function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>(mockData)
+  const [previousEntries, setPreviousEntries] = useState<LeaderboardEntry[]>([])
+  const [raffleWinners, setRaffleWinners] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<"current" | "past">("current")
   const currentDataCache = useRef<CachedData | null>(null)
   const pastDataCache = useRef<CachedData | null>(null)
+  const raffleCache = useRef<{ data: any[]; timestamp: number } | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [countdown, setCountdown] = useState({
@@ -163,6 +166,7 @@ export function Leaderboard() {
         setLastUpdated(data.lastUpdated || "")
 
         if (data.entries && data.entries.length > 0) {
+          setPreviousEntries(entries)
           setEntries(data.entries)
           if (activeTab === "current") {
             currentDataCache.current = { data: data.entries, timestamp: now }
@@ -172,6 +176,24 @@ export function Leaderboard() {
         } else {
           setEntries(mockData)
           setDataStatus("Mock Data - No Results")
+        }
+
+        // Also fetch raffle winners in same cycle, using cache
+        const raffleCacheAge = raffleCache.current ? now - raffleCache.current.timestamp : Infinity
+        if (raffleCacheAge >= 2 * 60 * 1000) {
+          try {
+            const raffleRes = await fetch("/api/raffle/winners")
+            const raffleData = await raffleRes.json()
+            if (raffleData.winners) {
+              setRaffleWinners(raffleData.winners)
+              raffleCache.current = { data: raffleData.winners, timestamp: now }
+            }
+          } catch (raffleErr) {
+            // Use cached raffle data if available
+            if (raffleCache.current) setRaffleWinners(raffleCache.current.data)
+          }
+        } else if (raffleCache.current) {
+          setRaffleWinners(raffleCache.current.data)
         }
       } catch (err) {
         console.error("[v0] Error fetching leaderboard:", err)
@@ -229,6 +251,7 @@ export function Leaderboard() {
       setLastUpdated(data.lastUpdated || "")
 
       if (data.entries && data.entries.length > 0) {
+        setPreviousEntries(entries)
         setEntries(data.entries)
         const now = Date.now()
         if (activeTab === "current") {
@@ -529,10 +552,10 @@ export function Leaderboard() {
       </div>
 
       {/* Live Feed */}
-      <LeaderboardLiveFeed />
+      <LeaderboardLiveFeed entries={entries} previousEntries={previousEntries} />
 
       {/* Daily Raffle */}
-      <DailyRaffle />
+      <DailyRaffle winners={raffleWinners} />
 
       {/* Footer */}
       <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-10 md:mt-14">
