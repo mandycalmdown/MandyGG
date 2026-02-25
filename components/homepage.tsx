@@ -486,12 +486,18 @@ export function Homepage() {
                 Sign up at Thrill with code:{" "}
                 <span className="text-[#CCFF00]">MANDY</span>
                 {" "}and come join the party on{" "}
-                <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">telegram</a>.
+                <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a>.
               </p>
             </div>
 
-            {/* Right: portrait */}
+            {/* Right: portrait with blue glow */}
             <div className="flex-shrink-0 relative md:w-[400px] w-full flex justify-center md:justify-end">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-light-blue-glow-7AKd9bPeneq1lRWF2GnsB2H2qovJrq.webp"
+                alt=""
+                aria-hidden="true"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[600px] md:h-[600px] object-contain opacity-40 pointer-events-none z-0"
+              />
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-mandy-portrait-zfkn0Sl4wywWHWP77mXxhPrRJ08CwH.webp"
                 alt="Mandy portrait"
