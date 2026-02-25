@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { SiteNavigation } from "@/components/site-navigation"
 import { AnnouncementsTicker } from "@/components/announcements-ticker"
 import { isAdminSessionValid } from "@/lib/admin-session"
@@ -252,25 +251,21 @@ export function Leaderboard() {
 
       <SiteNavigation currentPage="leaderboard" />
 
-      {/* Banner */}
+      {/* Banner Video */}
       <section className="relative w-full mb-2">
         <div className="w-full max-w-6xl mx-auto relative px-2 md:px-0">
-          <Image
-            src="/images/thrill-mandy-banner-static-leaderboard.webp"
-            alt="Thrill Mandy Leaderboard - $3500 Weekly Crypto Casino Competition"
-            width={1200}
-            height={300}
-            className="hidden md:block w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-contain"
-            priority
-          />
-          <Image
-            src="/images/mobile-static-leaderboard.webp"
-            alt="Mobile Leaderboard - Weekly Crypto Casino Battle"
-            width={400}
-            height={400}
-            className="md:hidden w-full h-auto max-w-sm mx-auto object-contain rounded"
-            priority
-          />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-cover rounded"
+          >
+            <source
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG%20NEW%20HOLO%20BANNER-sM5HVydkV5cvFOVAmfWeRGh0A3RyuH.mp4"
+              type="video/mp4"
+            />
+          </video>
         </div>
       </section>
 
@@ -374,13 +369,13 @@ export function Leaderboard() {
         <div className="flex flex-col md:flex-row justify-center items-center md:items-end gap-3 md:gap-4 mb-6 md:mb-8 max-w-4xl mx-auto">
           {/* 2nd Place */}
           <div
-            className={`bg-[#050505] rounded border border-[#333] p-3 md:p-4 text-center relative overflow-visible w-full max-w-xs transition-all duration-300 ${
-              hoveredCard === 2 ? "transform scale-105" : ""
+            className={`bg-[#000000] rounded-xl border transition-all duration-500 p-3 md:p-4 text-center relative overflow-visible w-full max-w-xs ${
+              hoveredCard === 2 ? "transform scale-105 border-[#CCFF00]/60" : "border-white/20"
             }`}
             style={{
               boxShadow: hoveredCard === 2
-                ? "0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(60,123,255,0.4)"
-                : "0 25px 50px rgba(0,0,0,0.8), 0 0 15px rgba(60,123,255,0.15)",
+                ? "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.15)"
+                : "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08)",
             }}
             onMouseEnter={() => setHoveredCard(2)}
             onMouseLeave={() => setHoveredCard(null)}
@@ -416,13 +411,13 @@ export function Leaderboard() {
 
           {/* 1st Place */}
           <div
-            className={`bg-[#050505] rounded border border-[#333] p-3 md:p-4 lg:p-6 text-center relative transform md:scale-110 overflow-visible w-full max-w-xs order-first md:order-none transition-all duration-300 ${
-              hoveredCard === 1 ? "md:scale-125" : ""
+            className={`bg-[#000000] rounded-xl border transition-all duration-500 p-3 md:p-4 lg:p-6 text-center relative transform md:scale-110 overflow-visible w-full max-w-xs order-first md:order-none ${
+              hoveredCard === 1 ? "md:scale-125 border-[#CCFF00]/60" : "border-white/20"
             }`}
             style={{
               boxShadow: hoveredCard === 1
-                ? "0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.4)"
-                : "0 25px 50px rgba(0,0,0,0.8), 0 0 15px rgba(204,255,0,0.15)",
+                ? "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.2)"
+                : "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08)",
             }}
             onMouseEnter={() => setHoveredCard(1)}
             onMouseLeave={() => setHoveredCard(null)}
@@ -458,13 +453,13 @@ export function Leaderboard() {
 
           {/* 3rd Place */}
           <div
-            className={`bg-[#050505] rounded border border-[#333] p-3 md:p-4 text-center relative overflow-visible w-full max-w-xs transition-all duration-300 ${
-              hoveredCard === 3 ? "transform scale-105" : ""
+            className={`bg-[#000000] rounded-xl border transition-all duration-500 p-3 md:p-4 text-center relative overflow-visible w-full max-w-xs ${
+              hoveredCard === 3 ? "transform scale-105 border-[#CCFF00]/60" : "border-white/20"
             }`}
             style={{
               boxShadow: hoveredCard === 3
-                ? "0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(165,56,255,0.4)"
-                : "0 25px 50px rgba(0,0,0,0.8), 0 0 15px rgba(165,56,255,0.15)",
+                ? "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.15)"
+                : "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08)",
             }}
             onMouseEnter={() => setHoveredCard(3)}
             onMouseLeave={() => setHoveredCard(null)}
@@ -501,8 +496,8 @@ export function Leaderboard() {
 
         {/* Ranks 4-10 Table */}
         <div
-          className="max-w-4xl mx-auto bg-[#050505] rounded border border-[#333] overflow-hidden transition-all duration-300 hover:shadow-2xl"
-          style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8)" }}
+          className="max-w-4xl mx-auto bg-[#000000] rounded-xl border border-white/20 overflow-hidden transition-all duration-500 hover:border-[#CCFF00]/40"
+          style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.08)" }}
         >
           <div className="p-3 md:p-6">
             <div
@@ -518,7 +513,7 @@ export function Leaderboard() {
             {remainingEntries.map((entry) => (
               <div
                 key={entry.id}
-                className="grid grid-cols-4 gap-2 md:gap-4 py-2 md:py-3 border-t border-[#333] text-[#FFFFFF]"
+                className="grid grid-cols-4 gap-2 md:gap-4 py-2 md:py-3 border-t border-white/10 text-[#FFFFFF]"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 <div className="text-sm md:text-base" style={{ fontWeight: 700 }}>{entry.rank}</div>

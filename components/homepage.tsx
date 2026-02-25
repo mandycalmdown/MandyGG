@@ -243,10 +243,12 @@ export function Homepage() {
             MANDY.GG
           </h1>
           <p
-            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center"
+            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center uppercase"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
-            {"Yes, I'm a girl... and I gamble."}
+            Want more bonuses
+            <br />
+            use code Mandy
           </p>
         </div>
       </section>
