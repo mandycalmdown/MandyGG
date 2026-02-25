@@ -214,56 +214,25 @@ export function Homepage() {
       </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center p-0 m-0">
+      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center py-10 md:py-16">
         <div className="relative z-10 flex flex-col items-center w-full">
-          {/* Desktop Video - full width, no side cropping, no padding */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="hidden md:block w-full block m-0 p-0"
-            style={{ display: "block", margin: 0, padding: 0, lineHeight: 0 }}
-          >
-            <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-XZLO4H7GbNnaHWswL1usoMwcDz1BxC.webm"
-              type="video/webm"
-            />
-          </video>
-          {/* Mobile Video - full width, no side cropping, no padding */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="md:hidden w-full block m-0 p-0"
-            style={{ display: "block", margin: 0, padding: 0, lineHeight: 0 }}
-          >
-            <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-B5Ux6Z3jjDeGS9yLxLpjnWgqMCCVYc.webm"
-              type="video/webm"
-            />
-          </video>
-
           <h1
-            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase -mt-4 tracking-wide text-center"
+            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase tracking-wide text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             MANDY.GG
           </h1>
           <p
-            className="text-sm md:text-base text-[#FFFFFF] mt-1 mb-0 text-center"
+            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-0 text-center"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
             {"Yes, I'm a girl... and I gamble."}
           </p>
-          {/* Black spacer below tagline */}
-          <div className="w-full h-12 md:h-20" />
         </div>
       </section>
 
       {/* ─── Cards Section (scrolls over holographic background) ─── */}
-      <section className="relative z-10 pt-2 md:pt-3 pb-6 md:pb-10">
+      <section className="relative z-10 py-10 md:py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
