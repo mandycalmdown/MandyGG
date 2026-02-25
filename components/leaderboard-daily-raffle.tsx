@@ -61,8 +61,7 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
   return (
     <div id="raffle" className="max-w-4xl mx-auto mt-10 md:mt-14 px-2 md:px-0">
       <div
-        className="bg-[#0a0a0a] rounded-xl border border-[#CCFF00]/40 p-4 md:p-6"
-        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(204,255,0,0.1)" }}
+        className="bg-[#0a0a0a] rounded-xl border border-white/20 p-4 md:p-6 transition-all duration-500 hover:border-[#CCFF00]/60 hover:shadow-[0_0_25px_rgba(204,255,0,0.1)]"
       >
         <div className="flex flex-col items-center mb-6">
           <img
@@ -71,7 +70,7 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
             className="w-32 md:w-40 h-auto mb-3"
           />
           <h2
-            className="text-xl md:text-2xl text-[#CCFF00] uppercase text-center"
+            className="text-xl md:text-2xl text-[#FFFFFF] uppercase text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             DAILY RAFFLE

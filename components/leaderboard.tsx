@@ -295,8 +295,10 @@ export function Leaderboard() {
         <SiteNavigation currentPage="leaderboard" />
       </div>
 
+      {/* Black section: banner + countdown + button */}
+      <div className="relative z-10 bg-[#000000]">
       {/* Banner Video */}
-      <section className="relative z-10 w-full mb-2">
+      <section className="w-full">
         <div className="w-full relative">
           <video
             autoPlay
@@ -314,7 +316,7 @@ export function Leaderboard() {
       </section>
 
       {/* Countdown */}
-      <div className="relative z-10 text-center mb-4 md:mb-6 lg:mb-8 px-4">
+      <div className="text-center mb-4 md:mb-6 lg:mb-8 px-4">
         <h3
           className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-3 uppercase"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
@@ -401,6 +403,9 @@ export function Leaderboard() {
           </p>
         )}
       </div>
+      {/* Gradient fade from black into holographic */}
+      <div className="h-24 md:h-32 bg-gradient-to-b from-[#000000] to-transparent" />
+      </div>{/* end black section */}
 
       {/* Top 3 Podium */}
       <div className="relative z-10 px-2 md:px-4">

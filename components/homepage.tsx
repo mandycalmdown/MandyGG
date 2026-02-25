@@ -214,28 +214,28 @@ export function Homepage() {
       </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center px-4 pt-1 pb-8 md:pt-2 md:pb-10">
+      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center">
         <div className="relative z-10 flex flex-col items-center w-full">
-          {/* Desktop Video */}
+          {/* Desktop Video - full width, no side cropping */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="hidden md:block w-full max-w-[700px] mx-auto"
+            className="hidden md:block w-full"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-XZLO4H7GbNnaHWswL1usoMwcDz1BxC.webm"
               type="video/webm"
             />
           </video>
-          {/* Mobile Video */}
+          {/* Mobile Video - full width, no side cropping */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="md:hidden w-full max-w-[320px] mx-auto"
+            className="md:hidden w-full"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-B5Ux6Z3jjDeGS9yLxLpjnWgqMCCVYc.webm"
@@ -244,13 +244,13 @@ export function Homepage() {
           </video>
 
           <h1
-            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase mt-1 tracking-wide text-center"
+            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase -mt-2 tracking-wide text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             MANDY.GG
           </h1>
           <p
-            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center"
+            className="text-sm md:text-base text-[#FFFFFF] mt-1 mb-0 text-center"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
             {"Yes, I'm a girl... and I gamble."}
