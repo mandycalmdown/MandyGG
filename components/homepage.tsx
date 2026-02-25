@@ -404,6 +404,66 @@ export function Homepage() {
         <AnnouncementsTicker tickerKey="ticker_3_text" />
       </div>
 
+      {/* ─── About Me Section ─── */}
+      <section className="relative z-10 bg-[#000000] py-16 md:py-24 px-4 overflow-hidden">
+        {/* Ambient blue glow behind the section */}
+        <img
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-light-blue-glow-7AKd9bPeneq1lRWF2GnsB2H2qovJrq.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] object-contain opacity-30 pointer-events-none"
+        />
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+            {/* Portrait */}
+            <div className="flex-shrink-0">
+              <div
+                className="w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border border-white/20"
+                style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(60,123,255,0.15)" }}
+              >
+                <img
+                  src="/images/mandy-portrait.jpg"
+                  alt="Mandy.gg portrait"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="text-center md:text-left flex-1">
+              <h2
+                className="text-2xl md:text-4xl text-[#FFFFFF] uppercase mb-4"
+                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+              >
+                ABOUT MANDY
+              </h2>
+              <div className="w-16 h-0.5 bg-[#CCFF00] mb-6 mx-auto md:mx-0" />
+              <p
+                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-4"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                {"I'm Mandy. I gamble, I stream, and I don't sugarcoat it. I started in crypto casinos because I love the thrill, and now I help thousands of players get better deals while doing what they're already doing."}
+              </p>
+              <p
+                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-6"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+              >
+                {"Code MANDY isn't just a referral code, it's your access pass to weekly races, lossback from day one, poker nights, and VIP perks that most affiliates can't offer. No fluff, just real value."}
+              </p>
+              <div className="flex items-center gap-4 justify-center md:justify-start">
+                <img
+                  src="/images/mandy-thrill-logo-combined.svg"
+                  alt="Mandy x Thrill partnership"
+                  className="h-8 md:h-10 w-auto opacity-80"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── FAQ Section ─── */}
       <section id="faq" className="relative z-10 bg-[#000000] py-12 md:py-20 px-4">
         <div className="max-w-4xl mx-auto">
