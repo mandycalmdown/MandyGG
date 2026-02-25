@@ -275,7 +275,7 @@ export function Leaderboard() {
           className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-3 uppercase"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
         >
-          THIS BATTLE ENDS IN
+          THIS RACE ENDS IN
         </h3>
         <div className="flex justify-center gap-3 md:gap-6 lg:gap-8 py-6">
           {[

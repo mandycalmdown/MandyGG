@@ -6,7 +6,7 @@ const DEFAULT_TICKER_TEXT = "USE CODE MANDY ON THRILL.COM – USE CODE MANDY –
 
 /* Color + speed config per ticker slot */
 const TICKER_CONFIG: Record<string, { bg: string; text: string; speed: number }> = {
-  ticker_1_text: { bg: "#0085FF", text: "#FFFFFF", speed: 18 },
+  ticker_1_text: { bg: "#2A69DB", text: "#000000", speed: 18 },
   ticker_2_text: { bg: "#FFFFFF", text: "#000000", speed: 24 },
   ticker_3_text: { bg: "#CCFF00", text: "#000000", speed: 14 },
 }

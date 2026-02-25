@@ -195,7 +195,7 @@ export function Homepage() {
       <SiteNavigation currentPage="home" />
 
       {/* ─── Hero Section ─── */}
-      <section className="relative flex flex-col items-center justify-center bg-[#000000] px-4 pt-6 pb-4 md:pt-10 md:pb-6">
+      <section className="relative flex flex-col items-center justify-center bg-[#000000] px-4 pt-1 pb-1 md:pt-2 md:pb-1">
         <div className="relative z-10 flex flex-col items-center">
           {/* Desktop Video */}
           <video
@@ -237,18 +237,16 @@ export function Homepage() {
           </video>
 
           <h1
-            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase mt-3 tracking-wide text-center"
+            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase mt-1 tracking-wide text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             MANDY.GG
           </h1>
           <p
-            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center uppercase"
+            className="text-sm md:text-base text-[#FFFFFF] mt-2 mb-1 text-center"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
-            Want more bonuses
-            <br />
-            use code Mandy
+            {"Yes, I'm a girl... and I gamble."}
           </p>
         </div>
       </section>
@@ -269,7 +267,7 @@ export function Homepage() {
       </div>
 
       {/* ─── Cards Section (scrolls over holographic background) ─── */}
-      <section className="relative z-10 -mt-[100vh] pt-16 md:pt-24 pb-16 md:pb-24">
+      <section className="relative z-10 -mt-[100vh] pt-4 md:pt-6 pb-16 md:pb-24">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
@@ -296,7 +294,9 @@ export function Homepage() {
                 className="text-sm text-[#FFFFFF] mb-6 uppercase"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
-                {"WANT MORE BONUSES? USE CODE: MANDY"}
+                Want more bonuses
+                <br />
+                use code MANDY
               </p>
               <Link href="/rewards" className="mt-auto w-full">
                 <Button
