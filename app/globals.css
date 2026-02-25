@@ -236,6 +236,12 @@
   animation: accordion-up 0.3s ease-out;
 }
 
+/* Slide-in animation for live feed alerts */
+@keyframes slideInLeft {
+  0% { transform: translateX(-30px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
 /* Floating animation for images */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }

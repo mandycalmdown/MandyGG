@@ -24,6 +24,7 @@ import {
   Calendar,
   Clock,
   Calculator,
+  Ticket,
 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
@@ -87,7 +88,7 @@ interface AdminDashboardClientProps {
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<
-    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "settings"
+    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "raffle" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -100,6 +101,19 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [isLoadingQualifiers, setIsLoadingQualifiers] = useState(false)
   const [pokerNightDate, setPokerNightDate] = useState<string>("")
   const [isCapturingQualifiers, setIsCapturingQualifiers] = useState(false)
+
+  // Raffle state
+  const [raffleDate, setRaffleDate] = useState(new Date().toISOString().split("T")[0])
+  const [raffleTickets, setRaffleTickets] = useState<any[]>([])
+  const [raffleWinner, setRaffleWinner] = useState<any>(null)
+  const [recentRaffleWinners, setRecentRaffleWinners] = useState<any[]>([])
+  const [isLoadingRaffle, setIsLoadingRaffle] = useState(false)
+  const [raffleIssueUserId, setRaffleIssueUserId] = useState("")
+  const [raffleIssueCount, setRaffleIssueCount] = useState("")
+  const [winnerTicketNumber, setWinnerTicketNumber] = useState("")
+  const [prizeAmount, setPrizeAmount] = useState("")
+  const [prizeDescription, setPrizeDescription] = useState("Daily Raffle Prize")
+  const [raffleStatus, setRaffleStatus] = useState<string | null>(null)
   const [tickerSettings, setTickerSettings] = useState<TickerSettings>({
     text_color: "#ffffff",
     background_color: "#6366f1",
@@ -225,6 +239,85 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
     return () => clearInterval(interval)
   }, [activeTab])
+
+  // Fetch raffle data when raffle tab is active or date changes
+  useEffect(() => {
+    if (activeTab === "raffle") {
+      fetchRaffleData()
+    }
+  }, [activeTab, raffleDate])
+
+  async function fetchRaffleData() {
+    setIsLoadingRaffle(true)
+    try {
+      const res = await fetch(`/api/admin/raffle?date=${raffleDate}`)
+      const data = await res.json()
+      setRaffleTickets(data.tickets || [])
+      setRaffleWinner(data.winner || null)
+      setRecentRaffleWinners(data.recentWinners || [])
+    } catch (err) {
+      console.error("[v0] Error fetching raffle data:", err)
+    } finally {
+      setIsLoadingRaffle(false)
+    }
+  }
+
+  async function handleIssueTickets() {
+    if (!raffleIssueUserId || !raffleIssueCount) return
+    setRaffleStatus(null)
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "issue_tickets",
+          userId: raffleIssueUserId,
+          ticketCount: parseInt(raffleIssueCount),
+          raffleDate,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus(`Issued ${raffleIssueCount} ticket(s) successfully!`)
+        setRaffleIssueUserId("")
+        setRaffleIssueCount("")
+        fetchRaffleData()
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setRaffleStatus("Error issuing tickets")
+    }
+  }
+
+  async function handlePickWinner() {
+    if (!winnerTicketNumber) return
+    setRaffleStatus(null)
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "pick_winner",
+          raffleDate,
+          winningTicketNumber: parseInt(winnerTicketNumber),
+          prizeAmount: parseFloat(prizeAmount) || 0,
+          prizeDescription,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus("Winner picked successfully!")
+        setWinnerTicketNumber("")
+        setPrizeAmount("")
+        fetchRaffleData()
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setRaffleStatus("Error picking winner")
+    }
+  }
 
   useEffect(() => {
     fetchTickerSettings()
@@ -609,6 +702,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     { id: "rewards" as const, label: "Rewards", icon: Gift },
     { id: "announcements" as const, label: "Announcements", icon: Bell },
     { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
+    { id: "raffle" as const, label: "Raffle", icon: Ticket },
     { id: "settings" as const, label: "Settings", icon: Settings },
   ]
 
@@ -1499,6 +1593,259 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
                     <p className="text-gray-400">No qualified players yet</p>
                     <p className="text-gray-500 text-sm mt-1">Players need to wager $50,000 to qualify</p>
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
+
+          {activeTab === "raffle" && (
+            <div className="space-y-6">
+              {/* Date Selector */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-4">Daily Raffle Management</h2>
+
+                <div className="flex flex-wrap items-end gap-4 mb-4">
+                  <div>
+                    <Label className="text-gray-400 text-sm uppercase mb-1 block">Raffle Date</Label>
+                    <Input
+                      type="date"
+                      value={raffleDate}
+                      onChange={(e) => setRaffleDate(e.target.value)}
+                      className="bg-[#111] border-teal-500/30 text-white w-48"
+                    />
+                  </div>
+                  <Button
+                    onClick={fetchRaffleData}
+                    disabled={isLoadingRaffle}
+                    className="bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl"
+                  >
+                    {isLoadingRaffle ? "Loading..." : "Refresh"}
+                  </Button>
+                </div>
+
+                {raffleStatus && (
+                  <div className={`text-sm mb-4 p-2 rounded ${raffleStatus.includes("Error") ? "bg-red-500/20 text-red-400" : "bg-green-500/20 text-green-400"}`}>
+                    {raffleStatus}
+                  </div>
+                )}
+
+                {/* Current tickets summary */}
+                <div className="bg-[#0a0a0a] rounded-lg border border-white/10 p-4 mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-400 text-sm uppercase">Tickets for {raffleDate}</span>
+                    <span className="text-[#CCFF00] font-bold text-lg">{raffleTickets.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-sm uppercase">Unique Players</span>
+                    <span className="text-[#CCFF00] font-bold text-lg">
+                      {new Set(raffleTickets.map((t: any) => t.user_id)).size}
+                    </span>
+                  </div>
+                  {raffleWinner && (
+                    <div className="mt-3 pt-3 border-t border-white/10">
+                      <span className="text-green-400 font-bold text-sm uppercase">
+                        Winner: Ticket #{raffleWinner.winning_ticket_number}
+                        {raffleWinner.profiles?.thrill_username && ` (${raffleWinner.profiles.thrill_username})`}
+                        {raffleWinner.claimed ? " - CLAIMED" : " - UNCLAIMED"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Card>
+
+              {/* Issue Tickets */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Issue Tickets</h3>
+                <div className="flex flex-wrap items-end gap-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <Label className="text-gray-400 text-sm uppercase mb-1 block">User ID</Label>
+                    <Input
+                      value={raffleIssueUserId}
+                      onChange={(e) => setRaffleIssueUserId(e.target.value)}
+                      placeholder="Paste user UUID"
+                      className="bg-[#111] border-teal-500/30 text-white"
+                    />
+                  </div>
+                  <div className="w-32">
+                    <Label className="text-gray-400 text-sm uppercase mb-1 block">Tickets</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={raffleIssueCount}
+                      onChange={(e) => setRaffleIssueCount(e.target.value)}
+                      placeholder="Count"
+                      className="bg-[#111] border-teal-500/30 text-white"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleIssueTickets}
+                    disabled={!raffleIssueUserId || !raffleIssueCount}
+                    className="bg-[#CCFF00] hover:bg-[#d4ff33] text-black font-bold rounded-xl"
+                  >
+                    Issue Tickets
+                  </Button>
+                </div>
+
+                {/* Quick-issue from user list */}
+                <div className="mt-4">
+                  <p className="text-xs text-gray-500 mb-2">Quick select a user:</p>
+                  <div className="max-h-48 overflow-y-auto space-y-1">
+                    {profiles
+                      .filter((p) => p.thrill_username_verified)
+                      .map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => setRaffleIssueUserId(p.id)}
+                          className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                            raffleIssueUserId === p.id
+                              ? "bg-teal-500/20 text-teal-400 border border-teal-500/30"
+                              : "text-gray-400 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          {p.thrill_username || p.display_name || p.id.slice(0, 8)}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Pick Winner */}
+              <Card
+                className="p-6 rounded-xl border border-amber-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.25)",
+                }}
+              >
+                <h3 className="text-xl font-bold text-amber-500 uppercase mb-4">Pick Winner</h3>
+                {raffleWinner ? (
+                  <div className="text-green-400 font-bold">
+                    Winner already selected for {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-end gap-4">
+                      <div className="w-40">
+                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Winning Ticket #</Label>
+                        <Input
+                          type="number"
+                          value={winnerTicketNumber}
+                          onChange={(e) => setWinnerTicketNumber(e.target.value)}
+                          placeholder="#"
+                          className="bg-[#111] border-amber-500/30 text-white"
+                        />
+                      </div>
+                      <div className="w-36">
+                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Prize ($)</Label>
+                        <Input
+                          type="number"
+                          value={prizeAmount}
+                          onChange={(e) => setPrizeAmount(e.target.value)}
+                          placeholder="Amount"
+                          className="bg-[#111] border-amber-500/30 text-white"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Description</Label>
+                        <Input
+                          value={prizeDescription}
+                          onChange={(e) => setPrizeDescription(e.target.value)}
+                          className="bg-[#111] border-amber-500/30 text-white"
+                        />
+                      </div>
+                      <Button
+                        onClick={handlePickWinner}
+                        disabled={!winnerTicketNumber}
+                        className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
+                      >
+                        Pick Winner
+                      </Button>
+                    </div>
+
+                    {/* Ticket range info */}
+                    {raffleTickets.length > 0 && (
+                      <p className="text-xs text-gray-500">
+                        Valid ticket range: #1 - #{Math.max(...raffleTickets.map((t: any) => t.ticket_number))} ({raffleTickets.length} total tickets)
+                      </p>
+                    )}
+                  </div>
+                )}
+              </Card>
+
+              {/* All Tickets for Date */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Tickets for {raffleDate}</h3>
+                {raffleTickets.length === 0 ? (
+                  <p className="text-gray-500">No tickets for this date.</p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto space-y-1">
+                    {raffleTickets.map((ticket: any) => (
+                      <div
+                        key={ticket.id}
+                        className={`flex items-center justify-between px-3 py-2 rounded text-sm ${
+                          raffleWinner?.winning_ticket_number === ticket.ticket_number
+                            ? "bg-[#CCFF00]/20 border border-[#CCFF00]/40"
+                            : "bg-white/5"
+                        }`}
+                      >
+                        <span className="text-[#CCFF00] font-bold">#{ticket.ticket_number}</span>
+                        <span className="text-gray-400">
+                          {ticket.profiles?.thrill_username || ticket.profiles?.username || ticket.user_id.slice(0, 8)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+
+              {/* Recent Winners */}
+              <Card
+                className="p-6 rounded-xl border border-teal-500/50"
+                style={{
+                  backgroundColor: "rgba(10, 10, 10, 0.95)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
+                }}
+              >
+                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Recent Winners (7 Days)</h3>
+                {recentRaffleWinners.length === 0 ? (
+                  <p className="text-gray-500">No winners yet.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {recentRaffleWinners.map((winner: any) => (
+                      <div key={winner.raffle_date} className="flex items-center justify-between px-3 py-2 rounded bg-white/5 text-sm">
+                        <div className="flex items-center gap-3">
+                          <span className="text-gray-400">{winner.raffle_date}</span>
+                          <span className="text-white font-bold">
+                            {winner.profiles?.thrill_username || winner.profiles?.username || "Unknown"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[#CCFF00]">Ticket #{winner.winning_ticket_number}</span>
+                          <span className={winner.claimed ? "text-green-400" : "text-red-400"}>
+                            {winner.claimed ? "CLAIMED" : "UNCLAIMED"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </Card>

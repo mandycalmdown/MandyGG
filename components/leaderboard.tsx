@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
+import { LeaderboardLiveFeed } from "@/components/leaderboard-live-feed"
+import { DailyRaffle } from "@/components/leaderboard-daily-raffle"
 import { AnnouncementsTicker } from "@/components/announcements-ticker"
 import { isAdminSessionValid } from "@/lib/admin-session"
 import { clearLeaderboardCacheAction } from "@/app/actions/admin-actions"
@@ -526,8 +528,14 @@ export function Leaderboard() {
         </div>
       </div>
 
+      {/* Live Feed */}
+      <LeaderboardLiveFeed />
+
+      {/* Daily Raffle */}
+      <DailyRaffle />
+
       {/* Footer */}
-      <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-6 md:mt-8">
+      <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-10 md:mt-14">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img

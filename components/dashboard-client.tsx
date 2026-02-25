@@ -13,7 +13,7 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
-import { Camera, AlertCircle, CheckCircle, Lock } from "lucide-react"
+import { Camera, AlertCircle, CheckCircle, Lock, Ticket } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { SiteNavigation } from "@/components/site-navigation"
 
@@ -43,6 +43,14 @@ interface WagerHistory {
   last7Days: number
   last30Days: number
   status: string
+}
+
+interface RaffleTicket {
+  id: string
+  ticket_number: number
+  raffle_date: string
+  wager_amount: number
+  created_at: string
 }
 
 interface DashboardClientProps {
@@ -81,6 +89,9 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
   const [dailyWager, setDailyWager] = useState<number>(0)
   const [isLoadingDailyWager, setIsLoadingDailyWager] = useState(false)
+
+  const [raffleTickets, setRaffleTickets] = useState<RaffleTicket[]>([])
+  const [isLoadingRaffle, setIsLoadingRaffle] = useState(false)
 
   const [pokerCountdown, setPokerCountdown] = useState({
     days: 0,
@@ -298,9 +309,26 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
       }
     }
 
-    fetchDailyWager()
+  fetchDailyWager()
   }, [profile?.thrill_username])
 
+  // Fetch raffle tickets
+  useEffect(() => {
+    async function fetchRaffleTickets() {
+      setIsLoadingRaffle(true)
+      try {
+        const res = await fetch("/api/raffle/tickets")
+        const data = await res.json()
+        if (data.tickets) setRaffleTickets(data.tickets)
+      } catch (err) {
+        console.error("[v0] Error fetching raffle tickets:", err)
+      } finally {
+        setIsLoadingRaffle(false)
+      }
+    }
+    fetchRaffleTickets()
+  }, [])
+  
   const handleSaveProfile = async () => {
     setIsSaving(true)
     setError(null)
@@ -824,6 +852,80 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               </Button>
             </Card>
           </div>
+        </div>
+
+        {/* Raffle Tickets Section */}
+        <div className="px-4 mt-6 md:mt-8">
+          <Card
+            className="max-w-6xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/20 transition-all duration-500 hover:border-[#CCFF00]/40"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.95)",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Ticket className="w-6 h-6 text-[#CCFF00]" />
+              <h3 className="text-xl font-bold text-white uppercase">Daily Raffle Tickets</h3>
+            </div>
+            <p
+              className="text-sm text-gray-400 mb-4"
+              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            >
+              Every $1,000 wagered = 1 raffle ticket. Showing last 7 days.
+            </p>
+
+            {isLoadingRaffle ? (
+              <div className="text-center py-8 text-gray-500">Loading tickets...</div>
+            ) : raffleTickets.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-2">No raffle tickets yet</p>
+                <p className="text-xs text-gray-600" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                  Wager $1,000+ on Thrill to earn tickets
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {/* Group by date */}
+                {Object.entries(
+                  raffleTickets.reduce((acc: Record<string, RaffleTicket[]>, ticket) => {
+                    const date = ticket.raffle_date
+                    if (!acc[date]) acc[date] = []
+                    acc[date].push(ticket)
+                    return acc
+                  }, {})
+                ).map(([date, tickets]) => (
+                  <div key={date} className="border border-white/10 rounded-lg p-3 mb-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400 uppercase" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                        {date}
+                      </span>
+                      <span className="text-xs text-[#CCFF00] font-bold" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                        {tickets.length} ticket{tickets.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tickets.map((ticket) => (
+                        <span
+                          key={ticket.id}
+                          className="px-2 py-1 rounded text-xs font-bold bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20"
+                          style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                        >
+                          #{ticket.ticket_number}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="text-center pt-2">
+                  <p className="text-xs text-gray-500" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                    Total: {raffleTickets.length} ticket{raffleTickets.length !== 1 ? "s" : ""} across {
+                      new Set(raffleTickets.map(t => t.raffle_date)).size
+                    } day{new Set(raffleTickets.map(t => t.raffle_date)).size !== 1 ? "s" : ""}
+                  </p>
+                </div>
+              </div>
+            )}
+          </Card>
         </div>
 
         {/* Footer */}
