@@ -318,12 +318,12 @@ export function Leaderboard() {
       {/* Countdown */}
       <div className="text-center mb-4 md:mb-6 lg:mb-8 px-4">
         <h3
-          className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-3 uppercase"
+          className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-1 uppercase"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
         >
           THIS RACE ENDS IN
         </h3>
-        <div className="flex justify-center items-center gap-1 md:gap-2 lg:gap-3 py-6">
+        <div className="flex justify-center items-center gap-1 md:gap-2 lg:gap-3 py-3">
           {[
             { label: "DAYS", value: countdown.days },
             { label: "HOURS", value: countdown.hours },
@@ -333,7 +333,7 @@ export function Leaderboard() {
             <div key={item.label} className="flex items-center">
               <div className="text-center">
                 <div
-                  className="text-xs md:text-sm lg:text-base text-[#888888] uppercase mb-1"
+                  className="text-xs md:text-sm lg:text-base text-[#FFFFFF] uppercase mb-1"
                   style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
                 >
                   {item.label}
@@ -385,7 +385,7 @@ export function Leaderboard() {
 
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
           <button
-            className="bg-[#CCFF00] text-[#000000] px-8 md:px-12 py-3 md:py-4 rounded uppercase text-sm md:text-base mb-6 md:mb-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(204,255,0,0.4)] hover:scale-105"
+            className="bg-[#2A69DB] text-[#FFFFFF] px-8 md:px-12 py-3 md:py-4 rounded uppercase text-sm md:text-base mb-4 transition-all duration-300 hover:shadow-[0_0_30px_rgba(42,105,219,0.5)] hover:scale-105"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700, letterSpacing: "0.1em" }}
           >
             JOIN THE ACTION
@@ -404,7 +404,7 @@ export function Leaderboard() {
         )}
       </div>
       {/* Gradient fade from black into holographic */}
-      <div className="h-24 md:h-32 bg-gradient-to-b from-[#000000] to-transparent" />
+      <div className="h-12 md:h-16 bg-gradient-to-b from-[#000000] to-transparent" />
       </div>{/* end black section */}
 
       {/* Top 3 Podium */}
@@ -444,7 +444,7 @@ export function Leaderboard() {
                 {formatCurrency(topThree[1]?.wager || 0)}
               </p>
               <p
-                className="text-xs md:text-sm text-[#888888]"
+                className="text-xs md:text-sm text-[#FFFFFF]"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 PRIZE: {formatCurrency(topThree[1]?.prize || 0)}
@@ -486,7 +486,7 @@ export function Leaderboard() {
                 {formatCurrency(topThree[0]?.wager || 0)}
               </p>
               <p
-                className="text-xs md:text-sm text-[#888888]"
+                className="text-xs md:text-sm text-[#FFFFFF]"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 PRIZE: {formatCurrency(topThree[0]?.prize || 0)}
@@ -528,7 +528,7 @@ export function Leaderboard() {
                 {formatCurrency(topThree[2]?.wager || 0)}
               </p>
               <p
-                className="text-xs md:text-sm text-[#888888]"
+                className="text-xs md:text-sm text-[#FFFFFF]"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 PRIZE: {formatCurrency(topThree[2]?.prize || 0)}
@@ -544,7 +544,7 @@ export function Leaderboard() {
         >
           <div className="p-3 md:p-6">
             <div
-              className="grid grid-cols-4 gap-2 md:gap-4 mb-3 md:mb-4 text-xs md:text-sm text-[#888888] uppercase"
+              className="grid grid-cols-4 gap-2 md:gap-4 mb-3 md:mb-4 text-xs md:text-sm text-[#2A69DB] uppercase"
               style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
             >
               <div>RANK</div>
