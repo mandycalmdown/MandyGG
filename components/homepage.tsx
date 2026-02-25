@@ -266,7 +266,7 @@ export function Homepage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
             <div
-              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#CCFF00]/60"
+              className="group bg-[#000000] rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#CCFF00]/60"
               style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(204,255,0,0.15)" }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
@@ -304,7 +304,7 @@ export function Homepage() {
 
             {/* Card 2 - LEADERBOARD */}
             <div
-              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#3C7BFF]/60"
+              className="group bg-[#000000] rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#3C7BFF]/60"
               style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(60,123,255,0.2)" }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
@@ -340,7 +340,7 @@ export function Homepage() {
 
             {/* Card 3 - CONNECT */}
             <div
-              className="group bg-[#050505]/95 backdrop-blur-sm rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#FF2FBF]/60"
+              className="group bg-[#000000] rounded-xl border border-white/20 p-6 md:p-8 text-center flex flex-col items-center transition-all duration-500 hover:-translate-y-2 hover:scale-[1.03] hover:border-[#FF2FBF]/60"
               style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
               onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(255,47,191,0.2)" }}
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1)" }}
@@ -397,7 +397,7 @@ export function Homepage() {
             </div>
 
             {/* Text + CTA */}
-            <div className="text-center md:text-right flex-1">
+            <div className="text-center flex-1">
               <p
                 className="text-xl md:text-2xl text-[#FFFFFF] leading-snug"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
@@ -431,13 +431,8 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Ticker 3 */}
-      <div className="relative z-10">
-        <AnnouncementsTicker tickerKey="ticker_3_text" />
-      </div>
-
       {/* ─── I'm Mandy, Section ─── */}
-      <section className="relative z-10 bg-[#000000]/85 backdrop-blur-sm overflow-hidden">
+      <section className="relative z-10 bg-[#000000] overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 pt-16 pb-0 md:pt-24 md:pb-0">
           <div className="flex flex-col md:flex-row items-start gap-8 md:gap-0">
             {/* Left: text */}
@@ -485,29 +480,31 @@ export function Homepage() {
           </div>
         </div>
 
-        {/* Holographic peek-through gap */}
-        <div className="w-full h-[60px] md:h-[80px] -mt-[60px] md:-mt-[80px] relative z-0" />
       </section>
 
+      {/* Ticker 3 - directly below I'm Mandy */}
+      <div className="relative z-10">
+        <AnnouncementsTicker tickerKey="ticker_3_text" />
+      </div>
+
       {/* ─── FAQ Section ─── */}
-      <section id="faq" className="relative z-10 bg-[#000000]/80 backdrop-blur-sm py-12 md:py-20 px-4">
+      <section id="faq" className="relative z-10 py-12 md:py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2
-            className="text-2xl md:text-4xl text-[#FFFFFF] uppercase text-center mb-2"
+            className="text-2xl md:text-4xl text-[#FFFFFF] uppercase text-center mb-8 md:mb-12"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             FREQUENTLY ASKED QUESTIONS
           </h2>
-          <div className="w-24 h-0.5 bg-[#CCFF00] mx-auto mb-8 md:mb-12" />
 
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             {faqItems.map((faq, index) => (
               <div
                 key={index}
-                className="border-b border-[#333]"
+                className="bg-[#111111]/90 backdrop-blur-sm rounded-lg overflow-hidden"
               >
                 <button
-                  className="w-full py-4 md:py-5 cursor-pointer text-left focus:outline-none flex justify-between items-center gap-4"
+                  className="w-full py-3 md:py-4 px-4 md:px-6 cursor-pointer text-left focus:outline-none flex justify-between items-center gap-4"
                   onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                   aria-expanded={expandedFaq === index}
                   aria-controls={`faq-content-${index}`}
@@ -531,7 +528,7 @@ export function Homepage() {
                 {expandedFaq === index && (
                   <div
                     id={`faq-content-${index}`}
-                    className="pb-4 md:pb-6"
+                    className="px-4 md:px-6 pb-4 md:pb-6"
                   >
                     <div
                       className="text-sm md:text-base text-[#FFFFFF] leading-relaxed"
