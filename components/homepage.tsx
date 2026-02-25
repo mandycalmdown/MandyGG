@@ -214,28 +214,30 @@ export function Homepage() {
       </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center">
+      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center p-0 m-0">
         <div className="relative z-10 flex flex-col items-center w-full">
-          {/* Desktop Video - full width, no side cropping */}
+          {/* Desktop Video - full width, no side cropping, no padding */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="hidden md:block w-full"
+            className="hidden md:block w-full block m-0 p-0"
+            style={{ display: "block", margin: 0, padding: 0, lineHeight: 0 }}
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-XZLO4H7GbNnaHWswL1usoMwcDz1BxC.webm"
               type="video/webm"
             />
           </video>
-          {/* Mobile Video - full width, no side cropping */}
+          {/* Mobile Video - full width, no side cropping, no padding */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="md:hidden w-full"
+            className="md:hidden w-full block m-0 p-0"
+            style={{ display: "block", margin: 0, padding: 0, lineHeight: 0 }}
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-B5Ux6Z3jjDeGS9yLxLpjnWgqMCCVYc.webm"
@@ -244,7 +246,7 @@ export function Homepage() {
           </video>
 
           <h1
-            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase -mt-2 tracking-wide text-center"
+            className="text-3xl md:text-5xl text-[#FFFFFF] uppercase -mt-4 tracking-wide text-center"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             MANDY.GG
@@ -429,25 +431,6 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* ─── Social Icons Strip ─── */}
-      <section className="relative z-10 py-8 md:py-12">
-        <div className="flex justify-center items-center gap-3 md:gap-5">
-          {socialLinks.map(({ Icon, href, label }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="text-[#000000] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
-              style={{ transformOrigin: "bottom center" }}
-            >
-              <Icon className="w-12 h-12 md:w-[60px] md:h-[60px]" />
-            </a>
-          ))}
-        </div>
-      </section>
-
       {/* Ticker 3 */}
       <div className="relative z-10">
         <AnnouncementsTicker tickerKey="ticker_3_text" />
@@ -578,6 +561,25 @@ export function Homepage() {
               </Button>
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ─── Social Icons Strip ─── */}
+      <section className="relative z-10 py-10 md:py-14">
+        <div className="flex justify-end items-center gap-4 md:gap-6 pr-6 md:pr-12">
+          {socialLinks.map(({ Icon, href, label }) => (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              className="text-[#000000] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
+              style={{ transformOrigin: "bottom center" }}
+            >
+              <Icon className="w-20 h-20 md:w-[100px] md:h-[100px]" />
+            </a>
+          ))}
         </div>
       </section>
 
