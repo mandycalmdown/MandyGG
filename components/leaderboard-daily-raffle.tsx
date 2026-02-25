@@ -60,12 +60,19 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
 
   return (
     <div id="raffle" className="max-w-4xl mx-auto mt-10 md:mt-14 px-2 md:px-0">
-      <h2
-        className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-6 text-center"
-        style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-      >
-        DAILY RAFFLE
-      </h2>
+      <div className="flex flex-col items-center mb-6">
+        <img
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-raffle-ticket-TQblBLgG4Hhz4PwIQ67HCpnm67QoDO.webp"
+          alt="Raffle Ticket"
+          className="w-32 md:w-40 h-auto mb-3"
+        />
+        <h2
+          className="text-xl md:text-2xl text-[#FFFFFF] uppercase text-center"
+          style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+        >
+          DAILY RAFFLE
+        </h2>
+      </div>
 
       {/* Raffle Winner Section */}
       <div

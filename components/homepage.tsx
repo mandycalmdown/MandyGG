@@ -222,17 +222,11 @@ export function Homepage() {
             muted
             loop
             playsInline
-            poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-RTSxD1gcEtHc9brgcBI9zl3PDxWQIw.webp"
             className="hidden md:block w-[420px] max-w-[80vw] mx-auto"
-            style={{ opacity: 1 }}
           >
             <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-yRUacfrY8cGHLmW86DRwUshVa0JzJQ.webm"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-XZLO4H7GbNnaHWswL1usoMwcDz1BxC.webm"
               type="video/webm"
-            />
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-RTSxD1gcEtHc9brgcBI9zl3PDxWQIw.webp"
-              alt="Mandy.gg holographic spinning logo"
             />
           </video>
           {/* Mobile Video */}
@@ -241,17 +235,11 @@ export function Homepage() {
             muted
             loop
             playsInline
-            poster="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-mobile-DiBeX3jrK9MO4xUQw66jdtzMrVdeCx.webp"
             className="md:hidden w-[220px] max-w-[70vw] mx-auto"
-            style={{ opacity: 1 }}
           >
             <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-7sOSmZxDVJu3XwLkwerAWW06lSTAFO.webm"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-B5Ux6Z3jjDeGS9yLxLpjnWgqMCCVYc.webm"
               type="video/webm"
-            />
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-poster-mobile-DiBeX3jrK9MO4xUQw66jdtzMrVdeCx.webp"
-              alt="Mandy.gg holographic spinning logo"
             />
           </video>
 
@@ -503,7 +491,7 @@ export function Homepage() {
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[600px] md:h-[600px] object-contain opacity-40 pointer-events-none z-0"
               />
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-mandy-portrait-zfkn0Sl4wywWHWP77mXxhPrRJ08CwH.webp"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-profile-photo-X8F4rWnnPeOGrwixzucWibnU9psG3K.webp"
                 alt="Mandy portrait"
                 className="w-[300px] md:w-[380px] h-auto object-contain relative z-10"
                 loading="lazy"

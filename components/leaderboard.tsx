@@ -287,8 +287,8 @@ export function Leaderboard() {
             className="w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-cover rounded"
           >
             <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG%20NEW%20HOLO%20BANNER-sM5HVydkV5cvFOVAmfWeRGh0A3RyuH.mp4"
-              type="video/mp4"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-leaderboard-header-banner-b693AAvhq4kfJGiTD6o3xHvpVTK5zS.webm"
+              type="video/webm"
             />
           </video>
         </div>
