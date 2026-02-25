@@ -257,11 +257,13 @@ export function Homepage() {
           >
             {"Yes, I'm a girl... and I gamble."}
           </p>
+          {/* Black spacer below tagline */}
+          <div className="w-full h-12 md:h-20" />
         </div>
       </section>
 
       {/* ─── Cards Section (scrolls over holographic background) ─── */}
-      <section className="relative z-10 pt-4 md:pt-6 pb-16 md:pb-24">
+      <section className="relative z-10 pt-2 md:pt-3 pb-6 md:pb-10">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 - REWARDS */}
@@ -383,9 +385,9 @@ export function Homepage() {
       </div>
 
       {/* ─── Mandy x Thrill Section ─── */}
-      <section className="relative z-10 bg-[#000000] pt-16 pb-14 md:pt-24 md:pb-20 px-4">
+      <section className="relative z-10 bg-[#000000] pt-6 pb-6 md:pt-10 md:pb-10 px-4">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10">
             {/* Logos */}
             <div className="flex-shrink-0">
               <img
@@ -399,24 +401,22 @@ export function Homepage() {
             {/* Text + CTA */}
             <div className="text-center flex-1">
               <p
-                className="text-xl md:text-2xl text-[#FFFFFF] leading-snug"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
+                className="text-xl md:text-2xl text-[#FFFFFF] leading-snug uppercase"
+                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
               >
-                Come play with me{" "}
-                <br className="hidden md:block" />
-                at Thrill!
+                COME PLAY WITH
+                <br />
+                ME AT THRILL!
               </p>
               <p
                 className="text-base md:text-lg text-[#FFFFFF] mt-2 leading-snug italic"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
               >
-                {"(It's like Stake,"}
+                {"(It's like Stake, but with less Drake"}
                 <br />
-                but with less Drake
-                <br />
-                {"and more bonuses!)"}
+                {"and better bonuses!)"}
               </p>
-              <div className="mt-6">
+              <div className="mt-3">
                 <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
                   <Button
                     className="bg-[#CCFF00] text-[#000000] border-none rounded uppercase text-sm px-8 py-3 hover:shadow-[0_0_25px_rgba(204,255,0,0.5)] transition-all duration-300"
@@ -432,19 +432,19 @@ export function Homepage() {
       </section>
 
       {/* ─── I'm Mandy, Section ─── */}
-      <section className="relative z-10 bg-[#000000] overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 pt-16 pb-0 md:pt-24 md:pb-0">
-          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-0">
+      <section className="relative z-10 bg-[#000000] overflow-visible">
+        <div className="max-w-6xl mx-auto px-4 pt-10 pb-0 md:pt-16 md:pb-0">
+          <div className="flex flex-col md:flex-row items-start gap-6 md:gap-0">
             {/* Left: text */}
             <div className="flex-1 relative z-10 md:pr-8">
               <h2
-                className="text-4xl md:text-6xl text-[#CCFF00] mb-8"
+                className="text-4xl md:text-6xl text-[#CCFF00] mb-6"
                 style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
               >
                 {"I'm Mandy,"}
               </h2>
               <p
-                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-4"
+                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-3"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 {"I'm a gambler trying to guide other degenerates through the shit show that is the online casino industry. The casinos on this site are the ones I actually trust with my own money. I get my players the best perks possible so you can stop Googling bonus codes and get back to watching Plinko balls fall in the wrong direction. You're welcome."}
@@ -460,14 +460,14 @@ export function Homepage() {
               </p>
             </div>
 
-            {/* Right: portrait with blue glow */}
-            <div className="flex-shrink-0 relative md:w-[400px] w-full flex justify-center md:justify-end">
+            {/* Right: portrait with blue glow - overlaps into section above */}
+            <div className="flex-shrink-0 relative md:w-[400px] w-full flex justify-center md:justify-end md:-mt-48">
               <div
                 aria-hidden="true"
                 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full pointer-events-none z-0"
                 style={{
-                  background: "radial-gradient(circle, rgba(42,105,219,0.6) 0%, rgba(42,105,219,0.3) 30%, rgba(42,105,219,0.1) 55%, transparent 75%)",
-                  filter: "blur(30px)",
+                  background: "radial-gradient(circle, rgba(42,105,219,0.55) 0%, rgba(42,105,219,0.25) 30%, rgba(42,105,219,0.08) 55%, transparent 70%)",
+                  filter: "blur(40px)",
                 }}
               />
               <img
@@ -488,35 +488,35 @@ export function Homepage() {
       </div>
 
       {/* ─── FAQ Section ─── */}
-      <section id="faq" className="relative z-10 py-12 md:py-20 px-4">
+      <section id="faq" className="relative z-10 py-8 md:py-14 px-4">
         <div className="max-w-4xl mx-auto">
           <h2
-            className="text-2xl md:text-4xl text-[#FFFFFF] uppercase text-center mb-8 md:mb-12"
+            className="text-2xl md:text-4xl text-[#000000] uppercase text-center mb-6 md:mb-8"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
           >
             FREQUENTLY ASKED QUESTIONS
           </h2>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             {faqItems.map((faq, index) => (
               <div
                 key={index}
-                className="bg-[#111111]/90 backdrop-blur-sm rounded-lg overflow-hidden"
+                className="bg-[#000000] rounded-md overflow-hidden"
               >
                 <button
-                  className="w-full py-3 md:py-4 px-4 md:px-6 cursor-pointer text-left focus:outline-none flex justify-between items-center gap-4"
+                  className="w-full py-2 md:py-2.5 px-4 md:px-5 cursor-pointer text-left focus:outline-none flex justify-between items-center gap-3"
                   onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                   aria-expanded={expandedFaq === index}
                   aria-controls={`faq-content-${index}`}
                 >
                   <h3
-                    className="text-sm md:text-base text-[#FFFFFF] uppercase text-left"
+                    className="text-xs md:text-sm text-[#FFFFFF] uppercase text-left"
                     style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
                   >
                     {faq.question}
                   </h3>
                   <svg
-                    className={`w-5 h-5 flex-shrink-0 text-[#CCFF00] transition-transform duration-300 ${expandedFaq === index ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 flex-shrink-0 text-[#CCFF00] transition-transform duration-300 ${expandedFaq === index ? "rotate-180" : ""}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -528,10 +528,10 @@ export function Homepage() {
                 {expandedFaq === index && (
                   <div
                     id={`faq-content-${index}`}
-                    className="px-4 md:px-6 pb-4 md:pb-6"
+                    className="px-4 md:px-5 pb-3 md:pb-4"
                   >
                     <div
-                      className="text-sm md:text-base text-[#FFFFFF] leading-relaxed"
+                      className="text-xs md:text-sm text-[#FFFFFF] leading-relaxed"
                       style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                     >
                       {typeof faq.answer === "string" ? faq.answer : faq.answer}
@@ -542,9 +542,9 @@ export function Homepage() {
             ))}
           </div>
 
-          <div className="text-center mt-10 md:mt-14">
+          <div className="text-center mt-8 md:mt-10">
             <p
-              className="text-lg md:text-2xl text-[#FFFFFF] mb-6 uppercase"
+              className="text-lg md:text-2xl text-[#000000] mb-4 uppercase"
               style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
             >
               JOIN OUR COMMUNITY ON TELEGRAM TO UNLOCK ALL BENEFITS.
@@ -562,8 +562,8 @@ export function Homepage() {
       </section>
 
       {/* ─── Social Icons Strip ─── */}
-      <section className="relative z-10 py-10 md:py-14">
-        <div className="flex justify-end items-center gap-4 md:gap-6 pr-6 md:pr-12">
+      <section className="relative z-10 py-6 md:py-10">
+        <div className="flex justify-center items-center gap-4 md:gap-6">
           {socialLinks.map(({ Icon, href, label }) => (
             <a
               key={label}
