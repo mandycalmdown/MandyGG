@@ -376,10 +376,59 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Ticker 2 - Between cards and social strip */}
+      {/* Ticker 2 */}
       <div className="relative z-10 bg-[#000000]">
         <AnnouncementsTicker tickerKey="ticker_2_text" />
       </div>
+
+      {/* ─── Mandy x Thrill Section ─── */}
+      <section className="relative z-10 bg-[#0a0a0a] py-14 md:py-20 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+            {/* Logos */}
+            <div className="flex-shrink-0">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDY-GG-THRILL-LOGOS-aE8v99hIu3ZnlWrtZAFIjCqA5sBIJw.webp"
+                alt="Mandy x Thrill logos"
+                className="w-[280px] md:w-[360px] h-auto"
+                loading="lazy"
+              />
+            </div>
+
+            {/* Text + CTA */}
+            <div className="text-center md:text-right flex-1">
+              <p
+                className="text-xl md:text-2xl text-[#FFFFFF] leading-snug"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
+              >
+                Come play with me{" "}
+                <br className="hidden md:block" />
+                at Thrill!
+              </p>
+              <p
+                className="text-base md:text-lg text-[#FFFFFF] mt-2 leading-snug"
+                style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 400 }}
+              >
+                {"It's like Stake,"}
+                <br />
+                but with less Drake
+                <br />
+                and more bonuses!
+              </p>
+              <div className="mt-6">
+                <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    className="bg-transparent text-[#FFFFFF] border border-[#FFFFFF] rounded uppercase text-sm px-8 py-3 hover:bg-[#FFFFFF] hover:text-[#000000] transition-all duration-300"
+                    style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 500, letterSpacing: "0.1em" }}
+                  >
+                    PLAY AT THRILL
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ─── Social Icons Strip ─── */}
       <section className="relative z-10 bg-[#000000] py-8 md:py-12">
@@ -399,68 +448,66 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Ticker 3 - Between social icons and FAQ */}
+      {/* Ticker 3 */}
       <div className="relative z-10 bg-[#000000]">
         <AnnouncementsTicker tickerKey="ticker_3_text" />
       </div>
 
-      {/* ─── About Me Section ─── */}
-      <section className="relative z-10 bg-[#000000] py-16 md:py-24 px-4 overflow-hidden">
-        {/* Ambient blue glow behind the section */}
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-light-blue-glow-7AKd9bPeneq1lRWF2GnsB2H2qovJrq.webp"
-          alt=""
-          aria-hidden="true"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] object-contain opacity-30 pointer-events-none"
-        />
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-            {/* Portrait */}
-            <div className="flex-shrink-0">
-              <div
-                className="w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border border-white/20"
-                style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(60,123,255,0.15)" }}
-              >
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-mandy-portrait-zfkn0Sl4wywWHWP77mXxhPrRJ08CwH.webp"
-                  alt="Mandy.gg portrait"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-
-            {/* Text */}
-            <div className="text-center md:text-left flex-1">
+      {/* ─── I'm Mandy, Section ─── */}
+      <section className="relative z-10 bg-[#000000] overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-0">
+            {/* Left: text */}
+            <div className="flex-1 relative z-10 md:pr-8">
               <h2
-                className="text-2xl md:text-4xl text-[#FFFFFF] uppercase mb-4"
-                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+                className="text-4xl md:text-6xl text-[#FFFFFF] mb-8"
+                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700, fontStyle: "italic" }}
               >
-                ABOUT MANDY
+                {"I'm Mandy,"}
               </h2>
-              <div className="w-16 h-0.5 bg-[#CCFF00] mb-6 mx-auto md:mx-0" />
               <p
                 className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-4"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
-                {"I'm Mandy. I gamble, I stream, and I don't sugarcoat it. I started in crypto casinos because I love the thrill, and now I help thousands of players get better deals while doing what they're already doing."}
+                {"I'm a gambler trying to guide other degenerates through the shit show that is the online casino industry. The casinos on this site are the ones I actually trust with my own money. I get my players the best perks possible so you can stop Googling bonus codes and get back to watching Plinko balls fall in the wrong direction. You're welcome."}
               </p>
               <p
-                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed mb-6"
+                className="text-sm md:text-base text-[#FFFFFF] leading-relaxed"
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
-                {"Code MANDY isn't just a referral code, it's your access pass to weekly races, lossback from day one, poker nights, and VIP perks that most affiliates can't offer. No fluff, just real value."}
+                Sign up at Thrill with code:{" "}
+                <span className="text-[#CCFF00]">MANDY</span>
+                {" "}and come join the party on{" "}
+                <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">telegram</a>.
               </p>
-              <div className="flex items-center gap-4 justify-center md:justify-start">
-                <img
-                  src="/images/mandy-thrill-logo-combined.svg"
-                  alt="Mandy x Thrill partnership"
-                  className="h-8 md:h-10 w-auto opacity-80"
-                  loading="lazy"
-                />
-              </div>
+            </div>
+
+            {/* Right: portrait */}
+            <div className="flex-shrink-0 relative md:w-[400px] w-full flex justify-center md:justify-end">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-mandy-portrait-zfkn0Sl4wywWHWP77mXxhPrRJ08CwH.webp"
+                alt="Mandy portrait"
+                className="w-[300px] md:w-[380px] h-auto object-contain relative z-10"
+                loading="lazy"
+              />
             </div>
           </div>
+        </div>
+
+        {/* Holographic strip at bottom of about section */}
+        <div className="w-full h-[120px] md:h-[180px] overflow-hidden">
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
+            />
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover"
+            />
+          </picture>
         </div>
       </section>
 
