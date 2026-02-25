@@ -30,7 +30,7 @@ export function HowToJoinPage() {
             className="mt-6 text-lg text-[#FFFFFF] text-balance md:text-xl"
             style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
           >
-            Follow these steps to join Thrill.com with code <span className="text-[#CCFF00]">MANDY</span> and
+            Follow these steps to join Thrill.com with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> and
             unlock exclusive rewards
           </p>
         </div>
@@ -62,7 +62,7 @@ export function HowToJoinPage() {
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 Click the button below to open Thrill.com. Make sure to use this specific link so you{"'"}re registered
-                under code <span className="text-[#CCFF00]">MANDY</span> and eligible for all exclusive
+                under code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> and eligible for all exclusive
                 rewards.
               </p>
               <div className="space-y-4" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
@@ -251,7 +251,7 @@ export function HowToJoinPage() {
                 >
                   {"If your profile does not show \"Referred by mandycalmdown\" you "}
                   <span className="text-[#CCFF00]">MUST</span>{" "}contact Thrill support before making any deposits
-                  or wagers. Otherwise, you will not be under code MANDY and will not be eligible for any rewards,
+                  or wagers. Otherwise, you will not be under code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> and will not be eligible for any rewards,
                   cash drops, or leaderboard prizes.
                 </p>
                 <p

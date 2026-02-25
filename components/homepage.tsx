@@ -80,7 +80,7 @@ const faqItems = [
       <span>
         Sign up through{" "}
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Thrill.com</a>
-        {" "}with code <code className="bg-[#1a1a1a] px-1.5 py-0.5 rounded text-[#CCFF00]">MANDY</code> for exclusive perks, weekly races, instant lossback, and VIP upgrades.
+        {" "}with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> for exclusive perks, weekly races, instant lossback, and VIP upgrades.
       </span>
     ),
   },
@@ -89,7 +89,7 @@ const faqItems = [
     answer: (
       <span>
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Thrill</a>
-        {" "}offers the most generous bonuses and fastest payouts for crypto gamblers. You get extra rewards by joining with code <code className="bg-[#1a1a1a] px-1.5 py-0.5 rounded text-[#CCFF00]">MANDY</code>.
+        {" "}offers the most generous bonuses and fastest payouts for crypto gamblers. You get extra rewards by joining with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a>.
       </span>
     ),
   },
@@ -109,7 +109,7 @@ const faqItems = [
     question: "WHAT PERKS COME WITH CODE MANDY?",
     answer: (
       <div>
-        <p className="mb-3">Using code <code className="bg-[#1a1a1a] px-1.5 py-0.5 rounded text-[#CCFF00]">MANDY</code> gives you access to:</p>
+        <p className="mb-3">Using code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> gives you access to:</p>
         <ul className="list-disc list-inside space-y-2 mb-3">
           <li><strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize pool.</li>
           <li><strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize pool if you hit the $50,000 monthly wagering requirement.</li>
@@ -130,7 +130,7 @@ const faqItems = [
       <span>
         Currently your best option is{" "}
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Thrill</a>.
-        Hands down. It{"'"}s new so they are eager and the bonuses are boosted, but it{"'"}s been well vetted and they are very reliable. Sign up with code <code className="bg-[#1a1a1a] px-1.5 py-0.5 rounded text-[#CCFF00]">MANDY</code>.
+        Hands down. It{"'"}s new so they are eager and the bonuses are boosted, but it{"'"}s been well vetted and they are very reliable. Sign up with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a>.
       </span>
     ),
   },
@@ -296,7 +296,7 @@ export function Homepage() {
               >
                 Want more bonuses
                 <br />
-                use code MANDY
+                use code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a>
               </p>
               <Link href="/rewards" className="mt-auto w-full">
                 <Button
@@ -438,7 +438,7 @@ export function Homepage() {
       </section>
 
       {/* ─── Social Icons Strip ─── */}
-      <section className="relative z-10 bg-[#000000] py-8 md:py-12">
+      <section className="relative z-10 py-8 md:py-12">
         <div className="flex justify-center items-center gap-3 md:gap-5">
           {socialLinks.map(({ Icon, href, label }) => (
             <a
@@ -484,7 +484,7 @@ export function Homepage() {
                 style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
               >
                 Sign up at Thrill with code:{" "}
-                <span className="text-[#CCFF00]">MANDY</span>
+                <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a>
                 {" "}and come join the party on{" "}
                 <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a>.
               </p>
