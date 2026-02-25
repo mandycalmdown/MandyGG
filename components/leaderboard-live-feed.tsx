@@ -120,27 +120,25 @@ export function LeaderboardLiveFeed({ entries, previousEntries }: LeaderboardLiv
 
   return (
     <div className="max-w-4xl mx-auto mt-8 md:mt-12 px-2 md:px-0">
-      <div
-        className="bg-[#0a0a0a] rounded-xl border border-white/20 p-4 md:p-6 transition-all duration-500 hover:border-[#2A69DB]/60 hover:shadow-[0_0_25px_rgba(42,105,219,0.15)]"
-      >
+      <div className="bg-[#000000] rounded-xl border border-white/20 p-4 md:p-6 transition-all duration-500 hover:border-[#CCFF00]/60 hover:shadow-[0_0_25px_rgba(204,255,0,0.1)]">
         <h2
-          className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-4 text-center"
+          className="text-2xl md:text-3xl text-[#FFFFFF] uppercase mb-4 text-center"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
         >
           LIVE FEED
         </h2>
 
         <div className="relative max-h-[260px] overflow-hidden">
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#000000] to-transparent z-10 pointer-events-none" />
 
           <div className="flex flex-wrap gap-2">
             {alerts.map((alert, idx) => (
               <div
                 key={alert.id}
-                className="rounded-md px-3 py-1.5 text-xs font-semibold whitespace-nowrap"
+                className="rounded-md px-3 py-1.5 text-sm font-semibold whitespace-nowrap border border-[#CCFF00]/30"
                 style={{
-                  backgroundColor: "#2A69DB",
-                  color: "#FFFFFF",
+                  backgroundColor: "rgba(204,255,0,0.1)",
+                  color: "#CCFF00",
                   fontFamily: "var(--font-jetbrains-mono), monospace",
                   opacity: idx < 16 ? 1 - idx * 0.04 : 0.3,
                   animation: idx === 0 ? "slideInLeft 0.3s ease-out" : undefined,

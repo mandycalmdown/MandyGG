@@ -318,7 +318,7 @@ export function Leaderboard() {
       {/* Countdown */}
       <div className="text-center mb-4 md:mb-6 lg:mb-8 px-4">
         <h3
-          className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-1 uppercase"
+          className="text-xl md:text-2xl lg:text-3xl text-[#CCFF00] mb-1 uppercase"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
         >
           THIS RACE ENDS IN
@@ -385,7 +385,7 @@ export function Leaderboard() {
 
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
           <button
-            className="bg-[#2A69DB] text-[#FFFFFF] px-8 md:px-12 py-3 md:py-4 rounded uppercase text-sm md:text-base mb-4 transition-all duration-300 hover:shadow-[0_0_30px_rgba(42,105,219,0.5)] hover:scale-105"
+            className="bg-[#CCFF00] text-[#000000] px-8 md:px-12 py-3 md:py-4 rounded uppercase text-sm md:text-base mb-4 transition-all duration-300 hover:shadow-[0_0_30px_rgba(204,255,0,0.5)] hover:scale-105"
             style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700, letterSpacing: "0.1em" }}
           >
             JOIN THE ACTION
@@ -404,7 +404,7 @@ export function Leaderboard() {
         )}
       </div>
       {/* Gradient fade from black into holographic */}
-      <div className="h-12 md:h-16 bg-gradient-to-b from-[#000000] to-transparent" />
+      <div className="h-6 md:h-8 bg-gradient-to-b from-[#000000] to-transparent" />
       </div>{/* end black section */}
 
       {/* Top 3 Podium */}
@@ -544,7 +544,7 @@ export function Leaderboard() {
         >
           <div className="p-3 md:p-6">
             <div
-              className="grid grid-cols-4 gap-2 md:gap-4 mb-3 md:mb-4 text-xs md:text-sm text-[#2A69DB] uppercase"
+              className="grid grid-cols-4 gap-2 md:gap-4 mb-3 md:mb-4 text-xs md:text-sm text-[#CCFF00] uppercase"
               style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
             >
               <div>RANK</div>
@@ -580,7 +580,7 @@ export function Leaderboard() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-[#000000]/90 backdrop-blur-sm border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-10 md:mt-14">
+      <footer className="relative z-10 bg-[#000000] py-10 md:py-14 px-4 mt-10 md:mt-14">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img

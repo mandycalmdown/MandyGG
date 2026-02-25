@@ -301,7 +301,7 @@ export function HowToJoinPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4">
+      <footer className="bg-[#000000] py-10 md:py-14 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img

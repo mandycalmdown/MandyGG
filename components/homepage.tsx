@@ -584,7 +584,7 @@ export function Homepage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer className="relative z-10 bg-[#000000]/90 backdrop-blur-sm border-t border-[#CCFF00] py-10 md:py-14 px-4">
+      <footer className="relative z-10 bg-[#000000] py-10 md:py-14 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img
