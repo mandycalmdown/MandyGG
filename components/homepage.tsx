@@ -447,10 +447,10 @@ export function Homepage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="text-[#FFFFFF] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
+              className="text-[#000000] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
               style={{ transformOrigin: "bottom center" }}
             >
-              <Icon className="w-8 h-8 md:w-10 md:h-10" />
+              <Icon className="w-12 h-12 md:w-[60px] md:h-[60px]" />
             </a>
           ))}
         </div>
