@@ -60,24 +60,27 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
 
   return (
     <div id="raffle" className="max-w-4xl mx-auto mt-10 md:mt-14 px-2 md:px-0">
-      <div className="flex flex-col items-center mb-6">
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-raffle-ticket-TQblBLgG4Hhz4PwIQ67HCpnm67QoDO.webp"
-          alt="Raffle Ticket"
-          className="w-32 md:w-40 h-auto mb-3"
-        />
-        <h2
-          className="text-xl md:text-2xl text-[#FFFFFF] uppercase text-center"
-          style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-        >
-          DAILY RAFFLE
-        </h2>
-      </div>
+      <div
+        className="bg-[#0a0a0a] rounded-xl border border-[#CCFF00]/40 p-4 md:p-6"
+        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(204,255,0,0.1)" }}
+      >
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-icon-raffle-ticket-TQblBLgG4Hhz4PwIQ67HCpnm67QoDO.webp"
+            alt="Raffle Ticket"
+            className="w-32 md:w-40 h-auto mb-3"
+          />
+          <h2
+            className="text-xl md:text-2xl text-[#CCFF00] uppercase text-center"
+            style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+          >
+            DAILY RAFFLE
+          </h2>
+        </div>
 
       {/* Raffle Winner Section */}
       <div
-        className="bg-[#000000] rounded-xl border border-[#CCFF00]/40 p-6 md:p-8 mb-6"
-        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(204,255,0,0.1)" }}
+        className="bg-[#111111] rounded-lg border border-white/10 p-6 md:p-8 mb-6"
       >
         <h3
           className="text-sm text-[#CCFF00] uppercase mb-4 tracking-wider"
@@ -183,8 +186,7 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
 
       {/* Raffle Info Card */}
       <div
-        className="bg-[#000000] rounded-xl border border-white/20 p-6 md:p-8 mb-6 transition-all duration-500 hover:border-[#CCFF00]/40"
-        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7)" }}
+        className="bg-[#111111] rounded-lg border border-white/10 p-6 md:p-8"
       >
         {/* Countdown */}
         <div className="text-center mb-6">
@@ -252,6 +254,7 @@ export function DailyRaffle({ winners: externalWinners }: DailyRaffleProps) {
             <li>Prizes may take up to 72 hours to be sent out</li>
           </ol>
         </div>
+      </div>
       </div>
     </div>
   )

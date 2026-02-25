@@ -141,15 +141,19 @@ export function LeaderboardLiveFeed({ entries, previousEntries }: LeaderboardLiv
 
   return (
     <div className="max-w-4xl mx-auto mt-8 md:mt-12 px-2 md:px-0">
-      <h2
-        className="text-xl md:text-2xl text-[#FFFFFF] uppercase mb-4 text-center"
-        style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+      <div
+        className="bg-[#0a0a0a] rounded-xl border border-[#2A69DB]/40 p-4 md:p-6"
+        style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.7), 0 0 20px rgba(42,105,219,0.15)" }}
       >
-        LIVE FEED:
-      </h2>
+        <h2
+          className="text-xl md:text-2xl text-[#2A69DB] uppercase mb-4 text-center"
+          style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+        >
+          LIVE FEED
+        </h2>
 
-      <div className="space-y-2 max-h-[320px] overflow-hidden relative">
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#000000] to-transparent z-10 pointer-events-none" />
+        <div className="space-y-2 max-h-[320px] overflow-hidden relative">
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
 
         {alerts.map((alert, idx) => {
           const color = ALERT_COLORS[alert.colorIndex]
@@ -171,6 +175,7 @@ export function LeaderboardLiveFeed({ entries, previousEntries }: LeaderboardLiv
             </div>
           )
         })}
+        </div>
       </div>
     </div>
   )

@@ -270,21 +270,40 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000000]">
-      {/* Ticker 1 */}
-      <AnnouncementsTicker tickerKey="ticker_1_text" />
+    <div className="min-h-screen bg-[#000000] relative">
+      {/* Fixed holographic background */}
+      <div className="fixed inset-0 z-0" aria-hidden="true">
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
+          />
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </picture>
+      </div>
 
-      <SiteNavigation currentPage="leaderboard" />
+      {/* Ticker 1 */}
+      <div className="relative z-10">
+        <AnnouncementsTicker tickerKey="ticker_1_text" />
+      </div>
+
+      <div className="relative z-10">
+        <SiteNavigation currentPage="leaderboard" />
+      </div>
 
       {/* Banner Video */}
-      <section className="relative w-full mb-2">
-        <div className="w-full max-w-6xl mx-auto relative px-2 md:px-0">
+      <section className="relative z-10 w-full mb-2">
+        <div className="w-full relative">
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-cover rounded"
+            className="w-full h-auto object-cover"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-leaderboard-header-banner-b693AAvhq4kfJGiTD6o3xHvpVTK5zS.webm"
@@ -295,33 +314,43 @@ export function Leaderboard() {
       </section>
 
       {/* Countdown */}
-      <div className="text-center mb-4 md:mb-6 lg:mb-8 px-4">
+      <div className="relative z-10 text-center mb-4 md:mb-6 lg:mb-8 px-4">
         <h3
           className="text-xl md:text-2xl lg:text-3xl text-[#3C7BFF] mb-3 uppercase"
           style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
         >
           THIS RACE ENDS IN
         </h3>
-        <div className="flex justify-center gap-3 md:gap-6 lg:gap-8 py-6">
+        <div className="flex justify-center items-center gap-1 md:gap-2 lg:gap-3 py-6">
           {[
             { label: "DAYS", value: countdown.days },
             { label: "HOURS", value: countdown.hours },
             { label: "MINUTES", value: countdown.minutes },
             { label: "SECONDS", value: countdown.seconds },
-          ].map((item) => (
-            <div key={item.label} className="text-center">
-              <div
-                className="text-xs md:text-sm lg:text-base text-[#888888] uppercase mb-1"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
-              >
-                {item.label}
+          ].map((item, idx) => (
+            <div key={item.label} className="flex items-center">
+              <div className="text-center">
+                <div
+                  className="text-xs md:text-sm lg:text-base text-[#888888] uppercase mb-1"
+                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
+                >
+                  {item.label}
+                </div>
+                <div
+                  className="text-3xl md:text-5xl lg:text-6xl text-[#FFFFFF]"
+                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
+                >
+                  {item.value.toString().padStart(2, "0")}
+                </div>
               </div>
-              <div
-                className="text-3xl md:text-5xl lg:text-6xl text-[#FFFFFF]"
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
-              >
-                {item.value.toString().padStart(2, "0")}
-              </div>
+              {idx < 3 && (
+                <span
+                  className="text-2xl md:text-4xl lg:text-5xl text-[#FFFFFF]/50 mx-1 md:mx-3 mt-4"
+                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700 }}
+                >
+                  :
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -350,32 +379,16 @@ export function Leaderboard() {
           >
             Past Week
           </button>
-          {isAdmin && (
-            <button
-              onClick={handleManualRefresh}
-              disabled={isRefreshing}
-              className="px-3 md:px-6 py-2 md:py-3 bg-[#3C7BFF] hover:bg-[#3C7BFF]/80 disabled:bg-[#333] text-[#FFFFFF] rounded uppercase text-xs md:text-sm transition-all duration-300 flex items-center gap-2 z-50"
-              style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-            >
-              {isRefreshing ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Refreshing...
-                </>
-              ) : (
-                <>
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Admin Refresh
-                </>
-              )}
-            </button>
-          )}
         </div>
+
+        <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer">
+          <button
+            className="bg-[#CCFF00] text-[#000000] px-8 md:px-12 py-3 md:py-4 rounded uppercase text-sm md:text-base mb-6 md:mb-8 transition-all duration-300 hover:shadow-[0_0_30px_rgba(204,255,0,0.4)] hover:scale-105"
+            style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700, letterSpacing: "0.1em" }}
+          >
+            JOIN THE ACTION
+          </button>
+        </a>
 
         {isLoading && (
           <p className="text-sm text-[#888888] mt-2" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
@@ -390,7 +403,7 @@ export function Leaderboard() {
       </div>
 
       {/* Top 3 Podium */}
-      <div className="px-2 md:px-4">
+      <div className="relative z-10 px-2 md:px-4">
         <div className="flex flex-col md:flex-row justify-center items-center md:items-end gap-3 md:gap-4 mb-6 md:mb-8 max-w-4xl mx-auto">
           {/* 2nd Place */}
           <div
@@ -552,13 +565,17 @@ export function Leaderboard() {
       </div>
 
       {/* Live Feed */}
-      <LeaderboardLiveFeed entries={entries} previousEntries={previousEntries} />
+      <div className="relative z-10">
+        <LeaderboardLiveFeed entries={entries} previousEntries={previousEntries} />
+      </div>
 
       {/* Daily Raffle */}
-      <DailyRaffle winners={raffleWinners} />
+      <div className="relative z-10">
+        <DailyRaffle winners={raffleWinners} />
+      </div>
 
       {/* Footer */}
-      <footer className="bg-[#000000] border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-10 md:mt-14">
+      <footer className="relative z-10 bg-[#000000]/90 backdrop-blur-sm border-t border-[#CCFF00] py-10 md:py-14 px-4 mt-10 md:mt-14">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img

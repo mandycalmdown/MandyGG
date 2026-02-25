@@ -214,15 +214,15 @@ export function Homepage() {
       </div>
 
       {/* ─── Hero Section ─── */}
-      <section className="relative z-10 flex flex-col items-center justify-center px-4 pt-1 pb-1 md:pt-2 md:pb-1">
-        <div className="relative z-10 flex flex-col items-center">
+      <section className="relative z-10 bg-[#000000] flex flex-col items-center justify-center px-4 pt-1 pb-8 md:pt-2 md:pb-10">
+        <div className="relative z-10 flex flex-col items-center w-full">
           {/* Desktop Video */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="hidden md:block w-[420px] max-w-[80vw] mx-auto"
+            className="hidden md:block w-full max-w-[700px] mx-auto"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-XZLO4H7GbNnaHWswL1usoMwcDz1BxC.webm"
@@ -235,7 +235,7 @@ export function Homepage() {
             muted
             loop
             playsInline
-            className="md:hidden w-[220px] max-w-[70vw] mx-auto"
+            className="md:hidden w-full max-w-[320px] mx-auto"
           >
             <source
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-mobile-B5Ux6Z3jjDeGS9yLxLpjnWgqMCCVYc.webm"
@@ -381,7 +381,7 @@ export function Homepage() {
       </div>
 
       {/* ─── Mandy x Thrill Section ─── */}
-      <section className="relative z-10 bg-[#000000]/80 backdrop-blur-sm pt-16 pb-14 md:pt-24 md:pb-20 px-4">
+      <section className="relative z-10 bg-[#000000] pt-16 pb-14 md:pt-24 md:pb-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
             {/* Logos */}
@@ -389,7 +389,7 @@ export function Homepage() {
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDY-GG-THRILL-LOGOS-aE8v99hIu3ZnlWrtZAFIjCqA5sBIJw.webp"
                 alt="Mandy x Thrill logos"
-                className="w-[280px] md:w-[360px] h-auto"
+                className="w-[560px] md:w-[720px] h-auto"
                 loading="lazy"
               />
             </div>
@@ -439,7 +439,7 @@ export function Homepage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={label}
-              className="text-[#FFFFFF] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
+              className="text-[#000000] transition-all duration-300 hover:text-[#CCFF00] hover:scale-125 hover:-translate-y-1 hover:drop-shadow-[0_0_12px_rgba(204,255,0,0.6)]"
               style={{ transformOrigin: "bottom center" }}
             >
               <Icon className="w-12 h-12 md:w-[60px] md:h-[60px]" />
@@ -484,11 +484,13 @@ export function Homepage() {
 
             {/* Right: portrait with blue glow */}
             <div className="flex-shrink-0 relative md:w-[400px] w-full flex justify-center md:justify-end">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-light-blue-glow-7AKd9bPeneq1lRWF2GnsB2H2qovJrq.webp"
-                alt=""
+              <div
                 aria-hidden="true"
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[600px] md:h-[600px] object-contain opacity-40 pointer-events-none z-0"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] rounded-full pointer-events-none z-0"
+                style={{
+                  background: "radial-gradient(circle, rgba(42,105,219,0.6) 0%, rgba(42,105,219,0.3) 30%, rgba(42,105,219,0.1) 55%, transparent 75%)",
+                  filter: "blur(30px)",
+                }}
               />
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-profile-photo-X8F4rWnnPeOGrwixzucWibnU9psG3K.webp"
