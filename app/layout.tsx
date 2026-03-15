@@ -1,5 +1,6 @@
 import type React from "react"
 import { Roboto_Condensed, Poppins } from "next/font/google"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
@@ -17,13 +18,61 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 })
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Mandy.gg",
+  url: "https://mandy.gg",
+  logo: "https://mandy.gg/images/mandy-logo-menu-icon-white.svg",
+  description:
+    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you're going to Plinko your crypto away, get the most out of it!",
+  sameAs: [
+    "https://t.me/Mandythrill",
+    "https://t.me/MandyggChat",
+    "https://t.me/MandySupport_bot",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    url: "https://t.me/MandySupport_bot",
+  },
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Weekly $3500 Wager Race",
+      description: "Compete in weekly $3500 wager battles for crypto prizes and get extra perks for using code MANDY.",
+      category: "Gaming Competition",
+    },
+    {
+      "@type": "Offer",
+      name: "Exclusive Casino Bonuses & Lossback",
+      description: "Exclusive crypto casino bonuses with code MANDY including lossback access and VIP perks. More perks, less regret!",
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        priceCurrency: "BTC",
+      },
+    },
+  ],
+  mainEntity: {
+    "@type": "WebSite",
+    "@id": "https://mandy.gg/#website",
+    url: "https://mandy.gg",
+    name: "Mandy.gg",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://mandy.gg/?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  },
+}
+
 export const metadata = {
   title: {
     template: "%s | Mandy.gg",
     default: "Mandy.gg - More perks, less regret | Weekly $3500 Wager Race",
   },
   description:
-    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you’re going to Plinko your crypto away, get the most out of it!",
+    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you're going to Plinko your crypto away, get the most out of it!",
   keywords:
     "crypto casino, bitcoin gambling, weekly wager battle, thrill casino, code MANDY, crypto bonuses, lossback, VIP perks, cryptocurrency betting, mandy.gg, bitcoin casino, crypto gaming, blockchain casino, cryptocurrency betting, crypto slots, bitcoin slots, live casino battles, crypto leaderboard, exclusive casino bonuses, crypto rewards, gambling influencer, casino streamer",
   authors: [{ name: "Mandy.gg" }],
@@ -32,7 +81,7 @@ export const metadata = {
   robots: "index, follow",
   openGraph: {
     title: "Mandy.gg - More perks, less regret | Weekly $3500 Wager Race",
-    description: "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you’re going to Plinko your crypto away, get the most out of it!",
+    description: "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses every time you punt with code MANDY. If you're going to Plinko your crypto away, get the most out of it!",
     url: "https://mandy.gg",
     siteName: "Mandy.gg",
     type: "website",
@@ -71,6 +120,32 @@ export const metadata = {
     "theme-color": "#5cfec0",
   },
     generator: 'v0.app'
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" className={`${robotoCondensed.variable} ${poppins.variable} antialiased bg-black shadow-none`}>
+      <head>
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+          strategy="afterInteractive"
+        />
+      </head>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
 }
 
 function StructuredData() {
