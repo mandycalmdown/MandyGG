@@ -1,9 +1,12 @@
 "use client";
 
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import "@/styles/mandy-home.css";
 import "@/styles/blog.css";
+import { SiteNavigation } from "@/components/site-navigation";
 
 export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
@@ -81,17 +84,21 @@ export function Homepage() {
 
   return (
     <main className="mandy-home">
-      <section className="hero" aria-labelledby="hero-title">
-        <h1
-          id="hero-title"
-          className="mandy-logo"
-          onMouseMove={handleLogoMouseMove}
-          onMouseLeave={handleLogoMouseLeave}
-        >
-          <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
-        </h1>
-        <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
-      </section>
+      <SiteNavigation />
+
+<section className="hero" aria-labelledby="hero-title">
+  <h1
+    id="hero-title"
+    className="mandy-logo"
+    onMouseMove={handleLogoMouseMove}
+    onMouseLeave={handleLogoMouseLeave}
+  >
+    <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
+  </h1>
+  <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
+</section>
+
+
 
       <section className="features" aria-label="Main features">
         <div className="features-grid">
@@ -101,7 +108,7 @@ export function Homepage() {
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp"
+                src="/MANDYGG_WEBSITE_IMAGES/THRILL_DICE_ICON.webp"
                 alt="Thrill dice icon"
                 className="feature-icon"
               />
@@ -120,7 +127,7 @@ export function Homepage() {
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp"
+                src="/MANDYGG_WEBSITE_IMAGES/TROPHY_FLOATING_ELEMENT.webp"
                 alt="Weekly race trophy icon"
                 className="feature-icon"
               />
@@ -139,7 +146,7 @@ export function Homepage() {
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp"
+                src="/MANDYGG_WEBSITE_IMAGES/TOOLS_ICON.webp"
                 alt="Gaming tools icon"
                 className="feature-icon"
               />
@@ -211,6 +218,16 @@ export function Homepage() {
           <Link href="/leaderboard" className="placeholder-mini-card">2. RAFFLE ANNOUNCEMENT</Link>
           <Link href="/mandycoins" className="placeholder-mini-card">3. MANDYCOIN ANNOUNCEMENT</Link>
           <a href="https://t.me/mandygg_support_bot" className="placeholder-mini-card" target="_blank" rel="noreferrer">4. JOIN TELEGRAM</a>
+        </div>
+      </section>
+      {/* ── Blog Feed Widget ── */}
+      <section className="blog-feed-section" aria-label="Latest from the blog">
+        <div className="blog-feed-header">
+          <span className="blog-feed-eyebrow">GAMBLING GOSSIP</span>
+          <Link href="/blog" className="blog-feed-link">ALL POSTS →</Link>
+        </div>
+        <div className="blog-feed-grid">
+          {/* Blog feed would be here if blog data exists */}
         </div>
       </section>
     </main>
