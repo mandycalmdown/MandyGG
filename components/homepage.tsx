@@ -5,7 +5,7 @@ import Link from "next/link";
 import "@/styles/mandy-home.css";
 import "@/styles/blog.css";
 
-export default function Home() {
+export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const logoRef = React.useRef<HTMLSpanElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
