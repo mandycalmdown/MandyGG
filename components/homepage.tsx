@@ -2,13 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { SiteNavigation } from "@/components/site-navigation";
 import "@/app/styles/mandy-home.css";
 import "@/app/styles/blog.css";
-import { SEED_POSTS, formatDate } from "@/app/blog/data";
-import SiteNav from "@/app/components/SiteNav";
-import SiteFooter from "@/app/components/SiteFooter";
 
-export default function Home() {
+export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const logoRef = React.useRef<HTMLSpanElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
@@ -145,7 +143,7 @@ export default function Home() {
 
   return (
     <main className="mandy-home">
-      <SiteNav />
+      <SiteNavigation />
 
       {/* HERO SECTION */}
       <section className="hero" aria-labelledby="hero-title">
@@ -302,31 +300,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* BLOG FEED */}
-      <section className="blog-feed-section" aria-label="Latest from the blog">
-        <div className="blog-feed-header">
-          <span className="blog-feed-eyebrow">GAMBLING GOSSIP</span>
-          <Link href="/blog" className="blog-feed-link">ALL POSTS →</Link>
-        </div>
-        <div className="blog-feed-grid">
-          {SEED_POSTS.slice(0, 3).map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-feed-card">
-              <div className="blog-feed-card-meta">
-                {post.tags.slice(0, 1).map((tag) => (
-                  <span key={tag} className="blog-tag">{tag}</span>
-                ))}
-                <span className="blog-date">{formatDate(post.date)}</span>
-              </div>
-              <h3 className="blog-feed-card-title">{post.title}</h3>
-              <p className="blog-feed-card-excerpt">{post.excerpt}</p>
-              <span className="blog-feed-card-cta">READ MORE →</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <SiteFooter />
     </main>
   );
 }
