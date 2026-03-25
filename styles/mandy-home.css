@@ -1,0 +1,791 @@
+.mandy-home,
+body {
+  margin: 0;
+}
+
+.mandy-home {
+  background: var(--mandy-bg);
+  color: var(--mandy-white);
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+.site-header {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  margin-top: 3.5rem;
+}
+
+.header-inner {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 0 auto;
+  min-height: 30px;
+  display: flex;
+  align-items: bottom;
+  gap: 0rem;
+}
+
+.brand-script {
+  color: var(--mandy-neon);
+  text-decoration: none;
+  font-family: "poppins", sans-serif;
+  font-style: italic;
+  font-size: clamp(2rem, 3.2vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  flex: 0 0 auto;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "poppins", "Courier New", monospace;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: var(--mandy-white);
+}
+
+.site-nav a + a::before {
+  content: "|";
+  color: #ffffff;
+  margin: 0 0.62rem;
+}
+
+.site-nav .sign-in {
+  color: var(--mandy-neon);
+}
+
+.site-nav .sign-in:hover {
+  color: #e0ff6a;
+}
+
+.hero {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  width: min(1240px, calc(100% - 3rem));
+  margin: 1.25rem auto 0;
+  text-align: center;
+}
+
+
+.hero-tagline {
+  margin: 0.85rem 0 0;
+  font-family: "poppins", "Courier New", monospace;
+  letter-spacing: 0.22em;
+  font-size: clamp(0.82rem, 1.45vw, 2rem);
+  color: #ffffff;
+}
+
+.features {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 22rem auto 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.floating-card {
+  border-radius: 23px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 44%),
+    var(--mandy-bg-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  will-change: transform;
+}
+
+.feature-card {
+  min-height: 300px;
+  padding: 1rem 1.65rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.feature-icon-wrap {
+  width: 180px;
+  height: 180px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  margin-top: -11rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 0;
+  transform: translateX(var(--icon-x, 0px)) translateY(var(--icon-y, 0px));
+  transition: transform 0.12s ease-out;
+}
+
+.feature-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.45));
+  animation: float-icon 4s ease-in-out infinite;
+}
+
+.feature-title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--mandy-neon);
+  font-weight: 800;
+  font-size: clamp(1.65rem, 1.5vw, 2rem);
+  letter-spacing: 0.02em;
+}
+
+.feature-description {
+  position: relative;
+  z-index: 1;
+  margin: 0.72rem 0 1.45rem;
+  min-height: 3.4em;
+  font-family: "poppins", "Courier New", monospace;
+  font-size: 0.69rem;
+  line-height: 1.28;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffffff;
+  max-width: 23ch;
+}
+
+.primary-button {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  border: 1px solid var(--mandy-neon);
+  border-radius: 0px;
+  background: transparent;
+  color: var(--mandy-white);
+  font-family: "poppins", "Courier New", monospace;
+  letter-spacing: 0.1em;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.6rem 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-button:hover {
+  background: var(--mandy-neon);
+  color: var(--mandy-bg);
+  box-shadow: 0 0 16px rgba(193, 255, 0, 0.34);
+}
+
+.mandy-home,
+body {
+  margin: 0;
+}
+
+.mandy-home {
+  background: var(--mandy-bg);
+  color: var(--mandy-white);
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+.site-header {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  margin-top: 3.5rem;
+}
+
+.header-inner {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 0 auto;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-script {
+  color: var(--mandy-neon);
+  text-decoration: none;
+  font-family: "poppins", sans-serif;
+  font-style: italic;
+  font-size: clamp(2rem, 3.2vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  flex: 0 0 auto;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "poppins", "Courier New", monospace;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: var(--mandy-white);
+}
+
+.site-nav a + a::before {
+  content: "|";
+  color: #ffffff;
+  margin: 0 0.62rem;
+}
+
+.site-nav .sign-in {
+  color: var(--mandy-neon);
+}
+
+.site-nav .sign-in:hover {
+  color: #e0ff6a;
+}
+
+.hero {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  width: min(1240px, calc(100% - 3rem));
+  margin: 1.25rem auto 0;
+  text-align: center;
+}
+
+
+.hero-tagline {
+  margin: 0.85rem 0 0;
+  font-family: "poppins", "Courier New", monospace;
+  letter-spacing: 0.22em;
+  font-size: clamp(0.82rem, 1.45vw, 2rem);
+  color: #ffffff;
+}
+
+.features {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 7.8rem auto 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+}
+
+.floating-card {
+  border-radius: 23px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 44%),
+    var(--mandy-bg-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  will-change: transform;
+}
+
+.feature-card {
+  min-height: 300px;
+  padding: 1rem 1.65rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.feature-icon-wrap {
+  width: 180px;
+  height: 180px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  margin-top: -11rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 0;
+  transform: translateX(var(--icon-x, 0px)) translateY(var(--icon-y, 0px));
+  transition: transform 0.12s ease-out;
+}
+
+.feature-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.45));
+  animation: float-icon 4s ease-in-out infinite;
+}
+
+.feature-title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--mandy-neon);
+  font-weight: 800;
+  font-size: clamp(1.65rem, 1.5vw, 2rem);
+  letter-spacing: 0.02em;
+}
+
+.feature-description {
+  position: relative;
+  z-index: 1;
+  margin: 0.72rem 0 1.45rem;
+  min-height: 3.4em;
+  font-family: "poppins", "Courier New", monospace;
+  font-size: 0.69rem;
+  line-height: 1.28;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffffff;
+  max-width: 23ch;
+}
+
+.primary-button {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  border: 1px solid var(--mandy-neon);
+  border-radius: 0px;
+  background: transparent;
+  color: var(--mandy-white);
+  font-family: "poppins", "Courier New", monospace;
+  letter-spacing: 0.1em;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.6rem 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-button:hover {
+  background: var(--mandy-neon);
+  color: var(--mandy-bg);
+  box-shadow: 0 0 16px rgba(193, 255, 0, 0.34);
+}
+
+.ticker {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  background: #ffffff;
+  border-radius: 0px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+
+  /* make the bar hug the text */
+  height: 2rem;
+  display: flex;
+  align-items: stretch;
+}
+
+.ticker-track {
+  display: flex;
+  align-items: bottom;        /* was bottom */
+  width: max-content;
+  white-space: nowrap;
+  font-family: "poppins", "Arial Black", sans-serif;
+  font-size: clamp(1.1rem, 1.9vw, 1.7rem);
+  line-height: 2;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #060606;
+  animation: mandy-ticker-reverse 38s linear infinite;
+  padding: 0 0.1rem;          /* no vertical padding, only horizontal */
+}
+
+.ticker-track span {
+  display: inline-block;
+  padding-right: 1.1rem;
+}
+
+
+
+@keyframes mandy-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes mandy-ticker-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1120px) {
+  .header-inner,
+  .hero,
+  .features,
+  .holo-panel {
+    width: min(1240px, calc(100% - 2rem));
+  }
+
+  .features {
+    margin-top: 6.2rem;
+  }
+
+  .features-grid {
+    gap: 1.1rem;
+  }
+
+  .feature-card {
+    min-height: 280px;
+    padding: 0 1.1rem 1.2rem;
+  }
+
+  .feature-icon-wrap {
+    width: 156px;
+    height: 156px;
+    margin-top: -5.2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    margin-top: 1.8rem;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0.6rem 0;
+  }
+
+  .features {
+    margin-top: 4.8rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 5rem;
+  }
+
+  .feature-card {
+    min-height: 250px;
+    padding: 0 1.2rem 1.35rem;
+  }
+
+  .feature-icon-wrap {
+    width: 142px;
+    height: 142px;
+    margin-top: -4.8rem;
+  }
+
+  .feature-title {
+    font-size: 1.65rem;
+  }
+
+  .feature-description {
+    font-size: 0.68rem;
+  }
+
+  .ticker-track {
+    font-size: clamp(0.95rem, 4vw, 1.4rem);
+  }
+
+  .holo-panel {
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand-script {
+    font-size: 2.4rem;
+  }
+
+  .site-nav {
+    gap: 0.2rem;
+    font-size: 0.67rem;
+    letter-spacing: 0.08em;
+  }
+
+  .site-nav a + a::before {
+    margin: 0 0.35rem;
+  }
+
+  .hero {
+    margin-top: 1rem;
+  }
+
+  .hero-tagline {
+    letter-spacing: 0.11em;
+  }
+
+  .features {
+    margin-top: 3.8rem;
+  }
+
+  .feature-card {
+    padding-left: 0.95rem;
+    padding-right: 0.95rem;
+  }
+
+  .holo-panel {
+    width: calc(100% - 1rem);
+    border-radius: 16px;
+  }
+}
+.mandy-logo {
+  margin: 0;
+  font-family: "poppins", sans-serif;
+  font-size: clamp(3.6rem, 14vw, 11.2rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  overflow: visible;
+}
+
+
+.mandy-logo__gradient {
+  position: relative;
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    #c1ff00 0%,
+    #c1ff00 20%,
+    #f5ff6c 35%,
+    #c1ff00 50%,
+    #ffe608 65%,
+    #c1ff00 80%,
+    #ffffff 90%,
+    #c1ff00 100%
+  );
+  background-size: 180% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: mandyGradientText 10s linear infinite;
+
+
+}
+
+@keyframes mandy-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes mandy-ticker-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1120px) {
+  .header-inner,
+  .hero,
+  .features,
+  .holo-panel {
+    width: min(1240px, calc(100% - 2rem));
+  }
+
+  .features {
+    margin-top: 6.2rem;
+  }
+
+  .features-grid {
+    gap: 1.1rem;
+  }
+
+  .feature-card {
+    min-height: 280px;
+    padding: 0 1.1rem 1.2rem;
+  }
+
+  .feature-icon-wrap {
+    width: 156px;
+    height: 156px;
+    margin-top: -5.2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    margin-top: 1.8rem;
+  }
+
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0.6rem 0;
+  }
+
+  .features {
+    margin-top: 4.8rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 5rem;
+  }
+
+  .feature-card {
+    min-height: 250px;
+    padding: 0 1.2rem 1.35rem;
+  }
+
+  .feature-icon-wrap {
+    width: 142px;
+    height: 142px;
+    margin-top: -4.8rem;
+  }
+
+  .feature-title {
+    font-size: 1.65rem;
+  }
+
+  .feature-description {
+    font-size: 0.68rem;
+  }
+
+  .ticker-track {
+    font-size: clamp(0.95rem, 4vw, 0.4rem);
+  }
+
+  .holo-panel {
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand-script {
+    font-size: 2.4rem;
+  }
+
+  .site-nav {
+    gap: 0.2rem;
+    font-size: 0.67rem;
+    letter-spacing: 0.08em;
+  }
+
+  .site-nav a + a::before {
+    margin: 0 0.35rem;
+  }
+
+  .hero {
+    margin-top: 1rem;
+  }
+
+  .hero-tagline {
+    letter-spacing: 0.11em;
+  }
+
+  .features {
+    margin-top: 3.8rem;
+  }
+
+  .feature-card {
+    padding-left: 0.95rem;
+    padding-right: 0.95rem;
+  }
+
+  .holo-panel {
+    width: calc(100% - 1rem);
+    border-radius: 16px;
+  }
+}
+.mandy-logo {
+  margin: 0;
+  font-family: "poppins", sans-serif;
+  font-size: clamp(3.6rem, 14vw, 11.2rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  overflow: visible;
+}
+
+
+.mandy-logo__gradient {
+  position: relative;
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    #c1ff00 0%,
+    #c1ff00 20%,
+    #f5ff6c 35%,
+    #c1ff00 50%,
+    #ffe608 65%,
+    #c1ff00 80%,
+    #ffffff 90%,
+    #c1ff00 100%
+  );
+  background-size: 180% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: mandyGradientText 10s linear infinite;
+
+
+}
+
+/* Re‑use the same keyframes for both logo and ticker */
+@keyframes mandyGradientText {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ── parallax float ── */
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.floating-card:nth-child(2) .feature-icon { animation-delay: -1.3s; }
+.floating-card:nth-child(3) .feature-icon { animation-delay: -2.6s; }

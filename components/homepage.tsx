@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { SiteNavigation } from "@/components/site-navigation";
-import "@/app/styles/mandy-home.css";
-import "@/app/styles/blog.css";
+import "@/styles/mandy-home.css";
+import "@/styles/blog.css";
 
-export function Homepage() {
+export default function Home() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const logoRef = React.useRef<HTMLSpanElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   const handleLogoMouseMove = (event: React.MouseEvent<HTMLElement>) => {
     const span = logoRef.current;
@@ -74,78 +72,15 @@ export function Homepage() {
   };
 
   const announcements = [
-    { tag: "NEW", variant: "new", date: "MAR 25, 2026", title: "$3500 WEEKLY RACE IS LIVE", body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week.", cta: "ENTER NOW →" },
-    { tag: "UPDATE", variant: "update", date: "MAR 15, 2026", title: "NEW GAMING TOOLS DROPPING SOON", body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access.", cta: "FOLLOW UPDATES →" },
+    { tag: "NEW", variant: "new", date: "MAR 8, 2026", title: "$3500 WEEKLY RACE IS LIVE", body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week.", cta: "ENTER NOW →" },
+    { tag: "UPDATE", variant: "update", date: "MAR 5, 2026", title: "NEW GAMING TOOLS DROPPING SOON", body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access.", cta: "FOLLOW UPDATES →" },
     { tag: "ALERT", variant: "alert", date: "MAR 1, 2026", title: "THRILL BONUS CODE: MANDY", body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it.", cta: "CLAIM BONUS →" },
     { tag: "INFO", variant: "", date: "FEB 22, 2026", title: "MANDY.GG IS NOW LIVE", body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next.", cta: "ABOUT MANDY →" },
-  ];
-
-  const faqItems = [
-    {
-      question: "HOW CAN I GET THE BEST CASINO BONUSES?",
-      answer: (
-        <span>
-          Sign up through{" "}
-          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill.com</a>
-          {" "}with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a> for exclusive perks, weekly races, instant lossback, and VIP upgrades.
-        </span>
-      ),
-    },
-    {
-      question: "WHAT'S THE BEST STAKE ALTERNATIVE?",
-      answer: (
-        <span>
-          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill</a>
-          {" "}offers the most generous bonuses and fastest payouts for crypto gamblers. You get extra rewards by joining with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a>.
-        </span>
-      ),
-    },
-    {
-      question: "HOW DO I CONTACT YOU?",
-      answer: (
-        <span>
-          Join the{" "}
-          <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">official Telegram group</a>
-          {" "}first. If you can{"'"}t find your answer in the group, message the{" "}
-          <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">MandySupport bot</a>.
-        </span>
-      ),
-    },
-    {
-      question: "WHAT PERKS COME WITH CODE MANDY?",
-      answer: (
-        <div>
-          <p className="mb-3">Using code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a> gives you access to:</p>
-          <ul className="list-disc list-inside space-y-2 mb-3">
-            <li><strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize pool.</li>
-            <li><strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize pool if you hit the $50,000 monthly wagering requirement.</li>
-            <li><strong>Lossback</strong>: You can request lossback from day one.</li>
-            <li><strong>Custom High Roller Benefits</strong>: For high volume players.</li>
-          </ul>
-        </div>
-      ),
-    },
-    {
-      question: "WHAT CASINO IS THE BEST?",
-      answer: (
-        <span>
-          Currently your best option is{" "}
-          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill</a>.
-          Hands down. Sign up with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a>.
-        </span>
-      ),
-    },
-    {
-      question: "ARE THESE CASINOS REAL? WILL THEY SCAM ME?",
-      answer: "Any casino listed on Mandy.gg has been vetted by me. If you're not breaking the terms of service or abusing promos or alts, you should have no issues withdrawing your winnings.",
-    },
+    { tag: "HOT", variant: "new", date: "FEB 16, 2026", title: "THRILL VIP LEVEL NOTES ADDED", body: "VIP notes for wagering pace, reload timing, and perk optimization are now in progress for the next tool drop.", cta: "READ NOTES →" },
   ];
 
   return (
     <main className="mandy-home">
-      <SiteNavigation />
-
-      {/* HERO SECTION */}
       <section className="hero" aria-labelledby="hero-title">
         <h1
           id="hero-title"
@@ -158,69 +93,67 @@ export function Homepage() {
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
-      {/* FEATURES SECTION - 3 CARDS */}
       <section className="features" aria-label="Main features">
         <div className="features-grid">
-          {/* Card 1: Rewards */}
           <article className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/REWARDS_HOLOGRAM_ICON-wYnYEtXbZyiqM2munN5rPZ1laVLopd.webp"
-                alt="Rewards"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp"
+                alt="Thrill dice icon"
                 className="feature-icon"
               />
             </div>
-            <h2 className="feature-title">REWARDS I GOT YOU</h2>
-            <p className="feature-description">THE BEST BONUSES, RAKEBACK, LOSSBACK, AND VIP PERKS ON THRILL</p>
-            <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="primary-button">
-              CLAIM REWARDS
-            </a>
+            <h2 className="feature-title">THRILL</h2>
+            <p className="feature-description">IT&apos;S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.</p>
+            <button className="primary-button primary-button--stacked" type="button">
+              <span>TELL ME</span>
+              <span>MORE</span>
+            </button>
           </article>
 
-          {/* Card 2: Weekly Race */}
           <article className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RACE_HOLOGRAM_ICON-D5nvoQ7KXz6sV3EUQC2MgisAEoRGa9.webp"
-                alt="Race"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp"
+                alt="Weekly race trophy icon"
                 className="feature-icon"
               />
             </div>
             <h2 className="feature-title">$3500 WEEKLY RACE</h2>
-            <p className="feature-description">COMPETE EVERY WEEK FOR CASH PRIZES. CODE MANDY GETS YOU INSTANT ENTRY.</p>
-            <Link href="/leaderboard" className="primary-button">
-              VIEW LEADERBOARD
+            <p className="feature-description">FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!</p>
+            <Link href="/leaderboard" className="primary-button primary-button--stacked">
+              <span>VIEW</span>
+              <span>LEADERBOARD</span>
             </Link>
           </article>
 
-          {/* Card 3: Connect */}
           <article className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/CONNECT_HOLOGRAM_ICON-pYzxAgRsXHHpRgyxGVg2TY0CFBHpmg.webp"
-                alt="Connect"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp"
+                alt="Gaming tools icon"
                 className="feature-icon"
               />
             </div>
-            <h2 className="feature-title">CONNECT</h2>
-            <p className="feature-description">JOIN THE TELEGRAM COMMUNITY FOR EVENTS, UPDATES, AND DEGEN VIBES</p>
-            <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="primary-button">
-              JOIN TELEGRAM
-            </a>
+            <h2 className="feature-title">GAMING TOOLS</h2>
+            <p className="feature-description">TOOLS FOR DEGENERACY.</p>
+            <Link href="/gaming-tools" className="primary-button primary-button--stacked">
+              <span>NERD</span>
+              <span>ALERT</span>
+            </Link>
           </article>
         </div>
       </section>
 
-      {/* TICKER */}
       <div className="ticker" aria-label="Promo ticker">
         <div className="ticker-track">
           <span>{tickerText.repeat(8)}</span>
@@ -228,7 +161,6 @@ export function Homepage() {
         </div>
       </div>
 
-      {/* UPDATES FEED SECTION */}
       <section className="updates-section" aria-label="Updates">
         <div className="updates-strip">
           <div className="updates-strip-head">
@@ -244,24 +176,24 @@ export function Homepage() {
               ←
             </button>
             <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
-              {announcements.map((item, i) => (
-                <article
-                  key={`feed-${i}`}
-                  role="listitem"
-                  className="update-feed-card floating-card"
-                  onMouseMove={handleCardMouseMove}
-                  onMouseLeave={handleCardMouseLeave}
-                >
-                  <div className="update-feed-top">
-                    <span className={`announcement-tag${item.variant ? ` announcement-tag--${item.variant}` : ""}`}>
-                      {item.tag}
-                    </span>
-                    <time className="announcement-date">{item.date}</time>
-                  </div>
-                  <h3 className="update-feed-title">{item.title}</h3>
-                  <p className="update-feed-copy">{item.body}</p>
-                </article>
-              ))}
+            {announcements.map((item, i) => (
+              <article
+                key={`feed-${i}`}
+                role="listitem"
+                className="update-feed-card floating-card"
+                onMouseMove={handleCardMouseMove}
+                onMouseLeave={handleCardMouseLeave}
+              >
+                <div className="update-feed-top">
+                  <span className={`announcement-tag${item.variant ? ` announcement-tag--${item.variant}` : ""}`}>
+                    {item.tag}
+                  </span>
+                  <time className="announcement-date">{item.date}</time>
+                </div>
+                <h3 className="update-feed-title">{item.title}</h3>
+                <p className="update-feed-copy">{item.body}</p>
+              </article>
+            ))}
             </div>
             <button
               type="button"
@@ -273,31 +205,12 @@ export function Homepage() {
             </button>
           </div>
         </div>
-      </section>
 
-      {/* FAQ SECTION */}
-      <section className="faq-section" aria-label="Frequently Asked Questions">
-        <div className="faq-container">
-          <h2 className="faq-title">FREQUENTLY ASKED QUESTIONS</h2>
-          <div className="faq-grid">
-            {faqItems.map((faq, index) => (
-              <div key={index} className="faq-item">
-                <button
-                  className="faq-question"
-                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                  aria-expanded={expandedFaq === index}
-                >
-                  <span>{faq.question}</span>
-                  <span className="faq-icon">{expandedFaq === index ? "−" : "+"}</span>
-                </button>
-                {expandedFaq === index && (
-                  <div className="faq-answer">
-                    {typeof faq.answer === "string" ? faq.answer : faq.answer}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+        <div className="update-placeholders-grid">
+          <Link href="/reviews/thrill" className="placeholder-mini-card">1. CASINO REVIEW</Link>
+          <Link href="/leaderboard" className="placeholder-mini-card">2. RAFFLE ANNOUNCEMENT</Link>
+          <Link href="/mandycoins" className="placeholder-mini-card">3. MANDYCOIN ANNOUNCEMENT</Link>
+          <a href="https://t.me/mandygg_support_bot" className="placeholder-mini-card" target="_blank" rel="noreferrer">4. JOIN TELEGRAM</a>
         </div>
       </section>
     </main>
