@@ -1,466 +1,300 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
-import MailingListForm from "@/components/MailingListForm"
-import { AnnouncementsTicker } from "@/components/announcements-ticker"
-import { SiteNavigation } from "@/components/site-navigation"
-import { socialLinks } from "@/components/social-icons"
-import { faqItems } from "@/components/homepage-faq-data"
+import React, { useState } from "react";
+import Link from "next/link";
+import "@/app/styles/mandy-home.css";
+import "@/app/styles/blog.css";
+import { SEED_POSTS, formatDate } from "@/app/blog/data";
+import SiteNav from "@/app/components/SiteNav";
+import SiteFooter from "@/app/components/SiteFooter";
 
-export function Homepage() {
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
-  const [user, setUser] = useState<User | null>(null)
-  const [scrollY, setScrollY] = useState(0)
-  const router = useRouter()
-  const supabase = createClient()
+export default function Home() {
+  const tickerText = "| CODE: MANDY ON THRILL.COM ";
+  const logoRef = React.useRef<HTMLSpanElement | null>(null);
+  const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  useEffect(() => {
-    async function checkUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    checkUser()
+  const handleLogoMouseMove = (event: React.MouseEvent<HTMLElement>) => {
+    const span = logoRef.current;
+    if (!span) return;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
+    const rect = span.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    const tiltX = ((yPercent - 50) / 50) * -8;
+    const tiltY = ((xPercent - 50) / 50) * 8;
 
-  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    span.style.setProperty("--mouse-x", `${xPercent}%`);
+    span.style.setProperty("--mouse-y", `${yPercent}%`);
+    span.style.setProperty("--tilt-x", `${tiltX}deg`);
+    span.style.setProperty("--tilt-y", `${tiltY}deg`);
+  };
+
+  const handleLogoMouseLeave = () => {
+    const span = logoRef.current;
+    if (!span) return;
+    span.style.setProperty("--mouse-x", "50%");
+    span.style.setProperty("--mouse-y", "50%");
+    span.style.setProperty("--tilt-x", "0deg");
+    span.style.setProperty("--tilt-y", "0deg");
+  };
+
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rx = ((y - cy) / cy) * -5;
+    const ry = ((x - cx) / cx) * 5;
+    const iconX = ((x - cx) / cx) * -14;
+    const iconY = ((y - cy) / cy) * -14;
+    card.style.setProperty("--rx", `${rx}deg`);
+    card.style.setProperty("--ry", `${ry}deg`);
+    card.style.setProperty("--icon-x", `${iconX}px`);
+    card.style.setProperty("--icon-y", `${iconY}px`);
+  };
+
+  const handleCardMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget;
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+    card.style.setProperty("--icon-x", "0px");
+    card.style.setProperty("--icon-y", "0px");
+  };
+
+  const scrollUpdatesFeed = (direction: "left" | "right") => {
+    const feed = updatesFeedRef.current;
+    if (!feed) return;
+    const offset = direction === "left" ? -340 : 340;
+    feed.scrollBy({ left: offset, behavior: "smooth" });
+  };
+
+  const announcements = [
+    { tag: "NEW", variant: "new", date: "MAR 25, 2026", title: "$3500 WEEKLY RACE IS LIVE", body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week.", cta: "ENTER NOW →" },
+    { tag: "UPDATE", variant: "update", date: "MAR 15, 2026", title: "NEW GAMING TOOLS DROPPING SOON", body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access.", cta: "FOLLOW UPDATES →" },
+    { tag: "ALERT", variant: "alert", date: "MAR 1, 2026", title: "THRILL BONUS CODE: MANDY", body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it.", cta: "CLAIM BONUS →" },
+    { tag: "INFO", variant: "", date: "FEB 22, 2026", title: "MANDY.GG IS NOW LIVE", body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next.", cta: "ABOUT MANDY →" },
+  ];
+
+  const faqItems = [
+    {
+      question: "HOW CAN I GET THE BEST CASINO BONUSES?",
+      answer: (
+        <span>
+          Sign up through{" "}
+          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill.com</a>
+          {" "}with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a> for exclusive perks, weekly races, instant lossback, and VIP upgrades.
+        </span>
+      ),
+    },
+    {
+      question: "WHAT'S THE BEST STAKE ALTERNATIVE?",
+      answer: (
+        <span>
+          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill</a>
+          {" "}offers the most generous bonuses and fastest payouts for crypto gamblers. You get extra rewards by joining with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a>.
+        </span>
+      ),
+    },
+    {
+      question: "HOW DO I CONTACT YOU?",
+      answer: (
+        <span>
+          Join the{" "}
+          <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">official Telegram group</a>
+          {" "}first. If you can{"'"}t find your answer in the group, message the{" "}
+          <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">MandySupport bot</a>.
+        </span>
+      ),
+    },
+    {
+      question: "WHAT PERKS COME WITH CODE MANDY?",
+      answer: (
+        <div>
+          <p className="mb-3">Using code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a> gives you access to:</p>
+          <ul className="list-disc list-inside space-y-2 mb-3">
+            <li><strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize pool.</li>
+            <li><strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize pool if you hit the $50,000 monthly wagering requirement.</li>
+            <li><strong>Lossback</strong>: You can request lossback from day one.</li>
+            <li><strong>Custom High Roller Benefits</strong>: For high volume players.</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      question: "WHAT CASINO IS THE BEST?",
+      answer: (
+        <span>
+          Currently your best option is{" "}
+          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline">Thrill</a>.
+          Hands down. Sign up with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#c1ff00] hover:underline font-bold">MANDY</a>.
+        </span>
+      ),
+    },
+    {
+      question: "ARE THESE CASINOS REAL? WILL THEY SCAM ME?",
+      answer: "Any casino listed on Mandy.gg has been vetted by me. If you're not breaking the terms of service or abusing promos or alts, you should have no issues withdrawing your winnings.",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#1f1f1f] relative overflow-x-hidden">
-      {/* ─── STICKY NAVBAR ─── */}
-      <div className="sticky top-0 z-50">
-        <SiteNavigation currentPage="home" />
-      </div>
+    <main className="mandy-home">
+      <SiteNav />
 
-      {/* ─── TICKER 1 (Below navbar) ─── */}
-      <div className="relative z-20">
-        <AnnouncementsTicker tickerKey="ticker_1_text" />
-      </div>
-
-      {/* ─── SECTION 1: HERO (Spinning Logo) ─── */}
-      <section className="relative w-full min-h-screen bg-[#1f1f1f] flex items-center justify-center overflow-hidden">
-        <div
-          className="flex items-center justify-center"
-          style={{
-            transform: prefersReducedMotion ? "none" : `translateY(${scrollY * 0.3}px)`,
-            opacity: Math.max(0, 1 - scrollY / 600),
-          }}
+      {/* HERO SECTION */}
+      <section className="hero" aria-labelledby="hero-title">
+        <h1
+          id="hero-title"
+          className="mandy-logo"
+          onMouseMove={handleLogoMouseMove}
+          onMouseLeave={handleLogoMouseLeave}
         >
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-64 md:w-96 h-auto object-contain"
-            style={{ display: "block" }}
-          >
-            <source
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-spinning-logo-go3Usymb603ueWcluXgwKOXYd4GivN.webm"
-              type="video/webm"
-            />
-          </video>
-        </div>
+          <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
+        </h1>
+        <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
-      {/* ─── SECTION 2: YELLOW MANDY.GG BAND (STICKY BEHAVIOR) ─── */}
-      <section
-        className="relative w-full bg-[#c8fe00] py-16 md:py-24 z-30"
-        style={{
-          position: scrollY > 800 ? "sticky" : "relative",
-          top: scrollY > 800 ? 64 : "auto",
-        }}
-      >
-        {/* Yellow band content */}
-        <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <h2
-            className="text-4xl md:text-6xl font-black uppercase text-[#151515] tracking-widest"
-            style={{ fontFamily: "OCR B Std, monospace" }}
+      {/* FEATURES SECTION - 3 CARDS */}
+      <section className="features" aria-label="Main features">
+        <div className="features-grid">
+          {/* Card 1: Rewards */}
+          <article className="feature-card floating-card"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
-            MANDY.GG
-          </h2>
-          <p
-            className="text-lg md:text-2xl uppercase text-[#151515] mt-2 font-black tracking-wide"
-            style={{ fontFamily: "OCR B Std, monospace" }}
-          >
-            YEAH, I'M A GIRL AND I GAMBLE.
-          </p>
-        </div>
-
-        {/* Floating assets over yellow band */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Trophy */}
-          <div
-            className="absolute w-32 h-32 md:w-48 md:h-48"
-            style={{
-              right: "5%",
-              top: "20%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * 0.1}px)`,
-              zIndex: scrollY > 900 ? 40 : 5,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-QOKEIT9LFdGLGmw9eVcuMC7I7PcEvu.webp"
-              alt="Trophy"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Poker Chip */}
-          <div
-            className="absolute w-24 h-24 md:w-32 md:h-32"
-            style={{
-              right: "12%",
-              bottom: "10%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * -0.15}px)`,
-              zIndex: scrollY > 900 ? 5 : 40,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT-eHDiZQerbpnVaknCxDImGBlyZo1TXh.webp"
-              alt="Poker Chip"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Gift Box */}
-          <div
-            className="absolute w-40 h-40 md:w-56 md:h-56"
-            style={{
-              left: "3%",
-              top: "50%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * 0.12}px)`,
-              zIndex: 5,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-HnZOVZyJzOem8MO5CgdJGmIVtiTPlV.webp"
-              alt="Gift Box"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Dice */}
-          <div
-            className="absolute w-32 h-32 md:w-40 md:h-40"
-            style={{
-              left: "15%",
-              top: "10%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * -0.2}px)`,
-              zIndex: scrollY > 950 ? 5 : 40,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-z66C0vVpaSzuLjVpRUU3EZCXOoEzau.webp"
-              alt="Dice"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* VIP Text */}
-          <div
-            className="absolute w-48 h-48 md:w-64 md:h-64"
-            style={{
-              right: "25%",
-              bottom: "5%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * 0.08}px)`,
-              zIndex: 5,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/VIP_FLOATING_ELEMENT-WMR1gdl6wxQ6TClcKwfUtSYYUPfZr5.webp"
-              alt="VIP"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Coin */}
-          <div
-            className="absolute w-20 h-20 md:w-28 md:h-28"
-            style={{
-              left: "35%",
-              bottom: "15%",
-              transform: prefersReducedMotion ? "none" : `translateY(${(scrollY - 800) * 0.25}px)`,
-              zIndex: 40,
-            }}
-          >
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/COIN_FLOATING_ELEMENT-jfnbEvoKETS360QGpVZi1fy7m3y5g0.webp"
-              alt="Coin"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 3: THREE FEATURE CARDS ─── */}
-      <section className="relative w-full bg-[#1f1f1f] py-16 md:py-24 px-4 z-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {/* Rewards Card */}
-            <div
-              className="bg-[#1f1f1f] border-2 border-[#000000] p-8 md:p-10 flex flex-col items-center text-center"
-              style={{
-                boxShadow: "3px 3px 0 rgba(0,0,0,1)",
-                borderRadius: "2px",
-              }}
-            >
-              <div className="w-32 h-32 md:w-40 md:h-40 mb-6">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/REWARDS_HOLOGRAM_ICON-wYnYEtXbZyiqM2munN5rPZ1laVLopd.webp"
-                  alt="Rewards"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <h3
-                className="text-xl md:text-2xl uppercase font-black text-[#c8fe00] mb-3 tracking-wider"
-                style={{ fontFamily: "OCR B Std, monospace" }}
-              >
-                REWARDS I GOT YOU
-              </h3>
-              <p className="text-sm md:text-base text-[#FFFFFF] mb-6">Join the race and compete for weekly prizes</p>
-              <Link href="#rewards">
-                <Button
-                  className="bg-[#c8fe00] text-[#151515] border-2 border-[#000000] uppercase font-black tracking-wider hover:brightness-90 transform hover:-translate-y-0.5"
-                  style={{
-                    fontFamily: "OCR B Std, monospace",
-                    boxShadow: "2px 2px 0 rgba(0,0,0,0.5)",
-                    borderRadius: "2px",
-                  }}
-                >
-                  VIEW REWARDS
-                </Button>
-              </Link>
-            </div>
-
-            {/* Race Card */}
-            <div
-              className="bg-[#1f1f1f] border-2 border-[#000000] p-8 md:p-10 flex flex-col items-center text-center"
-              style={{
-                boxShadow: "3px 3px 0 rgba(0,0,0,1)",
-                borderRadius: "2px",
-              }}
-            >
-              <div className="w-32 h-32 md:w-40 md:h-40 mb-6">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RACE_HOLOGRAM_ICON-D5nvoQ7KXz6sV3EUQC2MgisAEoRGa9.webp"
-                  alt="Race"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <h3
-                className="text-xl md:text-2xl uppercase font-black text-[#c8fe00] mb-1 tracking-wider"
-                style={{ fontFamily: "OCR B Std, monospace" }}
-              >
-                $35,000 RACE
-              </h3>
-              <p className="text-xs md:text-sm text-[#999] mb-3">Forget monthly</p>
-              <p className="text-xs md:text-sm text-[#999] mb-6">Join a weekly race to win every week</p>
-              <Link href="#leaderboard">
-                <Button
-                  className="bg-[#c8fe00] text-[#151515] border-2 border-[#000000] uppercase font-black tracking-wider hover:brightness-90 transform hover:-translate-y-0.5"
-                  style={{
-                    fontFamily: "OCR B Std, monospace",
-                    boxShadow: "2px 2px 0 rgba(0,0,0,0.5)",
-                    borderRadius: "2px",
-                  }}
-                >
-                  VIEW LEADERBOARD
-                </Button>
-              </Link>
-            </div>
-
-            {/* Connect Card */}
-            <div
-              className="bg-[#1f1f1f] border-2 border-[#000000] p-8 md:p-10 flex flex-col items-center text-center"
-              style={{
-                boxShadow: "3px 3px 0 rgba(0,0,0,1)",
-                borderRadius: "2px",
-              }}
-            >
-              <div className="w-32 h-32 md:w-40 md:h-40 mb-6">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/CONNECT_HOLOGRAM_ICON-pYzxAgRsXHHpRgyxGVg2TY0CFBHpmg.webp"
-                  alt="Connect"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <h3
-                className="text-xl md:text-2xl uppercase font-black text-[#c8fe00] mb-3 tracking-wider"
-                style={{ fontFamily: "OCR B Std, monospace" }}
-              >
-                CONNECT
-              </h3>
-              <p className="text-sm md:text-base text-[#FFFFFF] mb-6">Core join the community and chat live</p>
-              <Link href="https://t.me/MandyggChat" target="_blank">
-                <Button
-                  className="bg-[#c8fe00] text-[#151515] border-2 border-[#000000] uppercase font-black tracking-wider hover:brightness-90 transform hover:-translate-y-0.5"
-                  style={{
-                    fontFamily: "OCR B Std, monospace",
-                    boxShadow: "2px 2px 0 rgba(0,0,0,0.5)",
-                    borderRadius: "2px",
-                  }}
-                >
-                  JOIN TELEGRAM
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 4: MANDY x THRILL ─── */}
-      <section className="relative w-full bg-[#1f1f1f] py-16 md:py-24 px-4 z-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-            <div className="flex-1">
+            <div className="feature-icon-wrap">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/M_LOGO_YELLOW-PWuv3DrM2dtu3KJKT34AriQyDkGAQq.webp"
-                alt="Mandy Logo"
-                className="w-32 h-auto mb-6"
-              />
-              <h2
-                className="text-3xl md:text-5xl uppercase font-black text-[#c8fe00] mb-4 tracking-widest"
-                style={{ fontFamily: "OCR B Std, monospace" }}
-              >
-                COME PLAY WITH ME
-                <br />
-                AT THRILL!
-              </h2>
-              <p className="text-sm md:text-base text-[#FFFFFF] mb-6 italic">
-                (It's like Stake, but with less Drake and more bonuses!)
-              </p>
-              <Link href="https://thrill.com/?r=MANDY" target="_blank">
-                <Button
-                  className="bg-[#c8fe00] text-[#151515] border-2 border-[#000000] uppercase font-black tracking-wider hover:brightness-90 transform hover:-translate-y-0.5 px-8 py-4"
-                  style={{
-                    fontFamily: "OCR B Std, monospace",
-                    boxShadow: "2px 2px 0 rgba(0,0,0,0.5)",
-                    borderRadius: "2px",
-                  }}
-                >
-                  PLAY AT THRILL
-                </Button>
-              </Link>
-            </div>
-            <div className="flex-1">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/M_LOGO_YELLOW-PWuv3DrM2dtu3KJKT34AriQyDkGAQq.webp"
-                alt="Mandy Thrill"
-                className="w-full h-auto"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/REWARDS_HOLOGRAM_ICON-wYnYEtXbZyiqM2munN5rPZ1laVLopd.webp"
+                alt="Rewards"
+                className="feature-icon"
               />
             </div>
-          </div>
-        </div>
-      </section>
+            <h2 className="feature-title">REWARDS I GOT YOU</h2>
+            <p className="feature-description">THE BEST BONUSES, RAKEBACK, LOSSBACK, AND VIP PERKS ON THRILL</p>
+            <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="primary-button">
+              CLAIM REWARDS
+            </a>
+          </article>
 
-      {/* ─── SECTION 5: HI I'M MANDY ─── */}
-      <section className="relative w-full bg-[#1f1f1f] py-16 md:py-24 px-4 z-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start gap-8">
-            <div className="flex-1">
-              <h2
-                className="text-4xl md:text-6xl uppercase font-black text-[#c8fe00] mb-6 tracking-widest"
-                style={{ fontFamily: "OCR B Std, monospace" }}
-              >
-                HI I'M MANDY,
-              </h2>
-              <div className="space-y-4 text-sm md:text-base text-[#FFFFFF] leading-relaxed">
-                <p>
-                  I'm a gambler trying to guide other degenerates through the shit show that is the online casino industry. The casinos on this site are the ones I actually trust with my own money. I get my players the best perks possible so you can stop Googling bonus codes and get back to watching Plinko balls fall in the wrong direction. You're welcome.
-                </p>
-                <p>
-                  Sign up at Thrill with code:{" "}
-                  <Link href="https://thrill.com/?r=MANDY" target="_blank" className="text-[#c8fe00] font-bold hover:underline">
-                    MANDY
-                  </Link>
-                  {" "}and come join the party on{" "}
-                  <Link href="https://t.me/MandyggChat" target="_blank" className="text-[#c8fe00] font-bold hover:underline">
-                    Telegram
-                  </Link>
-                  .
-                </p>
-              </div>
-
-              {/* Kick Badge */}
-              <div className="mt-8 flex items-center gap-3 bg-[#c8fe00] text-[#151515] p-4 inline-flex rounded-lg">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/KICK_ICON-vbx7SAEPHPhmrsidbMX7i4bzkimJQ9.webp"
-                  alt="Kick"
-                  className="w-8 h-8"
-                />
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest">Mandy stream coming soon!</p>
-                  <p className="text-xs">Follow on Kick so you don't miss it!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 6: FAQ ─── */}
-      <section className="relative w-full bg-[#1f1f1f] py-16 md:py-24 px-4 z-20">
-        <div className="max-w-4xl mx-auto">
-          <h2
-            className="text-4xl md:text-5xl uppercase font-black text-[#000000] mb-12 tracking-widest text-center"
-            style={{ fontFamily: "OCR B Std, monospace" }}
+          {/* Card 2: Weekly Race */}
+          <article className="feature-card floating-card"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
           >
-            FREQUENTLY ASKED QUESTIONS
-          </h2>
+            <div className="feature-icon-wrap">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RACE_HOLOGRAM_ICON-D5nvoQ7KXz6sV3EUQC2MgisAEoRGa9.webp"
+                alt="Race"
+                className="feature-icon"
+              />
+            </div>
+            <h2 className="feature-title">$3500 WEEKLY RACE</h2>
+            <p className="feature-description">COMPETE EVERY WEEK FOR CASH PRIZES. CODE MANDY GETS YOU INSTANT ENTRY.</p>
+            <Link href="/leaderboard" className="primary-button">
+              VIEW LEADERBOARD
+            </Link>
+          </article>
 
-          <div className="space-y-2">
+          {/* Card 3: Connect */}
+          <article className="feature-card floating-card"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+          >
+            <div className="feature-icon-wrap">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/CONNECT_HOLOGRAM_ICON-pYzxAgRsXHHpRgyxGVg2TY0CFBHpmg.webp"
+                alt="Connect"
+                className="feature-icon"
+              />
+            </div>
+            <h2 className="feature-title">CONNECT</h2>
+            <p className="feature-description">JOIN THE TELEGRAM COMMUNITY FOR EVENTS, UPDATES, AND DEGEN VIBES</p>
+            <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="primary-button">
+              JOIN TELEGRAM
+            </a>
+          </article>
+        </div>
+      </section>
+
+      {/* TICKER */}
+      <div className="ticker" aria-label="Promo ticker">
+        <div className="ticker-track">
+          <span>{tickerText.repeat(8)}</span>
+          <span aria-hidden="true">{tickerText.repeat(8)}</span>
+        </div>
+      </div>
+
+      {/* UPDATES FEED SECTION */}
+      <section className="updates-section" aria-label="Updates">
+        <div className="updates-strip">
+          <div className="updates-strip-head">
+            <span className="updates-strip-title">LATEST UPDATES</span>
+          </div>
+          <div className="updates-feed-wrap">
+            <button
+              type="button"
+              className="updates-feed-arrow updates-feed-arrow--left"
+              aria-label="Scroll updates left"
+              onClick={() => scrollUpdatesFeed("left")}
+            >
+              ←
+            </button>
+            <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
+              {announcements.map((item, i) => (
+                <article
+                  key={`feed-${i}`}
+                  role="listitem"
+                  className="update-feed-card floating-card"
+                  onMouseMove={handleCardMouseMove}
+                  onMouseLeave={handleCardMouseLeave}
+                >
+                  <div className="update-feed-top">
+                    <span className={`announcement-tag${item.variant ? ` announcement-tag--${item.variant}` : ""}`}>
+                      {item.tag}
+                    </span>
+                    <time className="announcement-date">{item.date}</time>
+                  </div>
+                  <h3 className="update-feed-title">{item.title}</h3>
+                  <p className="update-feed-copy">{item.body}</p>
+                </article>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="updates-feed-arrow updates-feed-arrow--right"
+              aria-label="Scroll updates right"
+              onClick={() => scrollUpdatesFeed("right")}
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="faq-section" aria-label="Frequently Asked Questions">
+        <div className="faq-container">
+          <h2 className="faq-title">FREQUENTLY ASKED QUESTIONS</h2>
+          <div className="faq-grid">
             {faqItems.map((faq, index) => (
-              <div
-                key={index}
-                className="bg-[#1f1f1f] border-2 border-[#000000]"
-                style={{
-                  boxShadow: "2px 2px 0 rgba(0,0,0,1)",
-                  borderRadius: "2px",
-                }}
-              >
+              <div key={index} className="faq-item">
                 <button
-                  className="w-full py-3 md:py-4 px-6 md:px-8 cursor-pointer text-left flex justify-between items-center gap-4 hover:bg-[#2a2a2a] transition-colors"
+                  className="faq-question"
                   onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                   aria-expanded={expandedFaq === index}
-                  aria-controls={`faq-content-${index}`}
                 >
-                  <h3
-                    className="text-sm md:text-base uppercase font-black text-[#FFFFFF] tracking-wide"
-                    style={{ fontFamily: "OCR B Std, monospace" }}
-                  >
-                    {faq.question}
-                  </h3>
-                  <span className="text-2xl md:text-3xl text-[#c8fe00] font-black flex-shrink-0">
-                    {expandedFaq === index ? "−" : "+"}
-                  </span>
+                  <span>{faq.question}</span>
+                  <span className="faq-icon">{expandedFaq === index ? "−" : "+"}</span>
                 </button>
                 {expandedFaq === index && (
-                  <div id={`faq-content-${index}`} className="px-6 md:px-8 pb-4 md:pb-6 border-t border-[#000000]">
-                    <div className="text-sm md:text-base text-[#FFFFFF] leading-relaxed">
-                      {typeof faq.answer === "string" ? faq.answer : faq.answer}
-                    </div>
+                  <div className="faq-answer">
+                    {typeof faq.answer === "string" ? faq.answer : faq.answer}
                   </div>
                 )}
               </div>
@@ -469,59 +303,30 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* ─── SECTION 7: HOLOGRAPHIC FOOTER ─── */}
-      <section
-        className="relative w-full py-24 md:py-32 px-4 z-20 overflow-hidden"
-        style={{
-          backgroundImage: `url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLOGRAPHIC_FOIL_BACKGROUND.webp-t00iPLPAtMzDhml94kFHQG5aSZ93zb.jpeg')`,
-          backgroundSize: "cover",
-          backgroundAttachment: prefersReducedMotion ? "scroll" : "fixed",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-12">
-            <div className="flex justify-center gap-6 mb-12 flex-wrap">
-              {socialLinks.map((social) => {
-                const Icon = social.Icon
-                return (
-                  <Link key={social.label} href={social.href} target="_blank" rel="noopener noreferrer">
-                    <div className="flex flex-col items-center gap-2 group cursor-pointer">
-                      <div className="w-12 h-12 text-[#FFFFFF] hover:text-[#c8fe00] transition-colors">
-                        <Icon className="w-full h-full" />
-                      </div>
-                      <span className="text-xs md:text-sm uppercase font-black tracking-wide text-[#FFFFFF] group-hover:text-[#c8fe00]">
-                        {social.label}
-                      </span>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/M_LOGO_YELLOW-PWuv3DrM2dtu3KJKT34AriQyDkGAQq.webp"
-              alt="Mandy"
-              className="w-24 md:w-32 h-auto mx-auto mb-8"
-            />
-
-            <div className="flex justify-center gap-6 md:gap-12 flex-wrap text-xs md:text-sm uppercase font-black tracking-widest text-[#FFFFFF]">
-              <Link href="#privacy" className="hover:text-[#c8fe00]">
-                PRIVACY POLICY
-              </Link>
-              <Link href="#terms" className="hover:text-[#c8fe00]">
-                TERMS OF SERVICE
-              </Link>
-              <Link href="https://t.me/mandysupport_bot" target="_blank" className="hover:text-[#c8fe00]">
-                SUPPORT
-              </Link>
-            </div>
-          </div>
+      {/* BLOG FEED */}
+      <section className="blog-feed-section" aria-label="Latest from the blog">
+        <div className="blog-feed-header">
+          <span className="blog-feed-eyebrow">GAMBLING GOSSIP</span>
+          <Link href="/blog" className="blog-feed-link">ALL POSTS →</Link>
+        </div>
+        <div className="blog-feed-grid">
+          {SEED_POSTS.slice(0, 3).map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-feed-card">
+              <div className="blog-feed-card-meta">
+                {post.tags.slice(0, 1).map((tag) => (
+                  <span key={tag} className="blog-tag">{tag}</span>
+                ))}
+                <span className="blog-date">{formatDate(post.date)}</span>
+              </div>
+              <h3 className="blog-feed-card-title">{post.title}</h3>
+              <p className="blog-feed-card-excerpt">{post.excerpt}</p>
+              <span className="blog-feed-card-cta">READ MORE →</span>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* Mailing List Modal/Form (hidden for now) */}
-      <MailingListForm />
-    </div>
-  )
+      <SiteFooter />
+    </main>
+  );
 }
