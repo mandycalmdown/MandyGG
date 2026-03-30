@@ -135,6 +135,9 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
+  /* Extra top padding so overhanging icons have room above the cards */
+  padding-top: 5rem;
+  overflow: visible;
 }
 
 /* Card base — darker bg + iridescent rainbow border on hover */
@@ -185,6 +188,13 @@
   align-items: center;
   text-align: center;
   min-height: 320px;
+  /* Allow icon to overflow above the card */
+  overflow: visible;
+}
+
+/* Feature cards need overflow:visible so icons can float above the top edge */
+.feature-card.floating-card {
+  overflow: visible;
 }
 
 /* Icon sits BEHIND text but ABOVE the card background — z-index:0, text at z-index:1+ */
