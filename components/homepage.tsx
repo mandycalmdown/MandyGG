@@ -183,10 +183,13 @@ export function Homepage() {
               href="https://thrill.com/?r=MANDY"
               target="_blank"
               rel="noopener noreferrer"
-              className="primary-button"
+              className="primary-button holo-button"
             >
-              <span>TELL ME</span>
-              <span>MORE</span>
+              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
+              </video>
+              <span className="holo-button__label">TELL ME MORE</span>
             </a>
           </article>
 
@@ -206,9 +209,12 @@ export function Homepage() {
             <p className="feature-description">
               FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!
             </p>
-            <Link href="/leaderboard" className="primary-button">
-              <span>VIEW</span>
-              <span>LEADERBOARD</span>
+            <Link href="/leaderboard" className="primary-button holo-button">
+              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
+              </video>
+              <span className="holo-button__label">VIEW LEADERBOARD</span>
             </Link>
           </article>
 
@@ -226,9 +232,12 @@ export function Homepage() {
             </div>
             <h2 className="feature-title">GAMING TOOLS</h2>
             <p className="feature-description">TOOLS FOR DEGENERACY.</p>
-            <Link href="/tools" className="primary-button">
-              <span>NERD</span>
-              <span>ALERT</span>
+            <Link href="/tools" className="primary-button holo-button">
+              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
+                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
+              </video>
+              <span className="holo-button__label">NERD ALERT</span>
             </Link>
           </article>
         </div>
@@ -236,6 +245,18 @@ export function Homepage() {
 
       {/* ── Ticker ── */}
       <div className="ticker" aria-label="Promo ticker">
+        {/* HOLO_WIDE video behind the text */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden="true"
+          className="ticker-video"
+        >
+          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-CNLyaOSVK5cArFRfu1FNHzb433j8iI.webm" type="video/webm" />
+          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-RpqZaJvObzwBscZHWnnvAXCjgzTJWB.mp4" type="video/mp4" />
+        </video>
         <div className="ticker-track">
           <span>{tickerText.repeat(10)}</span>
           <span aria-hidden="true">{tickerText.repeat(10)}</span>
