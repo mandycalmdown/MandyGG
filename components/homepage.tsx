@@ -132,6 +132,7 @@ export function Homepage() {
 
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
+        {/* Outer h1: text-transparent so the base text is invisible */}
         <h1
           id="hero-title"
           ref={logoRef}
@@ -139,18 +140,9 @@ export function Homepage() {
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          {/*
-            bg-clip-text technique:
-            - Outer h1 text is `color: transparent` so nothing renders by default
-            - The inner span has `background-clip: text` + `WebkitBackgroundClip: text`
-              making the video act as the fill of the letterforms
-            - The video is absolutely positioned to cover the span, object-cover fills it
-            - The visible text "MANDY.GG" in the span is what gets clipped
-          */}
-          <span
-            className="mandy-logo__clip-wrap"
-            style={{ WebkitBackgroundClip: "text", backgroundClip: "text" }}
-          >
+          MANDY.GG
+          {/* Inner span: bg-clip-text clips the video to the letter shapes */}
+          <span className="mandy-logo__clip-wrap">
             <video
               autoPlay
               loop
@@ -163,8 +155,6 @@ export function Homepage() {
             </video>
             MANDY.GG
           </span>
-          {/* Sheen sweep on top */}
-          <span className="mandy-logo__sheen" aria-hidden="true" />
         </h1>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>

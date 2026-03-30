@@ -76,15 +76,24 @@
   user-select: none;
 }
 
-/* The span whose background is clipped to the text shape */
+/* Absolutely overlays the outer transparent text — video gets clipped to letter shapes */
 .mandy-logo__clip-wrap {
-  position: relative;
-  display: inline-block;
+  position: absolute;
+  inset: 0;
+  display: block;
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  /* Fallback background in case video hasn't loaded */
+  /* Fallback yellow if video hasn't loaded */
   background-color: #c1ff00;
+  /* Match the h1 font exactly */
+  font-family: "Poppins", sans-serif;
+  font-size: inherit;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 /* Video absolutely fills the span — it becomes the visible "fill" of the letters */
