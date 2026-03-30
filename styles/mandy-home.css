@@ -44,6 +44,17 @@
   text-align: center;
 }
 
+/*
+  VIDEO-AS-TEXT MASK TECHNIQUE
+  ─────────────────────────────
+  The h1 (.mandy-logo) is the stacking context (isolation: isolate).
+  • .mandy-logo__letters  → white text, sits on the dark page bg
+  • .mandy-logo__video    → covers the whole h1, mix-blend-mode: multiply
+      multiply math: dark-bg(≈0) × video = 0 (video invisible on dark areas)
+                     white-text(255) × video = video (video shows through letters)
+  • .mandy-logo__sheen    → glossy sweep on top for extra glint
+*/
+
 .mandy-logo {
   --rx: 0deg;
   --ry: 0deg;
@@ -51,71 +62,57 @@
   font-family: "Poppins", sans-serif;
   font-size: clamp(4rem, 14vw, 11.2rem);
   font-weight: 900;
-  line-height: 1.02;
-  letter-spacing: 0.01em;
+  line-height: 1;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
   text-align: center;
   position: relative;
   display: inline-block;
+  isolation: isolate;                  /* contain the blend modes */
   transform-style: preserve-3d;
-  transform: perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.15s ease-out;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out;
   cursor: default;
   user-select: none;
 }
 
-/* Base solid-colour text — always visible */
-.mandy-logo__text {
+/* White letterforms — the "mask window" the video shows through */
+.mandy-logo__letters {
   display: block;
-  color: #c1ff00;
+  color: #fff;
   position: relative;
   z-index: 1;
-}
-
-/* Wrapper that stacks the mask-text + video + sheen */
-.mandy-logo__video-mask {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: block;
   pointer-events: none;
-  overflow: hidden;
 }
 
-/* Duplicate text used as a mask so the video is clipped to the letterforms */
-.mandy-logo__text--mask {
-  position: relative;
-  z-index: 1;
-  color: #fff;                        /* visible colour under the video */
-  mix-blend-mode: multiply;           /* reveals video only where text is */
-}
-
-/* The holographic video, absolutely positioned to fill the mask wrapper */
+/* Video fills the h1 bounding box; multiply blend hides it everywhere except on the white text */
 .mandy-logo__video {
   position: absolute;
-  inset: -20% -5%;
-  width: 110%;
-  height: 140%;
+  inset: -10% -2%;
+  width: 104%;
+  height: 120%;
   object-fit: cover;
   z-index: 2;
-  mix-blend-mode: screen;            /* blends over the white mask text */
-  opacity: 0.92;
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 
-/* Sheen sweep layer */
+/* Extra gloss sheen that sweeps across the letters */
 .mandy-logo__sheen {
   position: absolute;
   inset: 0;
   z-index: 3;
   background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.18) 50%,
-    transparent 70%
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.22) 48%,
+    rgba(255, 255, 255, 0.08) 52%,
+    transparent 80%
   );
-  background-size: 200% 100%;
-  animation: logoSheen 3s linear infinite;
+  background-size: 250% 100%;
+  animation: logoSheen 3.5s linear infinite;
   mix-blend-mode: overlay;
+  pointer-events: none;
 }
 
 @keyframes logoSheen {

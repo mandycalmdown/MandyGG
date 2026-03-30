@@ -38,7 +38,7 @@ export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  const logoRef = React.useRef<HTMLSpanElement | null>(null);
+  const logoRef = React.useRef<HTMLHeadingElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
   /* ── logo parallax + tilt ── */
@@ -132,31 +132,39 @@ export function Homepage() {
 
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
+        {/*
+          HOW THE MASK WORKS:
+          - The wrapper has isolation:isolate so blending is self-contained
+          - The text is white (color:#fff) — acts as the "window"
+          - The video uses mix-blend-mode:multiply; on a dark bg: dark×video=dark (hidden),
+            white×video=video — so the video only shows through the white letterforms
+          - Sheen layer sweeps across on top for extra gloss
+        */}
         <h1
           id="hero-title"
+          ref={logoRef}
           className="mandy-logo"
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          {/* Base text layer — sets the visible shape */}
-          <span ref={logoRef} className="mandy-logo__text">MANDY.GG</span>
+          {/* White text — the "mask" window */}
+          <span className="mandy-logo__letters" aria-label="MANDY.GG">MANDY.GG</span>
 
-          {/* Video holo overlay — clipped to text via mix-blend-mode */}
-          <span className="mandy-logo__video-mask" aria-hidden="true">
-            <span className="mandy-logo__text mandy-logo__text--mask">MANDY.GG</span>
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="mandy-logo__video"
-            >
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-ljYuo3rZUklV4XceJzReNhrdyz45Ey.webm" type="video/webm" />
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-CGboDkQRcmYqzCkttgHHt7cX9NsbR3.mp4" type="video/mp4" />
-            </video>
-            {/* Sheen sweep on top of video */}
-            <span className="mandy-logo__sheen" aria-hidden="true" />
-          </span>
+          {/* Video fills the h1, multiply blends it away everywhere except on the white text */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+            className="mandy-logo__video"
+          >
+            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-ljYuo3rZUklV4XceJzReNhrdyz45Ey.webm" type="video/webm" />
+            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-CGboDkQRcmYqzCkttgHHt7cX9NsbR3.mp4" type="video/mp4" />
+          </video>
+
+          {/* Sheen sweep across the top */}
+          <span className="mandy-logo__sheen" aria-hidden="true" />
         </h1>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
