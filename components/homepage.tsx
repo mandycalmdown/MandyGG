@@ -38,7 +38,7 @@ export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  const logoRef = React.useRef<HTMLHeadingElement | null>(null);
+  const logoRef = React.useRef<HTMLDivElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
   /* ── logo parallax + tilt ── */
@@ -132,30 +132,40 @@ export function Homepage() {
 
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
-        {/* Outer h1: text-transparent so the base text is invisible */}
-        <h1
-          id="hero-title"
+        {/*
+          MULTIPLY BLEND VIDEO MASK
+          ─────────────────────────
+          The .mandy-logo wrapper is position:relative with overflow:hidden.
+          1. White <span> text renders normally over the dark background.
+          2. The <video> is absolute inset-0, mix-blend-mode: multiply.
+             - Over dark (#111): 0 × video ≈ 0 → video disappears (dark bg wins)
+             - Over white text: 255 × video = video → video fills the letters
+          Result: the holographic video is only visible inside the letterforms.
+        */}
+        <div
           ref={logoRef}
           className="mandy-logo"
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          MANDY.GG
-          {/* Inner span: bg-clip-text clips the video to the letter shapes */}
-          <span className="mandy-logo__clip-wrap">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              aria-hidden="true"
-              className="mandy-logo__video"
-            >
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4" type="video/mp4" />
-            </video>
-            MANDY.GG
-          </span>
-        </h1>
+          {/* White text — the mask shape */}
+          <h1 id="hero-title" className="mandy-logo__letters">MANDY.GG</h1>
+
+          {/* Video on top — multiply blend makes it disappear except over white letters */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+            className="mandy-logo__video"
+          >
+            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4" type="video/mp4" />
+          </video>
+
+          {/* Gloss sheen on top */}
+          <div className="mandy-logo__sheen" aria-hidden="true" />
+        </div>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 

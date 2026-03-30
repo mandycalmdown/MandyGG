@@ -45,19 +45,33 @@
 }
 
 /*
-  BG-CLIP-TEXT VIDEO MASK
-  ────────────────────────
-  .mandy-logo           → transparent text colour, 3D tilt on mouse
-  .mandy-logo__clip-wrap → position:relative so the video can fill it;
-                           background-clip:text clips the bg to the letterforms;
-                           color:transparent so only the bg (video) is visible
-  .mandy-logo__video    → absolute, fills the span, object-cover
-  .mandy-logo__sheen    → sweeping gloss on top
+  MULTIPLY BLEND VIDEO MASK
+  ──────────────────────────
+  .mandy-logo      → wrapper div, position:relative, dark bg (#111) to anchor multiply
+  .mandy-logo__letters → white h1 text (color:#fff)
+  .mandy-logo__video   → absolute inset-0, mix-blend-mode:multiply
+                         dark bg × video = 0 (video hidden)
+                         white text × video = video (video visible through letters only)
+  .mandy-logo__sheen   → subtle gloss sweep on top
 */
 
 .mandy-logo {
   --rx: 0deg;
   --ry: 0deg;
+  position: relative;
+  display: inline-block;
+  /* Must match the page background exactly for multiply to cut cleanly */
+  background-color: #111111;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out;
+  cursor: default;
+  user-select: none;
+  line-height: 1;
+}
+
+/* White letterforms — the mask that video shows through */
+.mandy-logo__letters {
   margin: 0;
   font-family: "Poppins", sans-serif;
   font-size: clamp(4rem, 14vw, 11.2rem);
@@ -66,64 +80,39 @@
   letter-spacing: -0.01em;
   text-transform: uppercase;
   text-align: center;
+  color: #ffffff;
   position: relative;
-  display: inline-block;
-  color: transparent;
-  transform-style: preserve-3d;
-  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.12s ease-out;
-  cursor: default;
-  user-select: none;
+  z-index: 1;
 }
 
-/* Absolutely overlays the outer transparent text — video gets clipped to letter shapes */
-.mandy-logo__clip-wrap {
-  position: absolute;
-  inset: 0;
-  display: block;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  /* Fallback yellow if video hasn't loaded */
-  background-color: #c1ff00;
-  /* Match the h1 font exactly */
-  font-family: "Poppins", sans-serif;
-  font-size: inherit;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-/* Video absolutely fills the span — it becomes the visible "fill" of the letters */
+/* Video covers the wrapper; multiply blend erases it everywhere except over white text */
 .mandy-logo__video {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -5% -2%;
+  width: 104%;
+  height: 110%;
   object-fit: cover;
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
+  mix-blend-mode: multiply;
 }
 
-/* Sheen sweep — sits above the video inside the same clip region */
+/* Gloss sheen on top of the video */
 .mandy-logo__sheen {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   background: linear-gradient(
     110deg,
     transparent 20%,
-    rgba(255, 255, 255, 0.28) 48%,
-    rgba(255, 255, 255, 0.10) 52%,
+    rgba(255, 255, 255, 0.18) 48%,
+    rgba(255, 255, 255, 0.06) 52%,
     transparent 80%
   );
   background-size: 250% 100%;
   animation: logoSheen 3.5s linear infinite;
   pointer-events: none;
-  -webkit-background-clip: text;
-  background-clip: text;
+  mix-blend-mode: overlay;
 }
 
 @keyframes logoSheen {
