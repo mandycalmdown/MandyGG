@@ -1,129 +1,133 @@
+/* ============================================================
+   MANDY.GG — HOMEPAGE STYLES
+   Accent map:
+     neon yellow  #c1ff00   → hero, feature cards, ticker, buttons
+     electric blue #3c7bff  → features section titles + blog section
+     hot pink      #ff2fbf  → updates section
+     electric purple #a538ff → FAQ section
+============================================================ */
+
+/* ── CSS custom props ── */
+:root {
+  --mandy-bg: #0a0a0a;
+  --mandy-bg-secondary: #111111;
+  --mandy-white: #ffffff;
+  --mandy-neon: #c1ff00;
+  --mandy-blue: #3c7bff;
+  --mandy-pink: #ff2fbf;
+  --mandy-purple: #a538ff;
+  --mandy-border: rgba(255, 255, 255, 0.10);
+}
+
+/* ── reset ── */
 .mandy-home,
-body {
-  margin: 0;
+.mandy-home * {
+  box-sizing: border-box;
 }
 
 .mandy-home {
   background: var(--mandy-bg);
   color: var(--mandy-white);
   min-height: 100vh;
-  padding-bottom: 3rem;
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
 }
 
-.site-header {
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-  margin-top: 3.5rem;
-}
-
-.header-inner {
-  width: min(1240px, calc(100% - 3rem));
-  margin: 0 auto;
-  min-height: 30px;
-  display: flex;
-  align-items: bottom;
-  gap: 0rem;
-}
-
-.brand-script {
-  color: var(--mandy-neon);
-  text-decoration: none;
-  font-family: "poppins", sans-serif;
-  font-style: italic;
-  font-size: clamp(2rem, 3.2vw, 3.1rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  flex: 0 0 auto;
-}
-
-.site-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: "poppins", "Courier New", monospace;
-  font-size: 0.92rem;
-  letter-spacing: 0.12em;
-  line-height: 1;
-}
-
-.site-nav a {
-  text-decoration: none;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  transition: color 0.2s ease;
-}
-
-.site-nav a:hover {
-  color: var(--mandy-white);
-}
-
-.site-nav a + a::before {
-  content: "|";
-  color: #ffffff;
-  margin: 0 0.62rem;
-}
-
-.site-nav .sign-in {
-  color: var(--mandy-neon);
-}
-
-.site-nav .sign-in:hover {
-  color: #e0ff6a;
-}
-
+/* ================================================================
+   HERO
+================================================================ */
 .hero {
   --mouse-x: 50%;
   --mouse-y: 50%;
-  --tilt-x: 0deg;
-  --tilt-y: 0deg;
   width: min(1240px, calc(100% - 3rem));
-  margin: 1.25rem auto 0;
+  margin: 2rem auto 0;
   text-align: center;
 }
 
-
-.hero-tagline {
-  margin: 0.85rem 0 0;
-  font-family: "poppins", "Courier New", monospace;
-  letter-spacing: 0.22em;
-  font-size: clamp(0.82rem, 1.45vw, 2rem);
-  color: #ffffff;
+.mandy-logo {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(4rem, 14vw, 11.2rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  overflow: visible;
 }
 
+.mandy-logo__gradient {
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    #c1ff00 0%,
+    #c1ff00 20%,
+    #f5ff6c 35%,
+    #ffffff 50%,
+    #f5ff6c 65%,
+    #c1ff00 80%,
+    #c1ff00 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: mandyGradientText 6s linear infinite;
+}
+
+@keyframes mandyGradientText {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-tagline {
+  margin: 1rem 0 0;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.22em;
+  font-size: clamp(0.75rem, 1.4vw, 1.1rem);
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   FEATURE CARDS — electric blue accent
+================================================================ */
 .features {
   width: min(1240px, calc(100% - 3rem));
-  margin: 22rem auto 0;
+  margin: 7rem auto 0;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.6rem;
+  gap: 1.5rem;
 }
 
 .floating-card {
-  border-radius: 23px;
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 44%),
-    var(--mandy-bg-secondary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  border: 1.5px solid var(--mandy-border);
+  background: linear-gradient(170deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 50%),
+              var(--mandy-bg-secondary);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  transition: transform 0.14s ease-out, box-shadow 0.14s ease-out, border-color 0.2s ease;
   will-change: transform;
 }
 
+.floating-card:hover {
+  border-color: rgba(60, 123, 255, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 24px rgba(60,123,255,0.15);
+}
+
 .feature-card {
-  min-height: 300px;
-  padding: 1rem 1.65rem 1.4rem;
+  padding: 1.1rem 1.6rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   position: relative;
+  min-height: 320px;
 }
 
 .feature-icon-wrap {
@@ -132,10 +136,8 @@ body {
   display: grid;
   place-items: center;
   pointer-events: none;
-  margin-top: -11rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-  z-index: 0;
+  margin-top: -10rem;
+  margin-bottom: 1.2rem;
   transform: translateX(var(--icon-x, 0px)) translateY(var(--icon-y, 0px));
   transition: transform 0.12s ease-out;
 }
@@ -144,648 +146,668 @@ body {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.45));
-  animation: float-icon 4s ease-in-out infinite;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.5));
+  animation: floatIcon 4s ease-in-out infinite;
 }
 
+.floating-card:nth-child(2) .feature-icon { animation-delay: -1.4s; }
+.floating-card:nth-child(3) .feature-icon { animation-delay: -2.8s; }
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* Blue gradient for feature titles */
 .feature-title {
-  position: relative;
-  z-index: 1;
   margin: 0;
-  color: var(--mandy-neon);
+  font-family: "Poppins", sans-serif;
   font-weight: 800;
-  font-size: clamp(1.65rem, 1.5vw, 2rem);
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
   letter-spacing: 0.02em;
+  color: transparent;
+  background-image: linear-gradient(90deg, #3c7bff 0%, #7eb3ff 50%, #3c7bff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: blueGradient 5s linear infinite;
+}
+
+@keyframes blueGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .feature-description {
-  position: relative;
-  z-index: 1;
-  margin: 0.72rem 0 1.45rem;
-  min-height: 3.4em;
-  font-family: "poppins", "Courier New", monospace;
-  font-size: 0.69rem;
-  line-height: 1.28;
-  letter-spacing: 0.16em;
+  margin: 0.7rem 0 1.4rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #ffffff;
-  max-width: 23ch;
+  color: rgba(255,255,255,0.7);
+  max-width: 22ch;
+  flex: 1;
 }
 
+/* Feature buttons — blue accent */
 .primary-button {
-  position: relative;
-  z-index: 1;
-  margin-top: auto;
-  border: 1px solid var(--mandy-neon);
-  border-radius: 0px;
-  background: transparent;
-  color: var(--mandy-white);
-  font-family: "poppins", "Courier New", monospace;
-  letter-spacing: 0.1em;
-  font-size: 0.76rem;
-  text-transform: uppercase;
-  line-height: 1;
-  padding: 0.6rem 0.6rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.primary-button:hover {
-  background: var(--mandy-neon);
-  color: var(--mandy-bg);
-  box-shadow: 0 0 16px rgba(193, 255, 0, 0.34);
-}
-
-.mandy-home,
-body {
-  margin: 0;
-}
-
-.mandy-home {
-  background: var(--mandy-bg);
-  color: var(--mandy-white);
-  min-height: 100vh;
-  padding-bottom: 3rem;
-}
-
-.site-header {
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-  margin-top: 3.5rem;
-}
-
-.header-inner {
-  width: min(1240px, calc(100% - 3rem));
-  margin: 0 auto;
-  min-height: 54px;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.brand-script {
-  color: var(--mandy-neon);
-  text-decoration: none;
-  font-family: "poppins", sans-serif;
-  font-style: italic;
-  font-size: clamp(2rem, 3.2vw, 3.1rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  flex: 0 0 auto;
-}
-
-.site-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: "poppins", "Courier New", monospace;
-  font-size: 0.92rem;
-  letter-spacing: 0.12em;
-  line-height: 1;
-}
-
-.site-nav a {
-  text-decoration: none;
-  color: #ffffff;
   display: inline-flex;
-  align-items: center;
-  transition: color 0.2s ease;
-}
-
-.site-nav a:hover {
-  color: var(--mandy-white);
-}
-
-.site-nav a + a::before {
-  content: "|";
-  color: #ffffff;
-  margin: 0 0.62rem;
-}
-
-.site-nav .sign-in {
-  color: var(--mandy-neon);
-}
-
-.site-nav .sign-in:hover {
-  color: #e0ff6a;
-}
-
-.hero {
-  --mouse-x: 50%;
-  --mouse-y: 50%;
-  --tilt-x: 0deg;
-  --tilt-y: 0deg;
-  width: min(1240px, calc(100% - 3rem));
-  margin: 1.25rem auto 0;
-  text-align: center;
-}
-
-
-.hero-tagline {
-  margin: 0.85rem 0 0;
-  font-family: "poppins", "Courier New", monospace;
-  letter-spacing: 0.22em;
-  font-size: clamp(0.82rem, 1.45vw, 2rem);
-  color: #ffffff;
-}
-
-.features {
-  width: min(1240px, calc(100% - 3rem));
-  margin: 7.8rem auto 0;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.6rem;
-}
-
-.floating-card {
-  border-radius: 23px;
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 44%),
-    var(--mandy-bg-secondary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
-  will-change: transform;
-}
-
-.feature-card {
-  min-height: 300px;
-  padding: 1rem 1.65rem 1.4rem;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  position: relative;
-}
-
-.feature-icon-wrap {
-  width: 180px;
-  height: 180px;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  margin-top: -11rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-  z-index: 0;
-  transform: translateX(var(--icon-x, 0px)) translateY(var(--icon-y, 0px));
-  transition: transform 0.12s ease-out;
-}
-
-.feature-icon {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.45));
-  animation: float-icon 4s ease-in-out infinite;
-}
-
-.feature-title {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  color: var(--mandy-neon);
-  font-weight: 800;
-  font-size: clamp(1.65rem, 1.5vw, 2rem);
-  letter-spacing: 0.02em;
-}
-
-.feature-description {
-  position: relative;
-  z-index: 1;
-  margin: 0.72rem 0 1.45rem;
-  min-height: 3.4em;
-  font-family: "poppins", "Courier New", monospace;
-  font-size: 0.69rem;
-  line-height: 1.28;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #ffffff;
-  max-width: 23ch;
-}
-
-.primary-button {
-  position: relative;
-  z-index: 1;
+  justify-content: center;
   margin-top: auto;
-  border: 1px solid var(--mandy-neon);
-  border-radius: 0px;
+  padding: 0.7rem 1.4rem;
+  border: 1.5px solid var(--mandy-blue);
+  border-radius: 6px;
   background: transparent;
   color: var(--mandy-white);
-  font-family: "poppins", "Courier New", monospace;
-  letter-spacing: 0.1em;
-  font-size: 0.76rem;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  line-height: 1;
-  padding: 0.6rem 0.6rem;
+  line-height: 1.3;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 140px;
 }
 
 .primary-button:hover {
-  background: var(--mandy-neon);
-  color: var(--mandy-bg);
-  box-shadow: 0 0 16px rgba(193, 255, 0, 0.34);
+  background: var(--mandy-blue);
+  color: var(--mandy-white);
+  box-shadow: 0 0 18px rgba(60,123,255,0.4);
 }
 
+/* ================================================================
+   TICKER
+================================================================ */
 .ticker {
   margin-top: 3rem;
-  margin-bottom: 3rem;
   background: #ffffff;
-  border-radius: 0px;
   overflow: hidden;
-  position: relative;
-  z-index: 1;
-
-  /* make the bar hug the text */
-  height: 2rem;
+  height: 2.2rem;
   display: flex;
-  align-items: stretch;
+  align-items: center;
 }
 
 .ticker-track {
   display: flex;
-  align-items: bottom;        /* was bottom */
+  align-items: center;
   width: max-content;
   white-space: nowrap;
-  font-family: "poppins", "Arial Black", sans-serif;
-  font-size: clamp(1.1rem, 1.9vw, 1.7rem);
-  line-height: 2;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
   font-weight: 800;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
   color: #060606;
-  animation: mandy-ticker-reverse 38s linear infinite;
-  padding: 0 0.1rem;          /* no vertical padding, only horizontal */
+  animation: mandyTickerScroll 30s linear infinite;
 }
 
 .ticker-track span {
   display: inline-block;
-  padding-right: 1.1rem;
+  padding-right: 0.5rem;
 }
 
-
-
-@keyframes mandy-ticker {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+@keyframes mandyTickerScroll {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
-@keyframes mandy-ticker-reverse {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
+/* ================================================================
+   UPDATES SECTION — hot pink accent
+================================================================ */
+.updates-section {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 4rem auto 0;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  align-items: flex-start;
 }
 
-@media (max-width: 1120px) {
-  .header-inner,
-  .hero,
-  .features,
-  .holo-panel {
-    width: min(1240px, calc(100% - 2rem));
-  }
-
-  .features {
-    margin-top: 6.2rem;
-  }
-
-  .features-grid {
-    gap: 1.1rem;
-  }
-
-  .feature-card {
-    min-height: 280px;
-    padding: 0 1.1rem 1.2rem;
-  }
-
-  .feature-icon-wrap {
-    width: 156px;
-    height: 156px;
-    margin-top: -5.2rem;
-  }
+.updates-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+  padding-top: 0.5rem;
 }
 
-@media (max-width: 900px) {
-  .site-header {
-    margin-top: 1.8rem;
-  }
-
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0.6rem 0;
-  }
-
-  .features {
-    margin-top: 4.8rem;
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 5rem;
-  }
-
-  .feature-card {
-    min-height: 250px;
-    padding: 0 1.2rem 1.35rem;
-  }
-
-  .feature-icon-wrap {
-    width: 142px;
-    height: 142px;
-    margin-top: -4.8rem;
-  }
-
-  .feature-title {
-    font-size: 1.65rem;
-  }
-
-  .feature-description {
-    font-size: 0.68rem;
-  }
-
-  .ticker-track {
-    font-size: clamp(0.95rem, 4vw, 1.4rem);
-  }
-
-  .holo-panel {
-    border-radius: 24px;
-  }
-}
-
-@media (max-width: 560px) {
-  .brand-script {
-    font-size: 2.4rem;
-  }
-
-  .site-nav {
-    gap: 0.2rem;
-    font-size: 0.67rem;
-    letter-spacing: 0.08em;
-  }
-
-  .site-nav a + a::before {
-    margin: 0 0.35rem;
-  }
-
-  .hero {
-    margin-top: 1rem;
-  }
-
-  .hero-tagline {
-    letter-spacing: 0.11em;
-  }
-
-  .features {
-    margin-top: 3.8rem;
-  }
-
-  .feature-card {
-    padding-left: 0.95rem;
-    padding-right: 0.95rem;
-  }
-
-  .holo-panel {
-    width: calc(100% - 1rem);
-    border-radius: 16px;
-  }
-}
-.mandy-logo {
+.updates-title {
   margin: 0;
-  font-family: "poppins", sans-serif;
-  font-size: clamp(3.6rem, 14vw, 11.2rem);
+  font-family: "Poppins", sans-serif;
   font-weight: 900;
-  line-height: 1.02;
+  font-size: clamp(3rem, 6vw, 5rem);
+  line-height: 0.95;
   letter-spacing: 0.01em;
-  text-transform: uppercase;
-  text-align: center;
-  overflow: visible;
-}
-
-
-.mandy-logo__gradient {
-  position: relative;
-  display: inline-block;
   color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    #c1ff00 0%,
-    #c1ff00 20%,
-    #f5ff6c 35%,
-    #c1ff00 50%,
-    #ffe608 65%,
-    #c1ff00 80%,
-    #ffffff 90%,
-    #c1ff00 100%
-  );
-  background-size: 180% 100%;
-  background-position: 0% 50%;
+  background-image: linear-gradient(135deg, #ff2fbf 0%, #ff8ad8 50%, #ff2fbf 100%);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: mandyGradientText 10s linear infinite;
-
-
+  animation: pinkGradient 5s linear infinite;
 }
 
-@keyframes mandy-ticker {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+@keyframes pinkGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-@keyframes mandy-ticker-reverse {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
+.updates-feed-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
 }
 
-@media (max-width: 1120px) {
-  .header-inner,
-  .hero,
-  .features,
-  .holo-panel {
-    width: min(1240px, calc(100% - 2rem));
-  }
-
-  .features {
-    margin-top: 6.2rem;
-  }
-
-  .features-grid {
-    gap: 1.1rem;
-  }
-
-  .feature-card {
-    min-height: 280px;
-    padding: 0 1.1rem 1.2rem;
-  }
-
-  .feature-icon-wrap {
-    width: 156px;
-    height: 156px;
-    margin-top: -5.2rem;
-  }
+.updates-horizontal-feed {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  flex: 1;
 }
 
-@media (max-width: 900px) {
-  .site-header {
-    margin-top: 1.8rem;
-  }
+.updates-horizontal-feed::-webkit-scrollbar { display: none; }
 
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0.6rem 0;
-  }
-
-  .features {
-    margin-top: 4.8rem;
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 5rem;
-  }
-
-  .feature-card {
-    min-height: 250px;
-    padding: 0 1.2rem 1.35rem;
-  }
-
-  .feature-icon-wrap {
-    width: 142px;
-    height: 142px;
-    margin-top: -4.8rem;
-  }
-
-  .feature-title {
-    font-size: 1.65rem;
-  }
-
-  .feature-description {
-    font-size: 0.68rem;
-  }
-
-  .ticker-track {
-    font-size: clamp(0.95rem, 4vw, 0.4rem);
-  }
-
-  .holo-panel {
-    border-radius: 24px;
-  }
+.updates-feed-arrow {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--mandy-pink);
+  background: transparent;
+  color: var(--mandy-pink);
+  font-size: 1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-@media (max-width: 560px) {
-  .brand-script {
-    font-size: 2.4rem;
-  }
-
-  .site-nav {
-    gap: 0.2rem;
-    font-size: 0.67rem;
-    letter-spacing: 0.08em;
-  }
-
-  .site-nav a + a::before {
-    margin: 0 0.35rem;
-  }
-
-  .hero {
-    margin-top: 1rem;
-  }
-
-  .hero-tagline {
-    letter-spacing: 0.11em;
-  }
-
-  .features {
-    margin-top: 3.8rem;
-  }
-
-  .feature-card {
-    padding-left: 0.95rem;
-    padding-right: 0.95rem;
-  }
-
-  .holo-panel {
-    width: calc(100% - 1rem);
-    border-radius: 16px;
-  }
+.updates-feed-arrow:hover {
+  background: var(--mandy-pink);
+  color: #fff;
 }
-.mandy-logo {
-  margin: 0;
-  font-family: "poppins", sans-serif;
-  font-size: clamp(3.6rem, 14vw, 11.2rem);
-  font-weight: 900;
-  line-height: 1.02;
-  letter-spacing: 0.01em;
+
+.update-feed-card {
+  flex: 0 0 220px;
+  min-width: 220px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.update-feed-card:hover {
+  border-color: rgba(255, 47, 191, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 20px rgba(255,47,191,0.15);
+}
+
+.update-feed-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.announcement-tag {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  text-align: center;
-  overflow: visible;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: var(--mandy-pink);
+  color: #fff;
 }
 
+.announcement-tag--new    { background: var(--mandy-pink); }
+.announcement-tag--update { background: var(--mandy-blue); }
+.announcement-tag--alert  { background: #ff4d4d; }
 
-.mandy-logo__gradient {
-  position: relative;
-  display: inline-block;
+.announcement-date {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.update-feed-title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mandy-white);
+  line-height: 1.3;
+}
+
+.update-feed-copy {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.65rem;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.55);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+/* ================================================================
+   BLOG SECTION — electric blue accent
+================================================================ */
+.blog-section {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 5rem auto 0;
+}
+
+.blog-header {
+  text-align: right;
+  margin-bottom: 2rem;
+}
+
+.blog-title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: 0.01em;
   color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    #c1ff00 0%,
-    #c1ff00 20%,
-    #f5ff6c 35%,
-    #c1ff00 50%,
-    #ffe608 65%,
-    #c1ff00 80%,
-    #ffffff 90%,
-    #c1ff00 100%
-  );
-  background-size: 180% 100%;
-  background-position: 0% 50%;
+  background-image: linear-gradient(90deg, #3c7bff 0%, #7eb3ff 40%, #3c7bff 100%);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: mandyGradientText 10s linear infinite;
-
-
+  animation: blueGradient 5s linear infinite;
 }
 
-/* Re‑use the same keyframes for both logo and ticker */
-@keyframes mandyGradientText {
-  0% {
-    background-position: 0% 50%;
+.blog-byline {
+  display: block;
+  font-family: "Poppins", sans-serif;
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+  margin-top: 0.2rem;
+  font-style: italic;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.4rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--mandy-border);
+  background: var(--mandy-bg-secondary);
+  text-decoration: none;
+  color: var(--mandy-white);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-card:hover {
+  border-color: rgba(60,123,255,0.45);
+  box-shadow: 0 0 20px rgba(60,123,255,0.12);
+}
+
+.blog-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.blog-tag {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: var(--mandy-blue);
+  color: #fff;
+}
+
+.blog-date {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.05em;
+}
+
+.blog-card-title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--mandy-white);
+}
+
+.blog-card-excerpt {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.55);
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.blog-card-cta {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--mandy-blue);
+  text-transform: uppercase;
+}
+
+.blog-more-wrap {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.blog-more-btn {
+  display: inline-block;
+  padding: 0.55rem 2rem;
+  border: 1.5px solid var(--mandy-white);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mandy-white);
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.blog-more-btn:hover {
+  border-color: var(--mandy-blue);
+  background: var(--mandy-blue);
+  color: #fff;
+}
+
+/* ================================================================
+   FAQ SECTION — electric purple accent
+================================================================ */
+.faq-section {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 3rem auto 0;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.faq-left {
+  padding-top: 0.5rem;
+}
+
+.faq-heading {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+  color: transparent;
+  background-image: linear-gradient(135deg, #a538ff 0%, #d17aff 50%, #a538ff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: purpleGradient 5s linear infinite;
+}
+
+@keyframes purpleGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.faq-item {
+  border: 1.5px solid rgba(165, 56, 255, 0.25);
+  border-radius: 8px;
+  background: var(--mandy-bg-secondary);
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(165, 56, 255, 0.55);
+}
+
+.faq-question-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--mandy-white);
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid var(--mandy-purple);
+  border-bottom: 2px solid var(--mandy-purple);
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+}
+
+.faq-item[data-open="true"] .faq-chevron {
+  transform: rotate(-135deg);
+}
+
+.faq-answer {
+  padding: 0 1.1rem 1rem;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+}
+
+.faq-answer a {
+  color: var(--mandy-purple);
+  text-decoration: underline;
+}
+
+.faq-answer a:hover {
+  color: #d17aff;
+}
+
+/* ================================================================
+   SITE FOOTER — yellow bg, black text
+================================================================ */
+.site-footer {
+  margin-top: 5rem;
+  background: var(--mandy-neon);
+  color: #000;
+  padding: 2.5rem 0 1.5rem;
+}
+
+.footer-inner {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-brand-name {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: #000;
+  letter-spacing: 0.02em;
+}
+
+.footer-tagline {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.6);
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-end;
+}
+
+.footer-links a {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #000;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-links a:hover {
+  opacity: 0.6;
+}
+
+.footer-bottom {
+  width: min(1240px, calc(100% - 3rem));
+  margin: 1.5rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-copy {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: rgba(0,0,0,0.5);
+}
+
+.footer-legal {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.footer-legal a {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: rgba(0,0,0,0.5);
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  color: #000;
+}
+
+/* ================================================================
+   RESPONSIVE
+================================================================ */
+@media (max-width: 960px) {
+  .features-grid,
+  .blog-grid {
+    grid-template-columns: 1fr;
+    gap: 4.5rem;
   }
-  50% {
-    background-position: 100% 50%;
+
+  .updates-section {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  100% {
-    background-position: 0% 50%;
+
+  .updates-left {
+    padding-top: 0;
+  }
+
+  .faq-section {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-links {
+    align-items: flex-start;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
-/* ── parallax float ── */
-@keyframes float-icon {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+@media (max-width: 600px) {
+  .hero {
+    width: calc(100% - 2rem);
+  }
+
+  .features,
+  .blog-section,
+  .faq-section,
+  .updates-section {
+    width: calc(100% - 2rem);
+  }
+
+  .update-feed-card {
+    flex: 0 0 200px;
+    min-width: 200px;
+  }
+
+  .blog-grid {
+    gap: 3rem;
+  }
 }
-.floating-card:nth-child(2) .feature-icon { animation-delay: -1.3s; }
-.floating-card:nth-child(3) .feature-icon { animation-delay: -2.6s; }

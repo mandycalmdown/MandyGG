@@ -1,47 +1,62 @@
 "use client";
 
-"use client";
-
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import "@/styles/mandy-home.css";
-import "@/styles/blog.css";
 import { SiteNavigation } from "@/components/site-navigation";
+import { faqItems } from "@/components/homepage-faq-data";
+import "@/styles/mandy-home.css";
+
+/* ── static blog posts ── */
+const BLOG_POSTS = [
+  {
+    slug: "thrill-deposit-bonus",
+    tag: "THRILL",
+    date: "MAR 8, 2026",
+    title: "THRILL DEPOSIT BONUS: WHAT'S ACTUALLY WORTH IT",
+    excerpt:
+      "EVERYONE SAYS 'USE CODE MANDY' BUT NOBODY EXPLAINS WHY. HERE'S THE ACTUAL MATH ON THE BONUS STRUCTURE SO YOU CAN STOP LEAVING MONEY ON THE TABLE.",
+  },
+  {
+    slug: "bankroll-management",
+    tag: "STRATEGY",
+    date: "MAR 5, 2026",
+    title: "BANKROLL MANAGEMENT FOR PEOPLE WHO HATE BANKROLL MANAGEMENT",
+    excerpt:
+      "YOU ALREADY KNOW YOU SHOULD HAVE A BANKROLL STRATEGY. YOU JUST DON'T HAVE ONE. LET ME MAKE IT SO SIMPLE YOU HAVE NO EXCUSE.",
+  },
+  {
+    slug: "how-to-place-in-race",
+    tag: "WEEKLY RACE",
+    date: "MAR 1, 2026",
+    title: "HOW TO ACTUALLY PLACE IN THE $3500 WEEKLY RACE",
+    excerpt:
+      "THE LEADERBOARD RACE ISN'T JUST 'BET MORE.' THERE'S A REAL STRATEGY TO PLACING AND I'M GOING TO TELL YOU WHAT IT IS BECAUSE I WANT COMPETITION.",
+  },
+];
 
 export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
   const logoRef = React.useRef<HTMLSpanElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
-  const handleLogoMouseMove = (event: React.MouseEvent<HTMLElement>) => {
+  /* ── logo parallax ── */
+  const handleLogoMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const span = logoRef.current;
     if (!span) return;
-
     const rect = span.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    const xPercent = (x / rect.width) * 100;
-    const yPercent = (y / rect.height) * 100;
-
-    const tiltX = ((yPercent - 50) / 50) * -8;
-    const tiltY = ((xPercent - 50) / 50) * 8;
-
-    span.style.setProperty("--mouse-x", `${xPercent}%`);
-    span.style.setProperty("--mouse-y", `${yPercent}%`);
-    span.style.setProperty("--tilt-x", `${tiltX}deg`);
-    span.style.setProperty("--tilt-y", `${tiltY}deg`);
+    span.style.setProperty("--mouse-x", `${((e.clientX - rect.left) / rect.width) * 100}%`);
+    span.style.setProperty("--mouse-y", `${((e.clientY - rect.top) / rect.height) * 100}%`);
   };
-
   const handleLogoMouseLeave = () => {
     const span = logoRef.current;
     if (!span) return;
     span.style.setProperty("--mouse-x", "50%");
     span.style.setProperty("--mouse-y", "50%");
-    span.style.setProperty("--tilt-x", "0deg");
-    span.style.setProperty("--tilt-y", "0deg");
   };
 
+  /* ── card tilt ── */
   const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -49,16 +64,11 @@ export function Homepage() {
     const cy = rect.height / 2;
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const rx = ((y - cy) / cy) * -5;
-    const ry = ((x - cx) / cx) * 5;
-    const iconX = ((x - cx) / cx) * -14;
-    const iconY = ((y - cy) / cy) * -14;
-    card.style.setProperty("--rx", `${rx}deg`);
-    card.style.setProperty("--ry", `${ry}deg`);
-    card.style.setProperty("--icon-x", `${iconX}px`);
-    card.style.setProperty("--icon-y", `${iconY}px`);
+    card.style.setProperty("--rx", `${((y - cy) / cy) * -5}deg`);
+    card.style.setProperty("--ry", `${((x - cx) / cx) * 5}deg`);
+    card.style.setProperty("--icon-x", `${((x - cx) / cx) * -14}px`);
+    card.style.setProperty("--icon-y", `${((y - cy) / cy) * -14}px`);
   };
-
   const handleCardMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     const card = e.currentTarget;
     card.style.setProperty("--rx", "0deg");
@@ -67,93 +77,133 @@ export function Homepage() {
     card.style.setProperty("--icon-y", "0px");
   };
 
-  const scrollUpdatesFeed = (direction: "left" | "right") => {
-    const feed = updatesFeedRef.current;
-    if (!feed) return;
-    const offset = direction === "left" ? -340 : 340;
-    feed.scrollBy({ left: offset, behavior: "smooth" });
+  /* ── updates feed scroll ── */
+  const scrollUpdatesFeed = (dir: "left" | "right") => {
+    updatesFeedRef.current?.scrollBy({ left: dir === "left" ? -300 : 300, behavior: "smooth" });
   };
 
   const announcements = [
-    { tag: "NEW", variant: "new", date: "MAR 8, 2026", title: "$3500 WEEKLY RACE IS LIVE", body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week.", cta: "ENTER NOW →" },
-    { tag: "UPDATE", variant: "update", date: "MAR 5, 2026", title: "NEW GAMING TOOLS DROPPING SOON", body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access.", cta: "FOLLOW UPDATES →" },
-    { tag: "ALERT", variant: "alert", date: "MAR 1, 2026", title: "THRILL BONUS CODE: MANDY", body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it.", cta: "CLAIM BONUS →" },
-    { tag: "INFO", variant: "", date: "FEB 22, 2026", title: "MANDY.GG IS NOW LIVE", body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next.", cta: "ABOUT MANDY →" },
-    { tag: "HOT", variant: "new", date: "FEB 16, 2026", title: "THRILL VIP LEVEL NOTES ADDED", body: "VIP notes for wagering pace, reload timing, and perk optimization are now in progress for the next tool drop.", cta: "READ NOTES →" },
+    {
+      tag: "NEW",
+      variant: "new",
+      date: "MAR 8, 2026",
+      title: "$3500 WEEKLY RACE IS LIVE",
+      body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week.",
+    },
+    {
+      tag: "UPDATE",
+      variant: "update",
+      date: "MAR 5, 2026",
+      title: "NEW GAMING TOOLS DROPPING SOON",
+      body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access.",
+    },
+    {
+      tag: "ALERT",
+      variant: "alert",
+      date: "MAR 1, 2026",
+      title: "THRILL BONUS CODE: MANDY",
+      body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it.",
+    },
+    {
+      tag: "INFO",
+      variant: "",
+      date: "FEB 22, 2026",
+      title: "MANDY.GG IS NOW LIVE",
+      body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next.",
+    },
+    {
+      tag: "HOT",
+      variant: "new",
+      date: "FEB 16, 2026",
+      title: "THRILL VIP LEVEL NOTES ADDED",
+      body: "VIP notes for wagering pace, reload timing, and perk optimization are now in progress for the next tool drop.",
+    },
   ];
 
   return (
     <main className="mandy-home">
       <SiteNavigation />
 
-<section className="hero" aria-labelledby="hero-title">
-  <h1
-    id="hero-title"
-    className="mandy-logo"
-    onMouseMove={handleLogoMouseMove}
-    onMouseLeave={handleLogoMouseLeave}
-  >
-    <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
-  </h1>
-  <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
-</section>
+      {/* ── Hero ── */}
+      <section className="hero" aria-labelledby="hero-title">
+        <h1
+          id="hero-title"
+          className="mandy-logo"
+          onMouseMove={handleLogoMouseMove}
+          onMouseLeave={handleLogoMouseLeave}
+        >
+          <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
+        </h1>
+        <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
+      </section>
 
-
-
+      {/* ── Feature Cards ── */}
       <section className="features" aria-label="Main features">
         <div className="features-grid">
-          <article className="feature-card floating-card"
+          <article
+            className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="/MANDYGG_WEBSITE_IMAGES/THRILL_DICE_ICON.webp"
-                alt="Thrill dice icon"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp"
+                alt="Dice icon for Thrill casino"
                 className="feature-icon"
               />
             </div>
             <h2 className="feature-title">THRILL</h2>
-            <p className="feature-description">IT&apos;S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.</p>
-            <button className="primary-button primary-button--stacked" type="button">
+            <p className="feature-description">
+              IT&apos;S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.
+            </p>
+            <a
+              href="https://thrill.com/?r=MANDY"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="primary-button"
+            >
               <span>TELL ME</span>
               <span>MORE</span>
-            </button>
+            </a>
           </article>
 
-          <article className="feature-card floating-card"
+          <article
+            className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="/MANDYGG_WEBSITE_IMAGES/TROPHY_FLOATING_ELEMENT.webp"
-                alt="Weekly race trophy icon"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp"
+                alt="Trophy icon for weekly race"
                 className="feature-icon"
               />
             </div>
             <h2 className="feature-title">$3500 WEEKLY RACE</h2>
-            <p className="feature-description">FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!</p>
-            <Link href="/leaderboard" className="primary-button primary-button--stacked">
+            <p className="feature-description">
+              FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!
+            </p>
+            <Link href="/leaderboard" className="primary-button">
               <span>VIEW</span>
               <span>LEADERBOARD</span>
             </Link>
           </article>
 
-          <article className="feature-card floating-card"
+          <article
+            className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
             <div className="feature-icon-wrap">
               <img
-                src="/MANDYGG_WEBSITE_IMAGES/TOOLS_ICON.webp"
-                alt="Gaming tools icon"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp"
+                alt="Tools icon for gaming tools"
                 className="feature-icon"
               />
             </div>
             <h2 className="feature-title">GAMING TOOLS</h2>
             <p className="feature-description">TOOLS FOR DEGENERACY.</p>
-            <Link href="/gaming-tools" className="primary-button primary-button--stacked">
+            <Link href="/tools" className="primary-button">
               <span>NERD</span>
               <span>ALERT</span>
             </Link>
@@ -161,38 +211,39 @@ export function Homepage() {
         </div>
       </section>
 
+      {/* ── Ticker ── */}
       <div className="ticker" aria-label="Promo ticker">
         <div className="ticker-track">
-          <span>{tickerText.repeat(8)}</span>
-          <span aria-hidden="true">{tickerText.repeat(8)}</span>
+          <span>{tickerText.repeat(10)}</span>
+          <span aria-hidden="true">{tickerText.repeat(10)}</span>
         </div>
       </div>
 
-      <section className="updates-section" aria-label="Updates">
-        <div className="updates-strip">
-          <div className="updates-strip-head">
-            <span className="updates-strip-title">LATEST UPDATES</span>
-          </div>
-          <div className="updates-feed-wrap">
-            <button
-              type="button"
-              className="updates-feed-arrow updates-feed-arrow--left"
-              aria-label="Scroll updates left"
-              onClick={() => scrollUpdatesFeed("left")}
-            >
-              ←
-            </button>
-            <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
+      {/* ── Updates ── */}
+      <section className="updates-section" aria-label="Latest updates">
+        <div className="updates-left">
+          <h2 className="updates-title">UPDATES</h2>
+        </div>
+        <div className="updates-feed-wrap">
+          <button
+            type="button"
+            className="updates-feed-arrow"
+            aria-label="Scroll updates left"
+            onClick={() => scrollUpdatesFeed("left")}
+          >
+            ←
+          </button>
+          <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
             {announcements.map((item, i) => (
               <article
-                key={`feed-${i}`}
+                key={i}
                 role="listitem"
                 className="update-feed-card floating-card"
                 onMouseMove={handleCardMouseMove}
                 onMouseLeave={handleCardMouseLeave}
               >
                 <div className="update-feed-top">
-                  <span className={`announcement-tag${item.variant ? ` announcement-tag--${item.variant}` : ""}`}>
+                  <span className={`announcement-tag announcement-tag--${item.variant || "info"}`}>
                     {item.tag}
                   </span>
                   <time className="announcement-date">{item.date}</time>
@@ -201,35 +252,96 @@ export function Homepage() {
                 <p className="update-feed-copy">{item.body}</p>
               </article>
             ))}
-            </div>
-            <button
-              type="button"
-              className="updates-feed-arrow updates-feed-arrow--right"
-              aria-label="Scroll updates right"
-              onClick={() => scrollUpdatesFeed("right")}
+          </div>
+          <button
+            type="button"
+            className="updates-feed-arrow"
+            aria-label="Scroll updates right"
+            onClick={() => scrollUpdatesFeed("right")}
+          >
+            →
+          </button>
+        </div>
+      </section>
+
+      {/* ── Blog / Gambling Gossip ── */}
+      <section className="blog-section" aria-label="Gambling Gossip blog posts">
+        <div className="blog-header">
+          <h2 className="blog-title">GAMBLING GOSSIP</h2>
+          <span className="blog-byline">(by Mandy)</span>
+        </div>
+        <div className="blog-grid">
+          {BLOG_POSTS.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card">
+              <div className="blog-card-meta">
+                <span className="blog-tag">{post.tag}</span>
+                <span className="blog-date">{post.date}</span>
+              </div>
+              <h3 className="blog-card-title">{post.title}</h3>
+              <p className="blog-card-excerpt">{post.excerpt}</p>
+              <span className="blog-card-cta">READ MORE →</span>
+            </Link>
+          ))}
+        </div>
+        <div className="blog-more-wrap">
+          <Link href="/blog" className="blog-more-btn">MORE</Link>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="faq-section" id="faq" aria-label="Frequently Asked Questions">
+        <div className="faq-left">
+          <h2 className="faq-heading">F.A.Q.</h2>
+        </div>
+        <div className="faq-list">
+          {faqItems.map((item, i) => (
+            <div
+              key={i}
+              className="faq-item"
+              data-open={expandedFaq === i ? "true" : "false"}
             >
-              →
-            </button>
+              <button
+                className="faq-question-btn"
+                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                aria-expanded={expandedFaq === i}
+              >
+                <span>{item.question}</span>
+                <span className="faq-chevron" aria-hidden="true" />
+              </button>
+              {expandedFaq === i && (
+                <div className="faq-answer">{item.answer}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="site-footer" aria-label="Site footer">
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <span className="footer-brand-name">MANDY.GG</span>
+            <span className="footer-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</span>
+          </div>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <Link href="/how-to-join">HOW TO JOIN</Link>
+            <Link href="/rewards">REWARDS</Link>
+            <Link href="/leaderboard">WEEKLY RACE</Link>
+            <Link href="/tools">TOOLS</Link>
+            <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+            <a href="https://discord.gg/mandygg" target="_blank" rel="noopener noreferrer">DISCORD</a>
+            <a href="https://kick.com/mandycalmdown" target="_blank" rel="noopener noreferrer">KICK</a>
+          </nav>
+        </div>
+        <div className="footer-bottom">
+          <span className="footer-copy">© 2026 MANDY.GG — ALL RIGHTS RESERVED</span>
+          <div className="footer-legal">
+            <Link href="/responsible-gambling">RESPONSIBLE GAMBLING</Link>
+            <Link href="/terms">TERMS</Link>
+            <Link href="/privacy">PRIVACY</Link>
           </div>
         </div>
-
-        <div className="update-placeholders-grid">
-          <Link href="/reviews/thrill" className="placeholder-mini-card">1. CASINO REVIEW</Link>
-          <Link href="/leaderboard" className="placeholder-mini-card">2. RAFFLE ANNOUNCEMENT</Link>
-          <Link href="/mandycoins" className="placeholder-mini-card">3. MANDYCOIN ANNOUNCEMENT</Link>
-          <a href="https://t.me/mandygg_support_bot" className="placeholder-mini-card" target="_blank" rel="noreferrer">4. JOIN TELEGRAM</a>
-        </div>
-      </section>
-      {/* ── Blog Feed Widget ── */}
-      <section className="blog-feed-section" aria-label="Latest from the blog">
-        <div className="blog-feed-header">
-          <span className="blog-feed-eyebrow">GAMBLING GOSSIP</span>
-          <Link href="/blog" className="blog-feed-link">ALL POSTS →</Link>
-        </div>
-        <div className="blog-feed-grid">
-          {/* Blog feed would be here if blog data exists */}
-        </div>
-      </section>
+      </footer>
     </main>
   );
 }
