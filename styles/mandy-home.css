@@ -9,8 +9,8 @@
 
 /* ── CSS custom props ── */
 :root {
-  --mandy-bg: #0a0a0a;
-  --mandy-bg-secondary: #111111;
+  --mandy-bg: #000000;
+  --mandy-bg-secondary: #0d0d0d;
   --mandy-white: #ffffff;
   --mandy-neon: #c1ff00;
   --mandy-blue: #3c7bff;
@@ -60,8 +60,8 @@
   --ry: 0deg;
   position: relative;
   display: inline-block;
-  /* Must exactly match --mandy-bg (#0a0a0a) so multiply erases video over the bg */
-  background-color: #0a0a0a;
+  /* Pure black: multiply(0, anything) = 0, fully erases video outside letterforms */
+  background-color: #000000;
   transform-style: preserve-3d;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform 0.12s ease-out;
@@ -96,6 +96,8 @@
   pointer-events: none;
   z-index: 2;
   mix-blend-mode: multiply;
+  /* Push the video's own blacks toward true zero so multiply fully cancels them */
+  filter: brightness(0.88) contrast(1.1);
 }
 
 /* Gloss sheen on top of the video */
