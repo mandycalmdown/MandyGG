@@ -45,14 +45,14 @@
 }
 
 /*
-  VIDEO-AS-TEXT MASK TECHNIQUE
-  ─────────────────────────────
-  The h1 (.mandy-logo) is the stacking context (isolation: isolate).
-  • .mandy-logo__letters  → white text, sits on the dark page bg
-  • .mandy-logo__video    → covers the whole h1, mix-blend-mode: multiply
-      multiply math: dark-bg(≈0) × video = 0 (video invisible on dark areas)
-                     white-text(255) × video = video (video shows through letters)
-  • .mandy-logo__sheen    → glossy sweep on top for extra glint
+  BG-CLIP-TEXT VIDEO MASK
+  ────────────────────────
+  .mandy-logo           → transparent text colour, 3D tilt on mouse
+  .mandy-logo__clip-wrap → position:relative so the video can fill it;
+                           background-clip:text clips the bg to the letterforms;
+                           color:transparent so only the bg (video) is visible
+  .mandy-logo__video    → absolute, fills the span, object-cover
+  .mandy-logo__sheen    → sweeping gloss on top
 */
 
 .mandy-logo {
@@ -68,7 +68,7 @@
   text-align: center;
   position: relative;
   display: inline-block;
-  isolation: isolate;                  /* contain the blend modes */
+  color: transparent;
   transform-style: preserve-3d;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform 0.12s ease-out;
@@ -76,43 +76,45 @@
   user-select: none;
 }
 
-/* White letterforms — the "mask window" the video shows through */
-.mandy-logo__letters {
-  display: block;
-  color: #fff;
+/* The span whose background is clipped to the text shape */
+.mandy-logo__clip-wrap {
   position: relative;
-  z-index: 1;
-  pointer-events: none;
+  display: inline-block;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* Fallback background in case video hasn't loaded */
+  background-color: #c1ff00;
 }
 
-/* Video fills the h1 bounding box; multiply blend hides it everywhere except on the white text */
+/* Video absolutely fills the span — it becomes the visible "fill" of the letters */
 .mandy-logo__video {
   position: absolute;
-  inset: -10% -2%;
-  width: 104%;
-  height: 120%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  z-index: 2;
-  mix-blend-mode: multiply;
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Extra gloss sheen that sweeps across the letters */
+/* Sheen sweep — sits above the video inside the same clip region */
 .mandy-logo__sheen {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 1;
   background: linear-gradient(
     110deg,
     transparent 20%,
-    rgba(255, 255, 255, 0.22) 48%,
-    rgba(255, 255, 255, 0.08) 52%,
+    rgba(255, 255, 255, 0.28) 48%,
+    rgba(255, 255, 255, 0.10) 52%,
     transparent 80%
   );
   background-size: 250% 100%;
   animation: logoSheen 3.5s linear infinite;
-  mix-blend-mode: overlay;
   pointer-events: none;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 @keyframes logoSheen {

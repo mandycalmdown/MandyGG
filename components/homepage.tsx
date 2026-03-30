@@ -132,14 +132,6 @@ export function Homepage() {
 
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
-        {/*
-          HOW THE MASK WORKS:
-          - The wrapper has isolation:isolate so blending is self-contained
-          - The text is white (color:#fff) — acts as the "window"
-          - The video uses mix-blend-mode:multiply; on a dark bg: dark×video=dark (hidden),
-            white×video=video — so the video only shows through the white letterforms
-          - Sheen layer sweeps across on top for extra gloss
-        */}
         <h1
           id="hero-title"
           ref={logoRef}
@@ -147,23 +139,31 @@ export function Homepage() {
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          {/* White text — the "mask" window */}
-          <span className="mandy-logo__letters" aria-label="MANDY.GG">MANDY.GG</span>
-
-          {/* Video fills the h1, multiply blends it away everywhere except on the white text */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden="true"
-            className="mandy-logo__video"
+          {/*
+            bg-clip-text technique:
+            - Outer h1 text is `color: transparent` so nothing renders by default
+            - The inner span has `background-clip: text` + `WebkitBackgroundClip: text`
+              making the video act as the fill of the letterforms
+            - The video is absolutely positioned to cover the span, object-cover fills it
+            - The visible text "MANDY.GG" in the span is what gets clipped
+          */}
+          <span
+            className="mandy-logo__clip-wrap"
+            style={{ WebkitBackgroundClip: "text", backgroundClip: "text" }}
           >
-            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-ljYuo3rZUklV4XceJzReNhrdyz45Ey.webm" type="video/webm" />
-            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-CGboDkQRcmYqzCkttgHHt7cX9NsbR3.mp4" type="video/mp4" />
-          </video>
-
-          {/* Sheen sweep across the top */}
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              aria-hidden="true"
+              className="mandy-logo__video"
+            >
+              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4" type="video/mp4" />
+            </video>
+            MANDY.GG
+          </span>
+          {/* Sheen sweep on top */}
           <span className="mandy-logo__sheen" aria-hidden="true" />
         </h1>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
