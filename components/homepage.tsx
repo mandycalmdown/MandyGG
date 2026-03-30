@@ -34,6 +34,25 @@ const BLOG_POSTS = [
   },
 ];
 
+/* Reusable holo video element — used for MANDY.GG, UPDATES, GAMBLING GOSSIP, F.A.Q. */
+function HoloVideo() {
+  return (
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      aria-hidden="true"
+      className="holo-video"
+    >
+      <source
+        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
+        type="video/mp4"
+      />
+    </video>
+  );
+}
+
 export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -41,23 +60,17 @@ export function Homepage() {
   const logoRef = React.useRef<HTMLDivElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
-  /* ── logo parallax + tilt ── */
+  /* ── logo / holo-header mouse tilt ── */
   const handleLogoMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;   // 0→1
-    const y = (e.clientY - rect.top)  / rect.height;  // 0→1
-    const rx =  (y - 0.5) * -8;   // tilt up/down  ±4 deg
-    const ry =  (x - 0.5) *  8;   // tilt left/right ±4 deg
-    el.style.setProperty("--mouse-x", `${x * 100}%`);
-    el.style.setProperty("--mouse-y", `${y * 100}%`);
-    el.style.setProperty("--rx", `${rx}deg`);
-    el.style.setProperty("--ry", `${ry}deg`);
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    el.style.setProperty("--rx", `${(y - 0.5) * -8}deg`);
+    el.style.setProperty("--ry", `${(x - 0.5) * 8}deg`);
   };
   const handleLogoMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget as HTMLElement;
-    el.style.setProperty("--mouse-x", "50%");
-    el.style.setProperty("--mouse-y", "50%");
     el.style.setProperty("--rx", "0deg");
     el.style.setProperty("--ry", "0deg");
   };
@@ -132,44 +145,21 @@ export function Homepage() {
 
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
-        {/*
-          MULTIPLY BLEND VIDEO MASK
-          ─────────────────────────
-          The .mandy-logo wrapper is position:relative with overflow:hidden.
-          1. White <span> text renders normally over the dark background.
-          2. The <video> is absolute inset-0, mix-blend-mode: multiply.
-             - Over dark (#111): 0 × video ≈ 0 → video disappears (dark bg wins)
-             - Over white text: 255 × video = video → video fills the letters
-          Result: the holographic video is only visible inside the letterforms.
-        */}
         <div
           ref={logoRef}
           className="mandy-logo"
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          {/* White text — the mask shape */}
           <h1 id="hero-title" className="mandy-logo__letters">MANDY.GG</h1>
-
-          {/* Video on top — multiply blend makes it disappear except over white letters */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden="true"
-            className="mandy-logo__video"
-          >
-            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4" type="video/mp4" />
-          </video>
-
-          {/* Gloss sheen on top */}
-          <div className="mandy-logo__sheen" aria-hidden="true" />
+          <HoloVideo />
+          <div className="holo-sheen" aria-hidden="true" />
         </div>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
       {/* ── Feature Cards ── */}
+      {/* margin-top increased so cards don't overlap tagline */}
       <section className="features" aria-label="Main features">
         <div className="features-grid">
           <article
@@ -177,10 +167,11 @@ export function Homepage() {
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
-            <div className="feature-icon-wrap">
+            {/* Icon sits behind text but above card background via z-index */}
+            <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp"
-                alt="Dice icon for Thrill casino"
+                alt=""
                 className="feature-icon"
               />
             </div>
@@ -204,10 +195,10 @@ export function Homepage() {
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
-            <div className="feature-icon-wrap">
+            <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp"
-                alt="Trophy icon for weekly race"
+                alt=""
                 className="feature-icon"
               />
             </div>
@@ -226,10 +217,10 @@ export function Homepage() {
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
-            <div className="feature-icon-wrap">
+            <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp"
-                alt="Tools icon for gaming tools"
+                alt=""
                 className="feature-icon"
               />
             </div>
@@ -253,8 +244,17 @@ export function Homepage() {
 
       {/* ── Updates ── */}
       <section className="updates-section" aria-label="Latest updates">
+        {/* UPDATES title with holo video mask — same technique as MANDY.GG */}
         <div className="updates-left">
-          <h2 className="updates-title">UPDATES</h2>
+          <div
+            className="holo-header"
+            onMouseMove={handleLogoMouseMove}
+            onMouseLeave={handleLogoMouseLeave}
+          >
+            <h2 className="holo-header__letters updates-title-text">UPDATES</h2>
+            <HoloVideo />
+            <div className="holo-sheen" aria-hidden="true" />
+          </div>
         </div>
         <div className="updates-feed-wrap">
           <button
@@ -299,8 +299,16 @@ export function Homepage() {
       {/* ── Blog / Gambling Gossip ── */}
       <section className="blog-section" aria-label="Gambling Gossip blog posts">
         <div className="blog-header">
-          <h2 className="blog-title">GAMBLING GOSSIP</h2>
-          <span className="blog-byline">(by Mandy)</span>
+          {/* GAMBLING GOSSIP with holo video mask */}
+          <div
+            className="holo-header blog-title-wrap"
+            onMouseMove={handleLogoMouseMove}
+            onMouseLeave={handleLogoMouseLeave}
+          >
+            <h2 className="holo-header__letters blog-title-text">GAMBLING GOSSIP</h2>
+            <HoloVideo />
+            <div className="holo-sheen" aria-hidden="true" />
+          </div>
         </div>
         <div className="blog-grid">
           {BLOG_POSTS.map((post) => (
@@ -322,8 +330,17 @@ export function Homepage() {
 
       {/* ── FAQ ── */}
       <section className="faq-section" id="faq" aria-label="Frequently Asked Questions">
+        {/* F.A.Q. with holo video mask */}
         <div className="faq-left">
-          <h2 className="faq-heading">F.A.Q.</h2>
+          <div
+            className="holo-header"
+            onMouseMove={handleLogoMouseMove}
+            onMouseLeave={handleLogoMouseLeave}
+          >
+            <h2 className="holo-header__letters faq-title-text">F.A.Q.</h2>
+            <HoloVideo />
+            <div className="holo-sheen" aria-hidden="true" />
+          </div>
         </div>
         <div className="faq-list">
           {faqItems.map((item, i) => (
