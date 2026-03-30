@@ -41,19 +41,25 @@ export function Homepage() {
   const logoRef = React.useRef<HTMLSpanElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
-  /* ── logo parallax ── */
+  /* ── logo parallax + tilt ── */
   const handleLogoMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    const span = logoRef.current;
-    if (!span) return;
-    const rect = span.getBoundingClientRect();
-    span.style.setProperty("--mouse-x", `${((e.clientX - rect.left) / rect.width) * 100}%`);
-    span.style.setProperty("--mouse-y", `${((e.clientY - rect.top) / rect.height) * 100}%`);
+    const el = e.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;   // 0→1
+    const y = (e.clientY - rect.top)  / rect.height;  // 0→1
+    const rx =  (y - 0.5) * -8;   // tilt up/down  ±4 deg
+    const ry =  (x - 0.5) *  8;   // tilt left/right ±4 deg
+    el.style.setProperty("--mouse-x", `${x * 100}%`);
+    el.style.setProperty("--mouse-y", `${y * 100}%`);
+    el.style.setProperty("--rx", `${rx}deg`);
+    el.style.setProperty("--ry", `${ry}deg`);
   };
-  const handleLogoMouseLeave = () => {
-    const span = logoRef.current;
-    if (!span) return;
-    span.style.setProperty("--mouse-x", "50%");
-    span.style.setProperty("--mouse-y", "50%");
+  const handleLogoMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget as HTMLElement;
+    el.style.setProperty("--mouse-x", "50%");
+    el.style.setProperty("--mouse-y", "50%");
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
   };
 
   /* ── card tilt ── */
@@ -132,7 +138,25 @@ export function Homepage() {
           onMouseMove={handleLogoMouseMove}
           onMouseLeave={handleLogoMouseLeave}
         >
-          <span ref={logoRef} className="mandy-logo__gradient">MANDY.GG</span>
+          {/* Base text layer — sets the visible shape */}
+          <span ref={logoRef} className="mandy-logo__text">MANDY.GG</span>
+
+          {/* Video holo overlay — clipped to text via mix-blend-mode */}
+          <span className="mandy-logo__video-mask" aria-hidden="true">
+            <span className="mandy-logo__text mandy-logo__text--mask">MANDY.GG</span>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="mandy-logo__video"
+            >
+              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-ljYuo3rZUklV4XceJzReNhrdyz45Ey.webm" type="video/webm" />
+              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_3SEC-CGboDkQRcmYqzCkttgHHt7cX9NsbR3.mp4" type="video/mp4" />
+            </video>
+            {/* Sheen sweep on top of video */}
+            <span className="mandy-logo__sheen" aria-hidden="true" />
+          </span>
         </h1>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>

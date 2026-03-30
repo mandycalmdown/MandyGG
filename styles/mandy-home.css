@@ -45,6 +45,8 @@
 }
 
 .mandy-logo {
+  --rx: 0deg;
+  --ry: 0deg;
   margin: 0;
   font-family: "Poppins", sans-serif;
   font-size: clamp(4rem, 14vw, 11.2rem);
@@ -53,32 +55,72 @@
   letter-spacing: 0.01em;
   text-transform: uppercase;
   text-align: center;
-  overflow: visible;
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  transform: perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.15s ease-out;
+  cursor: default;
+  user-select: none;
 }
 
-.mandy-logo__gradient {
-  display: inline-block;
-  color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    #c1ff00 0%,
-    #c1ff00 20%,
-    #f5ff6c 35%,
-    #ffffff 50%,
-    #f5ff6c 65%,
-    #c1ff00 80%,
-    #c1ff00 100%
+/* Base solid-colour text — always visible */
+.mandy-logo__text {
+  display: block;
+  color: #c1ff00;
+  position: relative;
+  z-index: 1;
+}
+
+/* Wrapper that stacks the mask-text + video + sheen */
+.mandy-logo__video-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Duplicate text used as a mask so the video is clipped to the letterforms */
+.mandy-logo__text--mask {
+  position: relative;
+  z-index: 1;
+  color: #fff;                        /* visible colour under the video */
+  mix-blend-mode: multiply;           /* reveals video only where text is */
+}
+
+/* The holographic video, absolutely positioned to fill the mask wrapper */
+.mandy-logo__video {
+  position: absolute;
+  inset: -20% -5%;
+  width: 110%;
+  height: 140%;
+  object-fit: cover;
+  z-index: 2;
+  mix-blend-mode: screen;            /* blends over the white mask text */
+  opacity: 0.92;
+}
+
+/* Sheen sweep layer */
+.mandy-logo__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 70%
   );
   background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: mandyGradientText 6s linear infinite;
+  animation: logoSheen 3s linear infinite;
+  mix-blend-mode: overlay;
 }
 
-@keyframes mandyGradientText {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes logoSheen {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .hero-tagline {
