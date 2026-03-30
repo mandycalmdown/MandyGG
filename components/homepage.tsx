@@ -34,7 +34,7 @@ const BLOG_POSTS = [
   },
 ];
 
-/* Reusable holo video element — used for MANDY.GG, UPDATES, GAMBLING GOSSIP, F.A.Q. */
+/* ── Reusable holo video mask — white text + multiply-blend video ── */
 function HoloVideo() {
   return (
     <video
@@ -53,6 +53,41 @@ function HoloVideo() {
   );
 }
 
+/* ── Reusable holo button ── */
+function HoloButton({
+  href,
+  external,
+  children,
+  className = "",
+}: {
+  href: string;
+  external?: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const inner = (
+    <>
+      <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
+        <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
+        <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
+      </video>
+      <span className="holo-button__label">{children}</span>
+    </>
+  );
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={`primary-button holo-button ${className}`}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={`primary-button holo-button ${className}`}>
+      {inner}
+    </Link>
+  );
+}
+
 export function Homepage() {
   const tickerText = "| CODE: MANDY ON THRILL.COM ";
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -60,7 +95,7 @@ export function Homepage() {
   const logoRef = React.useRef<HTMLDivElement | null>(null);
   const updatesFeedRef = React.useRef<HTMLDivElement | null>(null);
 
-  /* ── logo / holo-header mouse tilt ── */
+  /* ── holo-header tilt ── */
   const handleLogoMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const el = e.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
@@ -75,30 +110,44 @@ export function Homepage() {
     el.style.setProperty("--ry", "0deg");
   };
 
-  /* ── card tilt ── */
+  /* ── card tilt + glossy sheen ── */
   const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    const card = e.currentTarget;
+    const card = e.currentTarget as HTMLElement;
     const rect = card.getBoundingClientRect();
     const cx = rect.width / 2;
     const cy = rect.height / 2;
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    card.style.setProperty("--rx", `${((y - cy) / cy) * -5}deg`);
-    card.style.setProperty("--ry", `${((x - cx) / cx) * 5}deg`);
+    const rx = ((y - cy) / cy) * -6;
+    const ry = ((x - cx) / cx) * 6;
+    // normalised 0→1 mouse position for sheen positioning
+    const mx = ((x / rect.width) * 100).toFixed(1);
+    const my = ((y / rect.height) * 100).toFixed(1);
+    card.style.setProperty("--rx", `${rx}deg`);
+    card.style.setProperty("--ry", `${ry}deg`);
+    card.style.setProperty("--mx", `${mx}%`);
+    card.style.setProperty("--my", `${my}%`);
     card.style.setProperty("--icon-x", `${((x - cx) / cx) * -14}px`);
     card.style.setProperty("--icon-y", `${((y - cy) / cy) * -14}px`);
+    card.style.setProperty("--card-active", "1");
   };
   const handleCardMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
-    const card = e.currentTarget;
+    const card = e.currentTarget as HTMLElement;
     card.style.setProperty("--rx", "0deg");
     card.style.setProperty("--ry", "0deg");
+    card.style.setProperty("--mx", "50%");
+    card.style.setProperty("--my", "50%");
     card.style.setProperty("--icon-x", "0px");
     card.style.setProperty("--icon-y", "0px");
+    card.style.setProperty("--card-active", "0");
   };
 
   /* ── updates feed scroll ── */
   const scrollUpdatesFeed = (dir: "left" | "right") => {
-    updatesFeedRef.current?.scrollBy({ left: dir === "left" ? -300 : 300, behavior: "smooth" });
+    if (!updatesFeedRef.current) return;
+    const feed = updatesFeedRef.current;
+    const cardW = feed.querySelector(".update-feed-card")?.clientWidth ?? 300;
+    feed.scrollBy({ left: dir === "left" ? -(cardW + 16) : (cardW + 16), behavior: "smooth" });
   };
 
   const announcements = [
@@ -159,15 +208,15 @@ export function Homepage() {
       </section>
 
       {/* ── Feature Cards ── */}
-      {/* margin-top increased so cards don't overlap tagline */}
       <section className="features" aria-label="Main features">
         <div className="features-grid">
+
           <article
             className="feature-card floating-card"
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
-            {/* Icon sits behind text but above card background via z-index */}
+            <div className="card-gloss" aria-hidden="true" />
             <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp"
@@ -179,18 +228,7 @@ export function Homepage() {
             <p className="feature-description">
               IT&apos;S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.
             </p>
-            <a
-              href="https://thrill.com/?r=MANDY"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="primary-button holo-button"
-            >
-              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
-              </video>
-              <span className="holo-button__label">TELL ME MORE</span>
-            </a>
+            <HoloButton href="https://thrill.com/?r=MANDY" external>TELL ME MORE</HoloButton>
           </article>
 
           <article
@@ -198,6 +236,7 @@ export function Homepage() {
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
+            <div className="card-gloss" aria-hidden="true" />
             <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp"
@@ -209,13 +248,7 @@ export function Homepage() {
             <p className="feature-description">
               FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!
             </p>
-            <Link href="/leaderboard" className="primary-button holo-button">
-              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
-              </video>
-              <span className="holo-button__label">VIEW LEADERBOARD</span>
-            </Link>
+            <HoloButton href="/leaderboard">VIEW LEADERBOARD</HoloButton>
           </article>
 
           <article
@@ -223,6 +256,7 @@ export function Homepage() {
             onMouseMove={handleCardMouseMove}
             onMouseLeave={handleCardMouseLeave}
           >
+            <div className="card-gloss" aria-hidden="true" />
             <div className="feature-icon-wrap" aria-hidden="true">
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp"
@@ -232,28 +266,15 @@ export function Homepage() {
             </div>
             <h2 className="feature-title">GAMING TOOLS</h2>
             <p className="feature-description">TOOLS FOR DEGENERACY.</p>
-            <Link href="/tools" className="primary-button holo-button">
-              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-button__video">
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm" type="video/webm" />
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4" type="video/mp4" />
-              </video>
-              <span className="holo-button__label">NERD ALERT</span>
-            </Link>
+            <HoloButton href="/tools">NERD ALERT</HoloButton>
           </article>
+
         </div>
       </section>
 
       {/* ── Ticker ── */}
       <div className="ticker" aria-label="Promo ticker">
-        {/* HOLO_WIDE video behind the text */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-hidden="true"
-          className="ticker-video"
-        >
+        <video autoPlay loop muted playsInline aria-hidden="true" className="ticker-video">
           <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-CNLyaOSVK5cArFRfu1FNHzb433j8iI.webm" type="video/webm" />
           <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-RpqZaJvObzwBscZHWnnvAXCjgzTJWB.mp4" type="video/mp4" />
         </video>
@@ -265,7 +286,6 @@ export function Homepage() {
 
       {/* ── Updates ── */}
       <section className="updates-section" aria-label="Latest updates">
-        {/* UPDATES title with holo video mask — same technique as MANDY.GG */}
         <div className="updates-left">
           <div
             className="holo-header"
@@ -276,51 +296,51 @@ export function Homepage() {
             <HoloVideo />
             <div className="holo-sheen" aria-hidden="true" />
           </div>
-        </div>
-        <div className="updates-feed-wrap">
-          <button
-            type="button"
-            className="updates-feed-arrow"
-            aria-label="Scroll updates left"
-            onClick={() => scrollUpdatesFeed("left")}
-          >
-            ←
-          </button>
-          <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
-            {announcements.map((item, i) => (
-              <article
-                key={i}
-                role="listitem"
-                className="update-feed-card floating-card"
-                onMouseMove={handleCardMouseMove}
-                onMouseLeave={handleCardMouseLeave}
-              >
-                <div className="update-feed-top">
-                  <span className={`announcement-tag announcement-tag--${item.variant || "info"}`}>
-                    {item.tag}
-                  </span>
-                  <time className="announcement-date">{item.date}</time>
-                </div>
-                <h3 className="update-feed-title">{item.title}</h3>
-                <p className="update-feed-copy">{item.body}</p>
-              </article>
-            ))}
+          <div className="updates-arrows">
+            <button
+              type="button"
+              className="updates-feed-arrow"
+              aria-label="Scroll updates left"
+              onClick={() => scrollUpdatesFeed("left")}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="updates-feed-arrow"
+              aria-label="Scroll updates right"
+              onClick={() => scrollUpdatesFeed("right")}
+            >
+              →
+            </button>
           </div>
-          <button
-            type="button"
-            className="updates-feed-arrow"
-            aria-label="Scroll updates right"
-            onClick={() => scrollUpdatesFeed("right")}
-          >
-            →
-          </button>
+        </div>
+        <div ref={updatesFeedRef} className="updates-horizontal-feed" role="list">
+          {announcements.map((item, i) => (
+            <article
+              key={i}
+              role="listitem"
+              className="update-feed-card floating-card"
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+            >
+              <div className="card-gloss" aria-hidden="true" />
+              <div className="update-feed-top">
+                <span className={`announcement-tag announcement-tag--${item.variant || "info"}`}>
+                  {item.tag}
+                </span>
+                <time className="announcement-date">{item.date}</time>
+              </div>
+              <h3 className="update-feed-title">{item.title}</h3>
+              <p className="update-feed-copy">{item.body}</p>
+            </article>
+          ))}
         </div>
       </section>
 
       {/* ── Blog / Gambling Gossip ── */}
       <section className="blog-section" aria-label="Gambling Gossip blog posts">
         <div className="blog-header">
-          {/* GAMBLING GOSSIP with holo video mask */}
           <div
             className="holo-header blog-title-wrap"
             onMouseMove={handleLogoMouseMove}
@@ -333,7 +353,8 @@ export function Homepage() {
         </div>
         <div className="blog-grid">
           {BLOG_POSTS.map((post) => (
-            <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card">
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card floating-card">
+              <div className="card-gloss" aria-hidden="true" />
               <div className="blog-card-meta">
                 <span className="blog-tag">{post.tag}</span>
                 <span className="blog-date">{post.date}</span>
@@ -345,13 +366,12 @@ export function Homepage() {
           ))}
         </div>
         <div className="blog-more-wrap">
-          <Link href="/blog" className="blog-more-btn">MORE</Link>
+          <HoloButton href="/blog" className="blog-more-btn">MORE</HoloButton>
         </div>
       </section>
 
       {/* ── FAQ ── */}
       <section className="faq-section" id="faq" aria-label="Frequently Asked Questions">
-        {/* F.A.Q. with holo video mask */}
         <div className="faq-left">
           <div
             className="holo-header"
@@ -388,6 +408,10 @@ export function Homepage() {
 
       {/* ── Footer ── */}
       <footer className="site-footer" aria-label="Site footer">
+        {/* HOLO_BG_FAST video fills footer */}
+        <video autoPlay loop muted playsInline aria-hidden="true" className="footer-video">
+          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4" type="video/mp4" />
+        </video>
         <div className="footer-inner">
           <div className="footer-brand">
             <span className="footer-brand-name">MANDY.GG</span>
