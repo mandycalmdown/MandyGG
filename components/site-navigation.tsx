@@ -1,174 +1,180 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import "@/styles/site-nav.css";
+
+const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
+const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_WIDE_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-CNLyaOSVK5cArFRfu1FNHzb433j8iI.webm";
+const HOLO_WIDE_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-RpqZaJvObzwBscZHWnnvAXCjgzTJWB.mp4";
+
+const TICKER_TEXT = "| CODE: MANDY ON THRILL.COM ";
+
+const NAV_LINKS = [
+  { href: "/",             label: "HOME" },
+  { href: "/how-to-join",  label: "HOW TO" },
+  { href: "/rewards",      label: "REWARDS" },
+  { href: "/leaderboard",  label: "LEADERBOARD" },
+  { href: "/tools",        label: "TOOLS" },
+  { href: "/blog",         label: "GOSSIP" },
+  { href: "/#faq",         label: "FAQ" },
+];
 
 interface SiteNavigationProps {
-  currentPage?: string
+  currentPage?: string;
 }
 
 export function SiteNavigation({ currentPage }: SiteNavigationProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const router = useRouter()
-  const supabase = createClient()
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [user,     setUser    ] = useState<User | null>(null);
+  const router   = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    async function checkUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    checkUser()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) =>
+      setUser(s?.user ?? null)
+    );
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/")
-    router.refresh()
-  }
-
-  const navLinks = [
-    { href: "/", label: "HOME", page: "home" },
-    { href: "/how-to-join", label: "HOW TO", page: "how-to-join" },
-    { href: "/rewards", label: "REWARDS", page: "rewards" },
-    { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
-    { href: "/leaderboard#raffle", label: "RAFFLE", page: "raffle" },
-    { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "/dashboard", label: "DASHBOARD", page: "dashboard" },
-  ]
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
-    <nav className="w-full bg-[#000000] sticky top-0 z-50 border-b border-[#333]">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Left: Logo */}
-          <Link href="/" className="flex-shrink-0">
+    <div className="nav-sticky-wrapper">
+      {/* ── Ticker — sits above the nav bar ── */}
+      <div className="nav-ticker" aria-label="Promo ticker">
+        <video autoPlay loop muted playsInline aria-hidden="true" className="nav-ticker__video">
+          <source src={HOLO_WIDE_WEBM} type="video/webm" />
+          <source src={HOLO_WIDE_MP4}  type="video/mp4" />
+        </video>
+        <div className="nav-ticker__track" aria-hidden="true">
+          <span>{TICKER_TEXT.repeat(14)}</span>
+          <span>{TICKER_TEXT.repeat(14)}</span>
+        </div>
+        <p className="sr-only">{TICKER_TEXT}</p>
+      </div>
+
+      {/* ── Nav bar ── */}
+      <nav className="site-nav" aria-label="Main navigation">
+        <div className="site-nav__inner">
+
+          {/* Logo */}
+          <Link href="/" className="site-nav__logo" aria-label="Mandy.gg home">
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-logo-small-REJQ74xYMktKwzxz1LsyZINIDXNKJs.webp"
-              alt="Mandy.gg logo"
+              alt="Mandy.gg"
               width={120}
               height={48}
-              className="h-10 md:h-12 w-auto"
+              className="site-nav__logo-img"
             />
           </Link>
 
-          {/* Center: Nav Links (Desktop) */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {navLinks.map((link) => (
+          {/* Desktop links */}
+          <div className="site-nav__links" role="list">
+            {NAV_LINKS.map((link) => (
               <Link
-                key={link.page}
+                key={link.href}
                 href={link.href}
-                className={`text-sm uppercase tracking-wider transition-colors ${
-                  currentPage === link.page
-                    ? "text-[#CCFF00]"
-                    : "text-[#FFFFFF] hover:text-[#CCFF00]"
-                }`}
-                style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+                role="listitem"
+                className={`site-nav__link${currentPage === link.href ? " site-nav__link--active" : ""}`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Right: Auth Button (Desktop) */}
-          <div className="hidden lg:flex items-center">
+          {/* Desktop auth */}
+          <div className="site-nav__auth">
             {user ? (
-              <Button
+              <button
+                type="button"
                 onClick={handleSignOut}
-                className="bg-transparent border-2 border-[#CCFF00] text-[#FFFFFF] hover:bg-[#CCFF00] hover:text-[#000000] rounded transition-all duration-300 uppercase text-sm px-6 py-2"
-                style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
+                className="nav-holo-btn"
+                aria-label="Sign out"
               >
-                SIGN OUT
-              </Button>
+                <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                  <source src={HOLO_BTN_WEBM} type="video/webm" />
+                  <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                </video>
+                <span className="nav-holo-btn__label">SIGN OUT</span>
+              </button>
             ) : (
-              <Link href="/auth/login">
-                <Button
-                  className="bg-[#CCFF00] text-[#000000] hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] rounded transition-all duration-300 uppercase text-sm px-6 py-2"
-                  style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-                >
-                  LOGIN
-                </Button>
+              <Link href="/auth/login" className="nav-holo-btn" aria-label="Sign in">
+                <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                  <source src={HOLO_BTN_WEBM} type="video/webm" />
+                  <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                </video>
+                <span className="nav-holo-btn__label">SIGN IN</span>
               </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#CCFF00] p-2 focus:outline-none"
-              aria-label="Toggle mobile menu"
-            >
-              <div className="flex flex-col gap-1.5">
-                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-transform ${isMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
-                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-opacity ${isMenuOpen ? "opacity-0" : ""}`} />
-                <div className={`w-6 h-0.5 bg-[#CCFF00] transition-transform ${isMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-              </div>
-            </button>
-          </div>
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            className="site-nav__hamburger"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            <span className={`hbg-line${menuOpen ? " hbg-line--top-open" : ""}`} />
+            <span className={`hbg-line${menuOpen ? " hbg-line--mid-open" : ""}`} />
+            <span className={`hbg-line${menuOpen ? " hbg-line--bot-open" : ""}`} />
+          </button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-[#333]">
-            <div className="flex flex-col pt-4 gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.page}
-                  href={link.href}
-                  className={`py-3 px-2 text-sm uppercase tracking-wider transition-colors ${
-                    currentPage === link.page
-                      ? "text-[#CCFF00]"
-                      : "text-[#FFFFFF] hover:text-[#CCFF00]"
-                  }`}
-                  style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-                  onClick={() => setIsMenuOpen(false)}
+        {/* Mobile drawer */}
+        {menuOpen && (
+          <div className="site-nav__mobile-drawer">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`site-nav__mobile-link${currentPage === link.href ? " site-nav__mobile-link--active" : ""}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="site-nav__mobile-auth">
+              {user ? (
+                <button
+                  type="button"
+                  onClick={() => { handleSignOut(); setMenuOpen(false); }}
+                  className="nav-holo-btn nav-holo-btn--wide"
                 >
-                  {link.label}
+                  <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                    <source src={HOLO_BTN_WEBM} type="video/webm" />
+                    <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                  </video>
+                  <span className="nav-holo-btn__label">SIGN OUT</span>
+                </button>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="nav-holo-btn nav-holo-btn--wide"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                    <source src={HOLO_BTN_WEBM} type="video/webm" />
+                    <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                  </video>
+                  <span className="nav-holo-btn__label">SIGN IN</span>
                 </Link>
-              ))}
-
-              <div className="pt-3 mt-2 border-t border-[#333]">
-                {user ? (
-                  <Button
-                    onClick={() => {
-                      handleSignOut()
-                      setIsMenuOpen(false)
-                    }}
-                    className="w-full bg-transparent border-2 border-[#CCFF00] text-[#FFFFFF] hover:bg-[#CCFF00] hover:text-[#000000] rounded uppercase text-sm"
-                    style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-                  >
-                    SIGN OUT
-                  </Button>
-                ) : (
-                  <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>
-                    <Button
-                      className="w-full bg-[#CCFF00] text-[#000000] hover:shadow-[0_0_20px_rgba(204,255,0,0.5)] rounded uppercase text-sm"
-                      style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-                    >
-                      LOGIN
-                    </Button>
-                  </Link>
-                )}
-              </div>
+              )}
             </div>
           </div>
         )}
-      </div>
-    </nav>
-  )
+      </nav>
+    </div>
+  );
 }

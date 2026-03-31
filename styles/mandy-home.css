@@ -1,48 +1,43 @@
 /* ============================================================
    MANDY.GG — HOMEPAGE STYLES
-   Accent palette: #b5dc58 (lime), #6859d5 (purple), #ff94b4 (pink), #5ac3ff (blue)
+   Palette: #b5dc58 lime · #6859d5 purple · #ff94b4 pink · #5ac3ff blue
 ============================================================ */
 
 :root {
-  --mandy-bg:          #000000;
-  --mandy-bg-card:     #0a0c10;   /* cooler-toned near-black for cards */
-  --mandy-bg-secondary:#0d0f14;
-  --mandy-white:       #ffffff;
-  --mandy-lime:        #b5dc58;
-  --mandy-purple:      #6859d5;
-  --mandy-pink:        #ff94b4;
-  --mandy-blue:        #5ac3ff;
-  --mandy-border:      rgba(255,255,255,0.07);
-  --mandy-stroke:      #b5dc58; /* thin stroke on holo elements */
+  --m-bg:        #000000;
+  --m-card:      #080b10;   /* cool-toned near-black */
+  --m-card2:     #0c1018;
+  --m-white:     #ffffff;
+  --m-lime:      #b5dc58;
+  --m-purple:    #6859d5;
+  --m-pink:      #ff94b4;
+  --m-blue:      #5ac3ff;
+  --m-border:    rgba(255,255,255,0.07);
+  --m-stroke:    #b5dc58;
 }
 
-.mandy-home,
-.mandy-home * {
-  box-sizing: border-box;
-}
+/* ── Reset ── */
+.mandy-home, .mandy-home * { box-sizing: border-box; }
 
 .mandy-home {
-  background: var(--mandy-bg);
-  color: var(--mandy-white);
+  background: var(--m-bg);
+  color: var(--m-white);
   min-height: 100vh;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
   overflow-x: hidden;
 }
 
 /* ================================================================
-   SHARED: HOLO VIDEO MASK
-   white text + mix-blend-mode:multiply video
-   Video disappears over pure black; shows through white letterforms.
-   Thin #b5dc58 text-shadow stroke on holo elements.
+   HOLO TEXT MASK
+   White letters + video on top with mix-blend-mode:multiply.
+   Black bg → video disappears. White text → video shows through.
 ================================================================ */
-
-.mandy-logo,
-.holo-header {
+.holo-mask {
   --rx: 0deg;
   --ry: 0deg;
   position: relative;
   display: inline-block;
-  background-color: #000000;
+  background: #000000; /* must be pure black for multiply to work */
   transform-style: preserve-3d;
   transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform 0.12s ease-out;
@@ -51,22 +46,20 @@
   line-height: 1;
 }
 
-.mandy-logo__letters,
-.holo-header__letters {
+.holo-mask__letters {
   display: block;
   color: #ffffff;
   position: relative;
   z-index: 1;
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
   font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
-  /* Very thin lime stroke on holo text — <0.5px via text-shadow */
+  /* Sub-pixel lime stroke — <0.5 px */
   text-shadow:
-    0 0 0.4px var(--mandy-stroke),
-    0 0 0.4px var(--mandy-stroke);
-  -webkit-text-stroke: 0px transparent; /* do NOT use -webkit-text-stroke, too thick */
+    0 0 0.35px var(--m-stroke),
+    0 0 0.35px var(--m-stroke);
 }
 
 .holo-video {
@@ -88,7 +81,7 @@
   background: linear-gradient(
     110deg,
     transparent 15%,
-    rgba(255,255,255,0.22) 44%,
+    rgba(255,255,255,0.24) 44%,
     rgba(255,255,255,0.08) 56%,
     transparent 85%
   );
@@ -104,6 +97,106 @@
 }
 
 /* ================================================================
+   HOLO BUTTON
+================================================================ */
+.holo-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.72rem 1.6rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  min-width: 148px;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  /* Thin lime stroke around button */
+  box-shadow: 0 0 0 0.4px var(--m-stroke);
+}
+
+.holo-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 0.4px var(--m-stroke),
+    0 6px 22px rgba(104,89,213,0.4);
+}
+
+.holo-btn__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.holo-btn__label {
+  position: relative;
+  z-index: 1;
+  color: #000000;
+  font-weight: 800;
+  text-shadow: 0 0 0.3px var(--m-stroke);
+}
+
+/* ================================================================
+   SHARED CARD  (.mandy-card)
+================================================================ */
+.mandy-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  border-radius: 16px;
+  border: 1.5px solid var(--m-border);
+  background: var(--m-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 2px 24px rgba(0,0,0,0.8);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out, border-color 0.18s ease, box-shadow 0.18s ease;
+  will-change: transform;
+}
+
+/* Iridescent rainbow border on hover — no blur/halo */
+.mandy-card:hover {
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 0 0 1px rgba(90,195,255,0.6),
+    0 0 0 2px rgba(104,89,213,0.3),
+    0 0 18px rgba(255,148,180,0.18),
+    0 0 28px rgba(181,220,88,0.10);
+}
+
+/* Glossy sheen — affects card surface only, never text/images */
+.card-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1; /* above card bg, below content at z-index 2+ */
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,0.16) 0%,
+    rgba(255,255,255,0.05) 45%,
+    transparent 72%
+  );
+  transition: opacity 0.15s ease;
+}
+
+.mandy-card:hover .card-gloss { opacity: 1; }
+
+/* ================================================================
    HERO
 ================================================================ */
 .hero {
@@ -112,7 +205,7 @@
   text-align: center;
 }
 
-.mandy-logo__letters {
+.mandy-logo-size {
   font-size: clamp(3.5rem, 13vw, 11.2rem);
   letter-spacing: -0.01em;
 }
@@ -120,8 +213,8 @@
 .hero-tagline {
   margin: 1.2rem 0 0;
   letter-spacing: 0.22em;
-  font-size: clamp(0.7rem, 1.4vw, 1rem);
-  color: rgba(255,255,255,0.7);
+  font-size: clamp(0.68rem, 1.3vw, 0.95rem);
+  color: rgba(255,255,255,0.65);
   text-transform: uppercase;
 }
 
@@ -130,90 +223,36 @@
 ================================================================ */
 .features {
   width: min(1240px, calc(100% - 2rem));
-  margin: 2rem auto 0; /* reduced — tagline is now clearly above cards */
+  margin: 1.5rem auto 0;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
-  padding-top: 5rem; /* room for overhanging icons */
-  overflow: visible;
+  padding-top: 5.5rem; /* room for overhanging icons */
 }
 
-/* ── Card base ── */
-.floating-card {
-  --rx: 0deg;
-  --ry: 0deg;
-  --mx: 50%;
-  --my: 50%;
-  --card-active: 0;
-  border-radius: 16px;
-  border: 1.5px solid var(--mandy-border);
-  background: var(--mandy-bg-card);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 2px 20px rgba(0,0,0,0.7);
-  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.12s ease-out, box-shadow 0.2s ease, border-color 0.2s ease;
-  will-change: transform;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Iridescent rainbow border on hover */
-.floating-card:hover {
-  border-color: transparent;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    0 0 0 1px rgba(90,195,255,0.55),
-    0 0 0 2px rgba(104,89,213,0.35),
-    0 0 18px rgba(255,148,180,0.22),
-    0 0 32px rgba(181,220,88,0.12);
-}
-
-/* ── Dynamic gloss overlay — follows mouse ── */
-.card-gloss {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 4;
-  opacity: 0;
-  background: radial-gradient(
-    circle at var(--mx, 50%) var(--my, 50%),
-    rgba(255,255,255,0.18) 0%,
-    rgba(255,255,255,0.06) 40%,
-    transparent 70%
-  );
-  transition: opacity 0.15s ease;
-}
-
-.floating-card:hover .card-gloss {
-  opacity: 1;
-}
-
-/* ── Feature card specifics ── */
 .feature-card {
-  padding: 1.1rem 1.6rem 1.6rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  min-height: 320px;
+  padding: 1.2rem 1.6rem 1.75rem;
+  min-height: 300px;
+  overflow: visible; /* icons hang above the top edge */
 }
 
-.feature-card.floating-card {
-  overflow: visible; /* icons float above */
-}
-
+/* Icon: z-index 0 — behind text (z-index 2), above card bg */
 .feature-icon-wrap {
   position: absolute;
-  top: -4.5rem;
+  top: -5rem;
   left: 50%;
-  transform: translateX(-50%) translateX(var(--icon-x, 0px)) translateY(var(--icon-y, 0px));
-  width: 210px;
-  height: 210px;
+  transform: translateX(-50%)
+             translateX(var(--icon-x, 0px))
+             translateY(var(--icon-y, 0px));
+  width: 200px;
+  height: 200px;
   display: grid;
   place-items: center;
   pointer-events: none;
@@ -225,124 +264,72 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.65));
   animation: floatIcon 4s ease-in-out infinite;
 }
 
-.feature-card:nth-child(2) .feature-icon { animation-delay: -1.4s; }
-.feature-card:nth-child(3) .feature-icon { animation-delay: -2.8s; }
+.features-grid > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
+.features-grid > article:nth-child(3) .feature-icon { animation-delay: -2.8s; }
 
 @keyframes floatIcon {
-  0%, 100% { transform: translateY(0px); }
+  0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-10px); }
 }
 
+/* All direct children of feature-card need z-index > 1 to be above gloss */
 .feature-card > .feature-title,
-.feature-card > .feature-description,
-.feature-card > .primary-button,
-.feature-card > a {
+.feature-card > .feature-desc,
+.feature-card > .holo-button,
+.feature-card > .card-btn {
   position: relative;
-  z-index: 1;
-}
-
-.feature-card > .feature-title {
-  margin-top: 8.5rem;
+  z-index: 2;
 }
 
 .feature-title {
+  /* Reserve space for the floating icon */
+  margin-top: 8rem;
   font-weight: 800;
-  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
   letter-spacing: 0.02em;
   color: transparent;
-  background-image: linear-gradient(90deg, var(--mandy-blue) 0%, #a8e4ff 50%, var(--mandy-blue) 100%);
+  background-image: linear-gradient(90deg, var(--m-blue) 0%, #a8e6ff 50%, var(--m-blue) 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: blueGradient 5s linear infinite;
-  margin: 0;
+  animation: blueShift 5s linear infinite;
+  margin-bottom: 0;
+  /* white text is handled by the gradient */
 }
 
-@keyframes blueGradient {
+@keyframes blueShift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-.feature-description {
-  margin: 0.75rem 0 1.4rem;
-  font-size: 0.68rem;
-  line-height: 1.5;
+.feature-desc {
+  margin: 0.8rem 0 1.4rem;
+  font-size: 0.67rem;
+  line-height: 1.6;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  /* white text on dark card */
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.55);
   max-width: 22ch;
   flex: 1;
 }
 
-/* ================================================================
-   BUTTONS — all buttons use holo video background
-================================================================ */
-.primary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.card-btn {
   margin-top: auto;
-  padding: 0.75rem 1.6rem;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1;
-  cursor: pointer;
-  text-decoration: none;
-  min-width: 160px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.holo-button__video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  z-index: 0;
-  border-radius: inherit;
-}
-
-/* Button label — black text over the bright holo video */
-.holo-button__label {
-  position: relative;
-  z-index: 1;
-  color: #000000;
-  font-weight: 800;
-  /* Very thin lime stroke on button text */
-  text-shadow: 0 0 0.3px var(--mandy-stroke);
-}
-
-.primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 4px 20px rgba(104,89,213,0.4),
-    0 0 0 1px rgba(181,220,88,0.3);
 }
 
 /* ================================================================
-   TICKER
+   TICKER — tight height, holo-wide video bg, black text
 ================================================================ */
 .ticker {
-  margin-top: 2rem;
+  margin-top: 1.75rem;
   position: relative;
   overflow: hidden;
-  /* Only as tall as the text needs — no extra height */
-  height: 2.4rem;
+  height: 2.3rem; /* snug around the text */
   display: flex;
   align-items: center;
 }
@@ -355,7 +342,7 @@
   object-fit: cover;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .ticker-track {
@@ -363,49 +350,46 @@
   align-items: center;
   width: max-content;
   white-space: nowrap;
-  font-family: "Poppins", sans-serif;
-  font-size: clamp(0.72rem, 1.2vw, 0.95rem);
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
   font-weight: 800;
   letter-spacing: 0.07em;
-  /* Black text over holo video */
-  color: #000000;
-  animation: mandyTickerScroll 30s linear infinite;
+  color: #000000; /* black text on holo video */
+  animation: tickerScroll 32s linear infinite;
   position: relative;
   z-index: 1;
+  line-height: 1;
+  padding: 0 0.4rem;
 }
 
-.ticker-track span {
-  display: inline-block;
-  padding-right: 0.5rem;
-}
+.ticker-track span { display: inline-block; }
 
-@keyframes mandyTickerScroll {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 /* ================================================================
-   UPDATES SECTION
+   UPDATES
 ================================================================ */
 .updates-section {
   width: min(1240px, calc(100% - 2rem));
-  margin: 2rem auto 0;
+  margin: 1.75rem auto 0;
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 2rem;
+  gap: 1.75rem;
   align-items: flex-start;
 }
 
 .updates-left {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
   flex-shrink: 0;
-  align-items: flex-start;
 }
 
-.updates-title-text {
-  font-size: clamp(2.2rem, 4.5vw, 4rem);
+.updates-title-size {
+  font-size: clamp(2rem, 4vw, 3.8rem);
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
@@ -415,128 +399,122 @@
   gap: 0.5rem;
 }
 
-.updates-feed-arrow {
+.arrow-btn {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1.5px solid var(--mandy-pink);
+  border: 1.5px solid var(--m-pink);
   background: transparent;
-  color: var(--mandy-pink);
+  color: var(--m-pink);
   font-size: 1rem;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.2s ease, color 0.2s ease;
-  flex-shrink: 0;
+  transition: background 0.18s ease, color 0.18s ease;
+  font-family: inherit;
 }
 
-.updates-feed-arrow:hover {
-  background: var(--mandy-pink);
+.arrow-btn:hover {
+  background: var(--m-pink);
   color: #000;
 }
 
-.updates-horizontal-feed {
+.updates-feed {
   display: flex;
   gap: 1rem;
   overflow-x: auto;
   scroll-behavior: smooth;
-  -ms-overflow-style: none;
   scrollbar-width: none;
-  /* snap so cards don't stop mid-card on mobile */
+  -ms-overflow-style: none;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 
-.updates-horizontal-feed::-webkit-scrollbar { display: none; }
+.updates-feed::-webkit-scrollbar { display: none; }
 
-.update-feed-card {
-  flex: 0 0 calc(100% - 0px); /* mobile: one card fills container */
+.update-card {
+  /* Desktop: auto width so multiple cards show */
+  flex: 0 0 280px;
   scroll-snap-align: start;
   padding: 1rem 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  overflow: hidden; /* prevent gloss from leaking */
+  overflow: hidden;
 }
 
-.update-feed-card:hover {
-  border-color: transparent;
-  box-shadow:
-    0 0 0 1px rgba(255,148,180,0.5),
-    0 0 18px rgba(255,148,180,0.18);
+/* Content inside card above gloss */
+.update-card > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
 }
 
-.update-feed-top {
+.update-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-.announcement-tag {
-  font-size: 0.6rem;
+/* Tag chips */
+.tag {
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.2rem 0.5rem;
+  padding: 0.18rem 0.45rem;
   border-radius: 4px;
-  background: var(--mandy-pink);
-  color: #000;
 }
 
-.announcement-tag--new    { background: var(--mandy-pink);   color: #000; }
-.announcement-tag--update { background: var(--mandy-blue);   color: #000; }
-.announcement-tag--alert  { background: #ff5a5a;             color: #fff; }
-.announcement-tag--info   { background: var(--mandy-purple); color: #fff; }
+.tag--new    { background: var(--m-pink);   color: #000; }
+.tag--update { background: var(--m-blue);   color: #000; }
+.tag--alert  { background: #e63946;         color: #fff; }
+.tag--info   { background: var(--m-purple); color: #fff; }
+.tag--blue   { background: var(--m-blue);   color: #000; }
 
-.announcement-date {
-  font-size: 0.58rem;
-  color: rgba(255,255,255,0.4);
+.update-date, .blog-date {
+  font-size: 0.56rem;
+  color: rgba(255,255,255,0.38);
   letter-spacing: 0.05em;
   white-space: nowrap;
 }
 
-.update-feed-title {
+.update-title {
   margin: 0;
   font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  /* white on dark card */
-  color: var(--mandy-white);
+  letter-spacing: 0.04em;
+  color: var(--m-white);
   line-height: 1.3;
 }
 
-.update-feed-copy {
+.update-body {
   margin: 0;
-  font-size: 0.65rem;
-  line-height: 1.55;
-  color: rgba(255,255,255,0.5);
-  overflow: hidden;
+  font-size: 0.63rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.48);
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ================================================================
-   BLOG SECTION
+   BLOG / GAMBLING GOSSIP
 ================================================================ */
 .blog-section {
   width: min(1240px, calc(100% - 2rem));
-  margin: 2rem auto 0;
+  margin: 1.75rem auto 0;
 }
 
 .blog-header {
   text-align: right;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
-.blog-title-wrap {
-  display: inline-block;
-}
-
-.blog-title-text {
-  font-size: clamp(1.8rem, 4.5vw, 3.8rem);
+.blog-title-size {
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
   letter-spacing: 0.01em;
   text-align: right;
 }
@@ -550,177 +528,163 @@
 .blog-card {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.7rem;
   padding: 1.4rem;
   text-decoration: none;
-  color: var(--mandy-white);
+  color: var(--m-white);
   overflow: hidden;
 }
 
-.blog-card-meta {
+/* Blog card content above gloss */
+.blog-card > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
+}
+
+.blog-meta {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-}
-
-.blog-tag {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.55rem;
-  border-radius: 4px;
-  background: var(--mandy-blue);
-  color: #000;
-}
-
-.blog-date {
-  font-size: 0.6rem;
-  color: rgba(255,255,255,0.38);
-  letter-spacing: 0.05em;
+  gap: 0.55rem;
 }
 
 .blog-card-title {
   margin: 0;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1.3;
-  /* white on dark card */
-  color: var(--mandy-white);
+  color: var(--m-white);
 }
 
 .blog-card-excerpt {
   margin: 0;
-  font-size: 0.68rem;
+  font-size: 0.67rem;
   line-height: 1.6;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.48);
   flex: 1;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.blog-card-cta {
-  font-size: 0.65rem;
+.blog-cta {
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--mandy-blue);
+  color: var(--m-blue);
   text-transform: uppercase;
 }
 
-.blog-more-wrap {
-  margin-top: 1.5rem;
+.blog-more-row {
+  margin-top: 1.25rem;
   display: flex;
   justify-content: flex-end;
 }
 
-/* Override min-width for the "MORE" button */
-.blog-more-wrap .primary-button {
-  min-width: 100px;
-  padding: 0.6rem 2rem;
+.btn-sm {
+  min-width: 90px !important;
+  padding: 0.6rem 1.6rem !important;
 }
 
 /* ================================================================
-   FAQ SECTION
+   FAQ — compact and modern
 ================================================================ */
 .faq-section {
   width: min(1240px, calc(100% - 2rem));
-  margin: 2rem auto 0;
+  margin: 1.75rem auto 0;
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 2.5rem;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
   align-items: flex-start;
 }
 
-.faq-left {
-  padding-top: 0.25rem;
+.faq-title-wrap {
+  position: sticky;
+  top: 80px;
 }
 
-.faq-title-text {
-  font-size: clamp(2.2rem, 4.5vw, 3.8rem);
-  letter-spacing: 0.05em;
+.faq-title-size {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: 0.06em;
 }
 
 .faq-list {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
 }
 
 .faq-item {
-  border: 1.5px solid rgba(104,89,213,0.22);
-  border-radius: 8px;
-  background: var(--mandy-bg-card);
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.faq-item:hover,
-.faq-item[data-open="true"] {
-  border-color: transparent;
+.faq-item--open,
+.faq-item:hover {
+  border-color: transparent !important;
   box-shadow:
     0 0 0 1px rgba(104,89,213,0.55),
-    0 0 14px rgba(104,89,213,0.2);
+    0 0 14px rgba(104,89,213,0.18) !important;
 }
 
-.faq-question-btn {
+/* FAQ content above gloss */
+.faq-item > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
+}
+
+.faq-q {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.85rem 1.1rem;
+  padding: 0.8rem 1rem;
   background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
-  /* white text on dark card */
-  color: var(--mandy-white);
-  font-family: "Poppins", sans-serif;
-  font-size: 0.72rem;
+  color: var(--m-white);
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .faq-chevron {
   flex-shrink: 0;
-  width: 14px;
-  height: 14px;
-  border-right: 2px solid var(--mandy-purple);
-  border-bottom: 2px solid var(--mandy-purple);
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid var(--m-purple);
+  border-bottom: 2px solid var(--m-purple);
   transform: rotate(45deg);
-  transition: transform 0.25s ease;
+  transition: transform 0.22s ease;
 }
 
-.faq-item[data-open="true"] .faq-chevron {
+.faq-item--open .faq-chevron {
   transform: rotate(-135deg);
 }
 
 .faq-answer {
-  padding: 0 1.1rem 1rem;
-  font-size: 0.72rem;
-  line-height: 1.75;
-  color: rgba(255,255,255,0.65);
+  padding: 0 1rem 0.85rem;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
 }
-
-.faq-answer a {
-  color: var(--mandy-purple);
-  text-decoration: underline;
-}
-.faq-answer a:hover { color: #a390ff; }
 
 /* ================================================================
-   SITE FOOTER — holo video background
+   FOOTER — HOLO_BG_FAST video fill
 ================================================================ */
 .site-footer {
-  margin-top: 3.5rem;
+  margin-top: 3rem;
   position: relative;
   overflow: hidden;
-  padding: 2.5rem 0 1.5rem;
-  /* fallback bg while video loads */
-  background: #0a0c10;
+  padding: 3rem 0 1.5rem;
 }
 
 .footer-video {
@@ -751,47 +715,63 @@
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 
-.footer-brand-name {
+/* Large bold MANDY.GG — black over holo video */
+.footer-logo {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
   font-weight: 900;
-  font-size: 1.5rem;
-  /* black over the holo video */
-  color: #000;
-  letter-spacing: 0.02em;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  color: #000000;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
 }
 
-.footer-tagline {
-  font-size: 0.72rem;
+.footer-sub {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.7);
+  font-weight: 600;
+}
+
+.footer-code {
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.65);
+  color: rgba(0,0,0,0.6);
 }
 
-.footer-links {
+.footer-code strong {
+  color: #000;
+  font-weight: 800;
+}
+
+.footer-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
   align-items: flex-end;
 }
 
-.footer-links a {
+.footer-nav a {
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #000;
+  color: rgba(0,0,0,0.75);
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: color 0.18s ease;
 }
-.footer-links a:hover { opacity: 0.55; }
+.footer-nav a:hover { color: #000; }
 
 .footer-bottom {
   width: min(1240px, calc(100% - 2rem));
   margin: 1.5rem auto 0;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(0,0,0,0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -800,7 +780,7 @@
 }
 
 .footer-copy {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   letter-spacing: 0.07em;
   color: rgba(0,0,0,0.5);
 }
@@ -811,30 +791,30 @@
 }
 
 .footer-legal a {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   letter-spacing: 0.07em;
   color: rgba(0,0,0,0.5);
   text-decoration: none;
+  transition: color 0.18s ease;
 }
 .footer-legal a:hover { color: #000; }
 
 /* ================================================================
-   RESPONSIVE — TABLET
+   RESPONSIVE — TABLET (≤960px)
 ================================================================ */
 @media (max-width: 960px) {
   .features-grid {
     grid-template-columns: 1fr;
-    gap: 5.5rem;
+    gap: 6rem;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .blog-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+  .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
 
   .updates-section {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
   .updates-left {
@@ -846,20 +826,18 @@
 
   .faq-section {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
-  .footer-inner {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
+  .faq-title-wrap { position: static; }
 
-  .footer-links { align-items: flex-start; }
+  .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+  .footer-nav { align-items: flex-start; }
   .footer-bottom { flex-direction: column; align-items: flex-start; }
 }
 
 /* ================================================================
-   RESPONSIVE — MOBILE
+   RESPONSIVE — MOBILE (≤600px)
 ================================================================ */
 @media (max-width: 600px) {
   .hero,
@@ -870,44 +848,32 @@
     width: calc(100% - 1.5rem);
   }
 
-  /* MANDY.GG centered and fits screen */
-  .hero {
-    text-align: center;
-  }
+  /* MANDY.GG: centered, fits viewport */
+  .hero { text-align: center; }
+  .mandy-logo-size { font-size: clamp(2.8rem, 18vw, 5rem); }
+  .holo-mask { max-width: 100%; }
 
-  .mandy-logo {
-    max-width: 100%;
-  }
-
-  /* Feature grid stacked, single column */
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 5.5rem;
-  }
-
-  /* Updates: one card fills the screen width */
-  .updates-horizontal-feed {
+  /* Updates: full-card snap, no partial cards visible */
+  .updates-feed {
     scroll-snap-type: x mandatory;
+    gap: 0; /* remove gap so snap stops cleanly at each card */
   }
 
-  .update-feed-card {
-    /* Each card fills the full width of the scroll container */
-    flex: 0 0 calc(100vw - 3.5rem);
-    min-width: 0;
-    scroll-snap-align: start;
+  .update-card {
+    flex: 0 0 calc(100vw - 3rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    margin-right: 0;
   }
 
   /* Blog: single column */
-  .blog-grid {
-    grid-template-columns: 1fr;
-  }
+  .blog-grid { grid-template-columns: 1fr; }
 
-  /* FAQ: single column, no side label */
-  .faq-section {
-    grid-template-columns: 1fr;
-  }
+  /* FAQ: single col */
+  .faq-section { grid-template-columns: 1fr; }
 
-  .ticker {
-    height: 2rem;
-  }
+  /* Ticker slightly smaller */
+  .ticker { height: 2rem; }
+
+  .footer-logo { font-size: clamp(1.8rem, 12vw, 3rem); }
 }
