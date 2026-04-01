@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
 import { DailyRaffle } from "@/components/leaderboard-daily-raffle"
+import FlipCountdown from "@/components/FlipCountdown"
 import { isAdminSessionValid } from "@/lib/admin-session"
 import { clearLeaderboardCacheAction } from "@/app/actions/admin-actions"
 import MailingListForm from "@/components/MailingListForm"
@@ -168,6 +169,7 @@ export function Leaderboard() {
 
   const fmt = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)
   const pad = (n: number) => String(n).padStart(2, "0")
+  const timeLeft = `${pad(countdown.days)}:${pad(countdown.hours)}:${pad(countdown.minutes)}:${pad(countdown.seconds)}`
 
   const topThree = entries.slice(0, 3)
   const rest     = entries.slice(3)
@@ -197,45 +199,10 @@ export function Leaderboard() {
 
       {/* ── Countdown ── */}
       <div style={{ background: PAGE_BG, padding: "1.5rem 1rem 0", textAlign: "center" }}>
-        <p style={{ fontWeight: 700, fontSize: "clamp(0.65rem,2vw,0.8rem)", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: "0.5rem" }}>
+        <p style={{ fontWeight: 700, fontSize: "clamp(0.65rem,2vw,0.8rem)", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: "0.25rem" }}>
           TIME REMAINING
         </p>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: "0.15rem", flexWrap: "wrap", padding: "0.25rem 0 1.5rem" }}>
-          {([["DAYS", countdown.days], ["HRS", countdown.hours], ["MIN", countdown.minutes], ["SEC", countdown.seconds]] as [string, number][]).map(([label, val], idx) => (
-            <div key={label} style={{ display: "flex", alignItems: "flex-start" }}>
-              {/* Flip-card tile */}
-              <div style={{ display: "flex", gap: "3px" }}>
-                {pad(val).split("").map((digit, di) => (
-                  <div key={di} style={{
-                    width: "clamp(36px,9vw,56px)", height: "clamp(44px,11vw,68px)",
-                    background: CARD_BG, border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "8px", display: "flex", flexDirection: "column",
-                    alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden",
-                  }}>
-                    {/* Holo sheen line in middle */}
-                    <div style={{ position: "absolute", top: "50%", left: 0, right: 0, height: "1px", background: "rgba(255,255,255,0.06)", zIndex: 1 }} />
-                    <span style={{ fontSize: "clamp(1.4rem,4.5vw,2.6rem)", fontWeight: 900, color: "#fff", lineHeight: 1, position: "relative", zIndex: 2 }}>{digit}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Label below the pair */}
-              <div style={{ display: "flex", flexDirection: "column", alignSelf: "flex-end", marginBottom: "0", marginLeft: "2px", marginRight: idx < 3 ? "0" : "0" }}>
-              </div>
-              {/* Colon separator */}
-              {idx < 3 && (
-                <span style={{ fontSize: "clamp(1.2rem,3.5vw,2rem)", color: "rgba(255,255,255,0.25)", margin: "0 4px", paddingTop: "clamp(6px,2vw,14px)" }}>:</span>
-              )}
-            </div>
-          ))}
-        </div>
-        {/* Labels row */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "0", marginTop: "-0.75rem", marginBottom: "1.5rem" }}>
-          {(["DAYS", "HRS", "MIN", "SEC"] as string[]).map((label, idx) => (
-            <span key={label} style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.4)", width: idx < 3 ? "calc(clamp(36px,9vw,56px)*2 + 3px + clamp(1.2rem,3.5vw,2rem)*0.6 + 8px)" : "calc(clamp(36px,9vw,56px)*2 + 3px)", textAlign: "center" }}>
-              {label}
-            </span>
-          ))}
-        </div>
+        <FlipCountdown timeString={timeLeft} />
 
         {/* Title */}
         <h1 style={{ fontWeight: 900, fontSize: "clamp(1.4rem,5vw,2.8rem)", letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff", marginBottom: "1.25rem", lineHeight: 1.1 }}>

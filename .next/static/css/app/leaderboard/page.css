@@ -282,3 +282,182 @@
   .nav-ticker { height: 1.8rem; }
 }
 
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./styles/FlipCountdown.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* ── Flip Countdown ─────────────────────────────────── */
+
+.flip-countdown {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8px 0 4px;
+  flex-wrap: nowrap; /* never wrap — stays on one line */
+}
+
+.flip-digit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.flip-units {
+  display: flex;
+  gap: 3px;
+}
+
+/* ── Single digit tile ──────────────────────────────── */
+
+.fu {
+  position: relative;
+  width: 48px;
+  height: 66px;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.fu-top,
+.fu-bottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.fu-top {
+  top: 0;
+  height: 33px;
+  background: #0d1118;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.fu-bottom {
+  bottom: 0;
+  height: 32px;
+  background: #08090f;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 2px solid rgba(0, 0, 0, 0.8);
+  z-index: 2;
+}
+
+.fu-num {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 66px;
+  font-family: "poppins", sans-serif;
+  font-weight: 900;
+  font-size: 46px;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 66px;
+}
+
+.fu-num-top {
+  top: 0;
+}
+
+.fu-num-bottom {
+  bottom: 0;
+}
+
+/* ── Flip animation ─────────────────────────────────── */
+
+.fu-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 33px;
+  transform-style: preserve-3d;
+  transform-origin: center bottom;
+  animation: fu-flip 0.5s ease-in forwards;
+  z-index: 5;
+}
+
+@keyframes fu-flip {
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(-180deg); }
+}
+
+.fu-flap-front,
+.fu-flap-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.fu-flap-front {
+  background: #0d1118;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.fu-flap-back {
+  background: #08090f;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transform: rotateX(180deg);
+}
+
+/* ── Labels & separators ────────────────────────────── */
+
+.flip-separator {
+  font-family: "poppins", sans-serif;
+  font-weight: 900;
+  font-size: 40px;
+  color: rgba(255, 255, 255, 0.25);
+  margin: 0 1px;
+  align-self: flex-start;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.flip-label {
+  font-family: "poppins", sans-serif;
+  font-weight: 800;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ── Responsive — smaller on mobile but NEVER wraps ── */
+
+@media (max-width: 520px) {
+  .flip-countdown { gap: 3px; padding: 6px 4px 2px; }
+  .flip-units { gap: 2px; }
+  .fu { width: 34px; height: 48px; }
+  .fu-top { height: 24px; }
+  .fu-bottom { height: 23px; }
+  .fu-flap { height: 24px; }
+  .fu-num { height: 48px; font-size: 32px; line-height: 48px; }
+  .flip-separator { font-size: 26px; margin: 0 1px; margin-top: 3px; }
+  .flip-label { font-size: 8px; letter-spacing: 0.06em; }
+}
+
+@media (max-width: 360px) {
+  .flip-countdown { gap: 2px; }
+  .flip-units { gap: 1px; }
+  .fu { width: 28px; height: 40px; }
+  .fu-top { height: 20px; }
+  .fu-bottom { height: 19px; }
+  .fu-flap { height: 20px; }
+  .fu-num { height: 40px; font-size: 26px; line-height: 40px; }
+  .flip-separator { font-size: 20px; margin-top: 2px; }
+  .flip-label { font-size: 7px; }
+}
+
