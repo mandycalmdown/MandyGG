@@ -3,7 +3,6 @@
 import Link from "next/link"
 import Image from "next/image"
 import { SiteNavigation } from "@/components/site-navigation"
-import { AnnouncementsTicker } from "@/components/announcements-ticker"
 import MailingListForm from "@/components/MailingListForm"
 
 const HOLO_BG = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
@@ -18,11 +17,6 @@ export function RewardsPage() {
           <source media="(max-width: 768px)" srcSet={HOLO_BG_MOBILE} />
           <img src={HOLO_BG} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </picture>
-      </div>
-
-      {/* Ticker */}
-      <div style={{ position: "relative", zIndex: 10 }}>
-        <AnnouncementsTicker tickerKey="ticker_1_text" />
       </div>
 
       <div style={{ position: "relative", zIndex: 10 }}>

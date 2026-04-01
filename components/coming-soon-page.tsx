@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
-import { AnnouncementsTicker } from "@/components/announcements-ticker"
 
 const HOLO_BG_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
@@ -31,7 +30,6 @@ export function ComingSoonPage({ currentPage }: ComingSoonPageProps) {
       </div>
 
       <div style={{ position: "relative", zIndex: 10 }}>
-        <AnnouncementsTicker tickerKey="ticker_1_text" />
         <SiteNavigation currentPage={currentPage} />
 
         <div style={{

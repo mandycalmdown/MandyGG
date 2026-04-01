@@ -196,9 +196,9 @@ export function Homepage() {
             },
             {
               img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
-              title: "GAMING TOOLS",
-              desc: "TOOLS FOR DEGENERACY.",
-              btn: { label: "NERD ALERT", href: "/tools", ext: false },
+              title: "DEGEN DASHBOARD",
+              desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
+              btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
             },
           ] as const).map((card_, i) => (
             <article
