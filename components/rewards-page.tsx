@@ -6,112 +6,147 @@ import { SiteNavigation } from "@/components/site-navigation"
 import { AnnouncementsTicker } from "@/components/announcements-ticker"
 import MailingListForm from "@/components/MailingListForm"
 
+const HOLO_BG = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
+const HOLO_BG_MOBILE = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
+
 export function RewardsPage() {
   return (
-    <div className="min-h-screen bg-[#000000]">
-      {/* Ticker 1 */}
-      <AnnouncementsTicker tickerKey="ticker_1_text" />
+    <div style={{ minHeight: "100vh", background: "#000000", position: "relative" }}>
+      {/* Fixed holographic background */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0 }} aria-hidden="true">
+        <picture>
+          <source media="(max-width: 768px)" srcSet={HOLO_BG_MOBILE} />
+          <img src={HOLO_BG} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </picture>
+      </div>
 
-      <SiteNavigation currentPage="rewards" />
+      {/* Ticker */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <AnnouncementsTicker tickerKey="ticker_1_text" />
+      </div>
 
-      {/* Banner section */}
-      <section className="relative w-full mb-2">
-        <div className="w-full max-w-6xl mx-auto relative px-2 md:px-0">
-          {/* Desktop Banner */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <SiteNavigation currentPage="rewards" />
+      </div>
+
+      {/* Banner */}
+      <section style={{ position: "relative", zIndex: 10, width: "100%", marginBottom: "0.5rem" }}>
+        <div style={{ width: "100%", maxWidth: "1200px", margin: "0 auto", padding: "0 0.5rem" }}>
           <Image
             src="/images/rewards-banner-desktop-new.webp"
             alt="Mandy Rewards - Thrill Casino Bonuses"
             width={1200}
             height={300}
-            className="hidden md:block w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-contain"
+            className="hidden md:block w-full h-auto"
+            style={{ objectFit: "contain", maxHeight: "50vh" }}
             priority
           />
-          {/* Mobile Banner */}
           <Image
             src="/images/rewards-banner-mobile-new.webp"
             alt="Mobile Rewards - Thrill Casino Bonuses"
             width={400}
             height={400}
-            className="md:hidden w-full h-auto max-w-sm mx-auto object-contain rounded"
+            className="md:hidden w-full h-auto mx-auto"
+            style={{ objectFit: "contain", maxWidth: "360px", display: "block" }}
             priority
           />
         </div>
       </section>
 
-      {/* Main Content - Coming Soon */}
-      <main className="relative z-10 px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          <div
-            className="bg-[#050505] rounded border-2 border-[#A538FF] p-8 md:p-12 text-center"
-            style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(165,56,255,0.3)" }}
-          >
-            <h1
-              className="text-3xl md:text-5xl text-[#FFFFFF] mb-4 uppercase tracking-wide"
-              style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-            >
-              REWARDS
-            </h1>
-            <p
-              className="text-xl md:text-2xl text-[#CCFF00] mb-6 uppercase"
-              style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 }}
-            >
-              COMING SOON
-            </p>
-            <p
-              className="text-[#FFFFFF] text-base md:text-lg mb-2"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-            >
-              {"Sorry, I have ADHD."}
-            </p>
-            <p
-              className="text-[#888888] text-sm md:text-base"
-              style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-            >
-              Exciting rewards are on the way. Stay tuned!
-            </p>
+      {/* Main Content */}
+      <main style={{ position: "relative", zIndex: 10, padding: "2rem 1rem" }}>
+        <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+          <div style={{
+            background: "#080b10",
+            border: "1.5px solid rgba(181,220,88,0.25)",
+            borderRadius: "16px",
+            padding: "3rem 2.5rem",
+            textAlign: "center",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.8), 0 0 40px rgba(181,220,88,0.08)",
+          }}>
+            <h1 style={{
+              fontFamily: "var(--font-poppins), Poppins, sans-serif",
+              fontWeight: 900,
+              fontSize: "clamp(2rem, 8vw, 3rem)",
+              color: "#ffffff",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "0.5rem",
+            }}>REWARDS</h1>
+            <p style={{
+              fontFamily: "var(--font-poppins), Poppins, sans-serif",
+              fontWeight: 800,
+              fontSize: "1.4rem",
+              color: "#b5dc58",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "1rem",
+            }}>COMING SOON</p>
+            <p style={{
+              fontFamily: "var(--font-poppins), Poppins, sans-serif",
+              fontSize: "1rem",
+              color: "#ffffff",
+              marginBottom: "0.5rem",
+            }}>{"Sorry, I have ADHD."}</p>
+            <p style={{
+              fontFamily: "var(--font-poppins), Poppins, sans-serif",
+              fontSize: "0.85rem",
+              color: "rgba(255,255,255,0.45)",
+            }}>Exciting rewards are on the way. Stay tuned!</p>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#000000] py-10 md:py-14 px-4 mt-6 md:mt-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="flex justify-center mb-6">
+      <footer style={{
+        position: "relative",
+        zIndex: 10,
+        background: "#000000",
+        padding: "3rem 1rem",
+        marginTop: "2rem",
+      }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-logo-small-REJQ74xYMktKwzxz1LsyZINIDXNKJs.webp"
               alt="Mandy.gg logo"
-              width={120}
-              height={48}
-              className="h-10 md:h-12 w-auto"
+              style={{ height: "2.5rem", width: "auto" }}
             />
           </div>
-
-          <div
-            className="flex flex-wrap justify-center gap-4 md:gap-8 text-sm text-[#FFFFFF] mb-6"
-            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-          >
-            <Link href="/privacy" className="hover:text-[#CCFF00] transition-colors uppercase">
-              PRIVACY POLICY
-            </Link>
-            <Link href="/terms" className="hover:text-[#CCFF00] transition-colors uppercase">
-              TERMS OF SERVICE
-            </Link>
-            <a
-              href="https://t.me/mandysupport_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#CCFF00] transition-colors uppercase"
-            >
-              SUPPORT
-            </a>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem", marginBottom: "1.5rem" }}>
+            {[
+              { href: "/privacy", label: "PRIVACY POLICY" },
+              { href: "/terms", label: "TERMS OF SERVICE" },
+              { href: "https://t.me/mandysupport_bot", label: "SUPPORT", external: true },
+            ].map(item => (
+              <a
+                key={item.label}
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noopener noreferrer" : undefined}
+                style={{
+                  fontFamily: "var(--font-poppins), sans-serif",
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  color: "#ffffff",
+                  textDecoration: "none",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >{item.label}</a>
+            ))}
           </div>
-
           <MailingListForm />
-
-          <p
-            className="text-xs text-[#888888] mt-8 uppercase leading-relaxed"
-            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
-          >
+          <p style={{
+            fontFamily: "var(--font-poppins), sans-serif",
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.45)",
+            marginTop: "2rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            lineHeight: 1.6,
+          }}>
             {"© 2025 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE."}
           </p>
         </div>

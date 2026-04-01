@@ -2582,6 +2582,13 @@
       }
     }
   }
+  .hover\:text-\[\#b5dc58\] {
+    &:hover {
+      @media (hover: hover) {
+        color: #b5dc58;
+      }
+    }
+  }
   .hover\:text-accent-foreground {
     &:hover {
       @media (hover: hover) {

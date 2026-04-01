@@ -10,14 +10,33 @@ import MailingListForm from "@/components/MailingListForm"
 
 export function HowToJoinPage() {
   return (
-    <div className="min-h-screen bg-[#000000]">
-      {/* Ticker 1 */}
-      <AnnouncementsTicker tickerKey="ticker_1_text" />
+    <div className="min-h-screen bg-[#000000]" style={{ position: "relative" }}>
+      {/* Fixed holographic background */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0 }} aria-hidden="true">
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-mobile-ZwOFt65iGL74bPv4mX15f9MezlKFZP.webp"
+          />
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-holographic-loop-bg-KuTV174iSOVIJGQHzXHDyVA96RnXCn.webp"
+            alt=""
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </picture>
+      </div>
 
-      <SiteNavigation currentPage="how-to-join" />
+      {/* Ticker 1 */}
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <AnnouncementsTicker tickerKey="ticker_1_text" />
+      </div>
+
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <SiteNavigation currentPage="how-to-join" />
+      </div>
 
       {/* Hero Section */}
-      <section className="relative px-4 pt-24 pb-16 md:pt-32 md:pb-24 bg-[#000000]">
+      <section className="relative px-4 pt-24 pb-16 md:pt-32 md:pb-24" style={{ position: "relative", zIndex: 10 }}>
         <div className="mx-auto max-w-4xl text-center">
           <h1
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FFFFFF] tracking-tight text-balance uppercase"
@@ -37,7 +56,7 @@ export function HowToJoinPage() {
       </section>
 
       {/* Steps Section */}
-      <section className="px-4 pb-24">
+      <section className="px-4 pb-24" style={{ position: "relative", zIndex: 10 }}>
         <div className="mx-auto max-w-6xl space-y-24">
           {/* Step 1 */}
           <div className="grid gap-8 md:grid-cols-2 md:gap-12 items-center">
@@ -230,11 +249,15 @@ export function HowToJoinPage() {
       </section>
 
       {/* Important Notice */}
-      <section className="px-4 pb-24">
+      <section className="px-4 pb-24" style={{ position: "relative", zIndex: 10 }}>
         <div className="mx-auto max-w-4xl">
           <div
-            className="bg-[#050505] rounded border-2 border-[#FF2FBF] relative p-8 md:p-12"
-            style={{ boxShadow: "0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255,47,191,0.3)" }}
+            className="rounded relative p-8 md:p-12"
+            style={{
+              background: "#080b10",
+              border: "1.5px solid rgba(255,47,191,0.4)",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.8), 0 0 30px rgba(255,47,191,0.12)",
+            }}
           >
             <div className="flex items-start gap-4">
               <AlertCircle className="h-8 w-8 flex-shrink-0 mt-1 text-[#FF2FBF]" />
@@ -267,7 +290,7 @@ export function HowToJoinPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 pb-24">
+      <section className="px-4 pb-24" style={{ position: "relative", zIndex: 10 }}>
         <div className="mx-auto max-w-4xl text-center">
           <h2
             className="text-3xl md:text-4xl text-[#FFFFFF] mb-6 uppercase"
@@ -301,7 +324,7 @@ export function HowToJoinPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#000000] py-10 md:py-14 px-4">
+      <footer className="bg-[#000000] py-10 md:py-14 px-4" style={{ position: "relative", zIndex: 10 }}>
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <img

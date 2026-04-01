@@ -593,20 +593,20 @@ export function Leaderboard() {
           </div>
 
           <div
-            className="flex flex-wrap justify-center gap-4 md:gap-8 text-sm text-[#FFFFFF] mb-6"
-            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            className="flex flex-wrap justify-center gap-4 md:gap-8 mb-6"
+            style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 800, fontSize: "0.75rem", letterSpacing: "0.08em" }}
           >
-            <Link href="/privacy" className="hover:text-[#CCFF00] transition-colors uppercase">
+            <Link href="/privacy" className="text-white hover:text-[#b5dc58] transition-colors uppercase">
               PRIVACY POLICY
             </Link>
-            <Link href="/terms" className="hover:text-[#CCFF00] transition-colors uppercase">
+            <Link href="/terms" className="text-white hover:text-[#b5dc58] transition-colors uppercase">
               TERMS OF SERVICE
             </Link>
             <a
               href="https://t.me/mandysupport_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#CCFF00] transition-colors uppercase"
+              className="text-white hover:text-[#b5dc58] transition-colors uppercase"
             >
               SUPPORT
             </a>
@@ -615,8 +615,13 @@ export function Leaderboard() {
           <MailingListForm />
 
           <p
-            className="text-xs text-[#888888] mt-8 uppercase leading-relaxed"
-            style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
+            className="text-xs mt-8 uppercase leading-relaxed"
+            style={{
+              fontFamily: "var(--font-poppins), sans-serif",
+              fontWeight: 700,
+              color: "rgba(255,255,255,0.5)",
+              letterSpacing: "0.06em",
+            }}
           >
             {"© 2025 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE."}
           </p>
