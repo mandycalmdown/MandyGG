@@ -239,7 +239,15 @@ export function Homepage() {
         </video>
 
         <section className="updates-section" aria-label="Latest updates">
-          <span className="updates-title-sheen updates-title-size">UPDATES</span>
+          <div
+            className="holo-mask"
+            onMouseMove={holo.onMove}
+            onMouseLeave={holo.onLeave}
+          >
+            <span className="holo-mask__letters updates-title-size">UPDATES</span>
+            <HoloText />
+            <span className="holo-sheen" aria-hidden="true" />
+          </div>
 
           <div className="updates-feed-wrap">
             <div ref={feedRef} className="updates-feed" role="list">
@@ -314,10 +322,18 @@ export function Homepage() {
 
       {/* ── FAQ ── */}
       <section className="faq-section" id="faq" aria-label="FAQ">
-        {/* Plain bg-clip sheen — no video, no halo bleed */}
-        <span className="faq-title-sheen faq-title-wrap faq-title-size" aria-hidden="true">
-          F.A.Q.
-        </span>
+        {/* Outer div handles vertical layout; inner holo-mask is free of transform conflicts */}
+        <div className="faq-title-wrap">
+          <div
+            className="holo-mask"
+            onMouseMove={holo.onMove}
+            onMouseLeave={holo.onLeave}
+          >
+            <span className="holo-mask__letters faq-title-size">F.A.Q.</span>
+            <HoloText />
+            <span className="holo-sheen" aria-hidden="true" />
+          </div>
+        </div>
         <div className="faq-list">
           {faqItems.map((item, i) => (
             <div

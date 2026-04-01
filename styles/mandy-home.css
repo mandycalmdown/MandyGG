@@ -617,12 +617,19 @@
 .faq-title-wrap {
   position: sticky;
   top: 100px;
+  /* writing-mode on the wrapper rotates the whole thing vertically */
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(180deg);
   line-height: 1;
-  /* No holo-mask wrapper needed — use bg-clip sheen directly */
-  background: none;
+  /* Inner holo-mask must undo the vertical writing-mode so blend compositing works */
+}
+
+/* Reset writing-mode on the holo-mask inside faq-title-wrap so
+   multiply blend compositing isn't broken by vertical text transforms */
+.faq-title-wrap .holo-mask {
+  writing-mode: horizontal-tb;
+  transform: rotate(180deg) perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 }
 
 /* FAQ title — bg-clip text sheen, no video, no halo */
