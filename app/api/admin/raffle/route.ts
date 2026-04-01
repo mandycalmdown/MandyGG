@@ -2,187 +2,162 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
-// GET all tickets for today (admin view)
+function getNextFridayUTC(from = new Date()): Date {
+  const d = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()))
+  const daysUntilFriday = (5 - d.getUTCDay() + 7) % 7
+  d.setUTCDate(d.getUTCDate() + daysUntilFriday)
+  return d
+}
+
+/** GET — raffle settings, current week stats, recent winners (admin) */
 export async function GET(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    // Check admin
-    const isAdmin = user.user_metadata?.is_admin === true
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-    }
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!user.user_metadata?.is_admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
     const { searchParams } = new URL(request.url)
-    const dateParam = searchParams.get("date") || new Date().toISOString().split("T")[0]
+    const weekParam = searchParams.get("week") || getNextFridayUTC().toISOString().split("T")[0]
 
     const admin = createAdminClient()
 
-    // Get all tickets for the specified date
-    const { data: tickets, error: ticketsError } = await admin
-      .from("raffle_tickets")
-      .select("*, profiles(username, thrill_username)")
-      .eq("raffle_date", dateParam)
-      .order("ticket_number", { ascending: true })
+    const [{ data: settings }, { data: weekTickets }, { data: winner }, { data: recentWinners }] = await Promise.all([
+      admin.from("raffle_settings").select("*").eq("id", 1).single(),
+      admin.from("raffle_tickets")
+        .select("id, user_id, thrill_username, ticket_number, ticket_count, wager_amount, created_at")
+        .eq("raffle_week", weekParam)
+        .order("ticket_count", { ascending: false }),
+      admin.from("raffle_winners").select("*").eq("raffle_date", weekParam).maybeSingle(),
+      admin.from("raffle_winners").select("*").order("raffle_date", { ascending: false }).limit(12),
+    ])
 
-    if (ticketsError) {
-      console.error("[v0] Error fetching admin raffle tickets:", ticketsError)
-      return NextResponse.json({ error: ticketsError.message }, { status: 500 })
-    }
-
-    // Get the winner for this date if exists
-    const { data: winner, error: winnerError } = await admin
-      .from("raffle_winners")
-      .select("*, profiles(username, thrill_username)")
-      .eq("raffle_date", dateParam)
-      .maybeSingle()
-
-    if (winnerError) {
-      console.error("[v0] Error fetching raffle winner:", winnerError)
-    }
-
-    // Get recent winners (last 7 days)
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-
-    const { data: recentWinners, error: recentError } = await admin
-      .from("raffle_winners")
-      .select("*, profiles(username, thrill_username)")
-      .gte("raffle_date", sevenDaysAgo.toISOString().split("T")[0])
-      .order("raffle_date", { ascending: false })
-
-    if (recentError) {
-      console.error("[v0] Error fetching recent winners:", recentError)
-    }
+    const totalTickets = (weekTickets || []).reduce((s, t) => s + (t.ticket_count ?? 1), 0)
+    const uniquePlayers = new Set((weekTickets || []).map((t) => t.user_id)).size
 
     return NextResponse.json({
-      tickets: tickets || [],
-      winner: winner || null,
+      settings: settings ?? { prize_amount: 250, tickets_per_wager: 500, draw_day_utc: 5, draw_hour_utc: 0, is_active: true },
+      stats: { week: weekParam, totalTickets, uniquePlayers, entries: weekTickets || [] },
+      winner: winner ?? null,
       recentWinners: recentWinners || [],
-      date: dateParam,
     })
-  } catch (error) {
-    console.error("[v0] Error in admin raffle GET:", error)
+  } catch (err) {
+    console.error("[v0] admin/raffle GET error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
-// POST - Issue tickets to a user (admin) or pick a winner
+/** PATCH — update raffle settings */
+export async function PATCH(request: Request) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!user.user_metadata?.is_admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+    const body = await request.json()
+    const allowed = ["prize_amount", "tickets_per_wager", "draw_day_utc", "draw_hour_utc", "is_active"]
+    const updates: Record<string, any> = { updated_at: new Date().toISOString() }
+    for (const key of allowed) {
+      if (body[key] !== undefined) updates[key] = body[key]
+    }
+
+    const admin = createAdminClient()
+    const { data, error } = await admin.from("raffle_settings").update(updates).eq("id", 1).select().single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true, settings: data })
+  } catch (err) {
+    console.error("[v0] admin/raffle PATCH error:", err)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+/** POST — run the weekly draw or manually issue tickets */
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const isAdmin = user.user_metadata?.is_admin === true
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-    }
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!user.user_metadata?.is_admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
     const body = await request.json()
     const admin = createAdminClient()
 
+    if (body.action === "run_draw") {
+      const raffleWeek = body.raffle_week || getNextFridayUTC().toISOString().split("T")[0]
+
+      const { data: existing } = await admin.from("raffle_winners").select("id").eq("raffle_date", raffleWeek).maybeSingle()
+      if (existing) return NextResponse.json({ error: "Draw already completed for this week" }, { status: 409 })
+
+      const { data: settings } = await admin.from("raffle_settings").select("prize_amount").eq("id", 1).single()
+      const prizeAmount = settings?.prize_amount ?? 250
+
+      const { data: tickets } = await admin
+        .from("raffle_tickets")
+        .select("id, user_id, ticket_number, thrill_username, ticket_count")
+        .eq("raffle_week", raffleWeek)
+
+      if (!tickets || tickets.length === 0) return NextResponse.json({ error: "No tickets for this week" }, { status: 404 })
+
+      // Weighted random pool
+      const pool: typeof tickets = []
+      for (const t of tickets) {
+        for (let i = 0; i < (t.ticket_count ?? 1); i++) pool.push(t)
+      }
+      const winner = pool[Math.floor(Math.random() * pool.length)]
+
+      const { data: inserted, error: winnerErr } = await admin.from("raffle_winners").insert({
+        ticket_id: winner.id,
+        ticket_number: winner.ticket_number,
+        thrill_username: winner.thrill_username,
+        raffle_date: raffleWeek,
+        winner_user_id: winner.user_id,
+        winning_ticket_number: winner.ticket_number,
+        prize_amount: prizeAmount,
+        prize_description: `$${prizeAmount} Weekly Raffle — ${raffleWeek}`,
+        claimed: false,
+      }).select().single()
+
+      if (winnerErr) return NextResponse.json({ error: winnerErr.message }, { status: 500 })
+      return NextResponse.json({ success: true, winner: inserted })
+    }
+
     if (body.action === "issue_tickets") {
-      const { userId, ticketCount, raffleDate } = body
+      const { userId, thrillUsername, wagerAmount, raffleWeek } = body
+      if (!userId || !wagerAmount) return NextResponse.json({ error: "userId and wagerAmount required" }, { status: 400 })
 
-      if (!userId || !ticketCount || ticketCount < 1) {
-        return NextResponse.json({ error: "Missing userId or ticketCount" }, { status: 400 })
-      }
+      const { data: settings } = await admin.from("raffle_settings").select("tickets_per_wager").eq("id", 1).single()
+      const ticketsPerWager = settings?.tickets_per_wager ?? 500
+      const ticketCount = Math.floor(wagerAmount / ticketsPerWager)
 
-      const date = raffleDate || new Date().toISOString().split("T")[0]
+      const week = raffleWeek || getNextFridayUTC().toISOString().split("T")[0]
 
-      // Get current max ticket number for this date
-      const { data: maxTicket } = await admin
-        .from("raffle_tickets")
-        .select("ticket_number")
-        .eq("raffle_date", date)
-        .order("ticket_number", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-
-      const startNumber = (maxTicket?.ticket_number || 0) + 1
-
-      const ticketsToInsert = Array.from({ length: ticketCount }, (_, i) => ({
+      const { data, error } = await admin.from("raffle_tickets").upsert({
         user_id: userId,
-        ticket_number: startNumber + i,
-        raffle_date: date,
-        wager_amount: 1000,
-      }))
+        thrill_username: thrillUsername || userId,
+        ticket_number: `${userId.slice(0, 8)}-${week}`,
+        raffle_date: new Date().toISOString().split("T")[0],
+        raffle_week: week,
+        wager_amount: wagerAmount,
+        ticket_count: ticketCount,
+      }, { onConflict: "user_id,raffle_week" }).select()
 
-      const { data: insertedTickets, error: insertError } = await admin
-        .from("raffle_tickets")
-        .insert(ticketsToInsert)
-        .select()
-
-      if (insertError) {
-        console.error("[v0] Error issuing raffle tickets:", insertError)
-        return NextResponse.json({ error: insertError.message }, { status: 500 })
-      }
-
-      return NextResponse.json({ success: true, tickets: insertedTickets })
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true, ticketCount, ticket: data?.[0] })
     }
 
-    if (body.action === "pick_winner") {
-      const { raffleDate, winningTicketNumber, prizeAmount, prizeDescription } = body
-      const date = raffleDate || new Date().toISOString().split("T")[0]
-
-      // Check if winner already exists for this date
-      const { data: existingWinner } = await admin
-        .from("raffle_winners")
-        .select("*")
-        .eq("raffle_date", date)
-        .maybeSingle()
-
-      if (existingWinner) {
-        return NextResponse.json({ error: "Winner already picked for this date" }, { status: 400 })
-      }
-
-      // Find the winning ticket
-      const { data: winningTicket, error: ticketError } = await admin
-        .from("raffle_tickets")
-        .select("*")
-        .eq("raffle_date", date)
-        .eq("ticket_number", winningTicketNumber)
-        .maybeSingle()
-
-      if (ticketError || !winningTicket) {
-        return NextResponse.json({ error: "Winning ticket not found" }, { status: 404 })
-      }
-
-      // Insert winner
-      const { data: winner, error: winnerError } = await admin
-        .from("raffle_winners")
-        .insert({
-          raffle_date: date,
-          user_id: winningTicket.user_id,
-          ticket_id: winningTicket.id,
-          winning_ticket_number: winningTicketNumber,
-          prize_amount: prizeAmount || 0,
-          prize_description: prizeDescription || "Daily Raffle Prize",
-          claimed: false,
-        })
-        .select()
-        .single()
-
-      if (winnerError) {
-        console.error("[v0] Error picking raffle winner:", winnerError)
-        return NextResponse.json({ error: winnerError.message }, { status: 500 })
-      }
-
-      return NextResponse.json({ success: true, winner })
+    if (body.action === "mark_claimed") {
+      const { winner_id } = body
+      if (!winner_id) return NextResponse.json({ error: "winner_id required" }, { status: 400 })
+      const { data, error } = await admin.from("raffle_winners").update({ claimed: true, claimed_at: new Date().toISOString() }).eq("id", winner_id).select().single()
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true, winner: data })
     }
 
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 })
-  } catch (error) {
-    console.error("[v0] Error in admin raffle POST:", error)
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 })
+  } catch (err) {
+    console.error("[v0] admin/raffle POST error:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
