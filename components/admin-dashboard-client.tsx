@@ -115,7 +115,10 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [raffleIssueCount, setRaffleIssueCount] = useState("")
   const [winnerTicketNumber, setWinnerTicketNumber] = useState("")
   const [prizeAmount, setPrizeAmount] = useState("")
-  const [prizeDescription, setPrizeDescription] = useState("Daily Raffle Prize")
+  const [prizeDescription, setPrizeDescription] = useState("Weekly Raffle Prize — $250")
+  const [raffleSettings, setRaffleSettings] = useState({ prize_amount: 250, tickets_per_wager: 500, is_active: true })
+  const [isSavingRaffleSettings, setIsSavingRaffleSettings] = useState(false)
+  const [raffleWagerAmount, setRaffleWagerAmount] = useState("")
   const [raffleStatus, setRaffleStatus] = useState<string | null>(null)
   const [tickerSettings, setTickerSettings] = useState<TickerSettings>({
     text_color: "#ffffff",
@@ -256,11 +259,12 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   async function fetchRaffleData() {
     setIsLoadingRaffle(true)
     try {
-      const res = await fetch(`/api/admin/raffle?date=${raffleDate}`)
+      const res = await fetch(`/api/admin/raffle?week=${raffleDate}`)
       const data = await res.json()
-      setRaffleTickets(data.tickets || [])
+      setRaffleTickets(data.stats?.entries || [])
       setRaffleWinner(data.winner || null)
       setRecentRaffleWinners(data.recentWinners || [])
+      if (data.settings) setRaffleSettings(data.settings)
     } catch (err) {
       console.error("[v0] Error fetching raffle data:", err)
     } finally {
@@ -269,24 +273,31 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   }
 
   async function handleIssueTickets() {
-    if (!raffleIssueUserId || !raffleIssueCount) return
+    if (!raffleIssueUserId || (!raffleIssueCount && !raffleWagerAmount)) return
     setRaffleStatus(null)
     try {
+      const body: Record<string, any> = {
+        action: "issue_tickets",
+        userId: raffleIssueUserId,
+        raffleWeek: raffleDate,
+      }
+      if (raffleWagerAmount) {
+        body.wagerAmount = parseFloat(raffleWagerAmount)
+      } else {
+        body.ticketCount = parseInt(raffleIssueCount)
+        body.wagerAmount = parseInt(raffleIssueCount) * 500 // derive wager from tickets
+      }
       const res = await fetch("/api/admin/raffle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "issue_tickets",
-          userId: raffleIssueUserId,
-          ticketCount: parseInt(raffleIssueCount),
-          raffleDate,
-        }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (data.success) {
-        setRaffleStatus(`Issued ${raffleIssueCount} ticket(s) successfully!`)
+        setRaffleStatus(`Issued ${data.ticketCount} ticket(s) for week of ${data.weekFriday}!`)
         setRaffleIssueUserId("")
         setRaffleIssueCount("")
+        setRaffleWagerAmount("")
         fetchRaffleData()
       } else {
         setRaffleStatus(`Error: ${data.error}`)
@@ -297,23 +308,24 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   }
 
   async function handlePickWinner() {
-    if (!winnerTicketNumber) return
     setRaffleStatus(null)
     try {
+      // Use run_draw for auto-random, or pick_winner for manual
+      const isManual = winnerTicketNumber.trim() !== ""
       const res = await fetch("/api/admin/raffle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "pick_winner",
-          raffleDate,
-          winningTicketNumber: parseInt(winnerTicketNumber),
-          prizeAmount: parseFloat(prizeAmount) || 0,
+          action: isManual ? "pick_winner" : "run_draw",
+          raffle_week: raffleDate,
+          winnerTicketNumber: isManual ? parseInt(winnerTicketNumber) : undefined,
+          prizeAmount: parseFloat(prizeAmount) || raffleSettings.prize_amount,
           prizeDescription,
         }),
       })
       const data = await res.json()
       if (data.success) {
-        setRaffleStatus("Winner picked successfully!")
+        setRaffleStatus(isManual ? `Winner set: Ticket #${winnerTicketNumber}` : `Draw complete! Winner: ${data.winner?.thrill_username || "unknown"}`)
         setWinnerTicketNumber("")
         setPrizeAmount("")
         fetchRaffleData()
@@ -321,7 +333,53 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
         setRaffleStatus(`Error: ${data.error}`)
       }
     } catch (err) {
-      setRaffleStatus("Error picking winner")
+      setRaffleStatus("Error running draw")
+    }
+  }
+
+  async function handleRaffleSettingsSave() {
+    setIsSavingRaffleSettings(true)
+    setRaffleStatus(null)
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prize_amount:      raffleSettings.prize_amount,
+          tickets_per_wager: raffleSettings.tickets_per_wager,
+          is_active:         raffleSettings.is_active,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus("Settings saved!")
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch {
+      setRaffleStatus("Error saving settings")
+    } finally {
+      setIsSavingRaffleSettings(false)
+    }
+  }
+
+  async function handleMarkClaimed() {
+    setRaffleStatus(null)
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "mark_claimed", raffleDate }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus("Prize marked as claimed!")
+        fetchRaffleData()
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch {
+      setRaffleStatus("Error marking claimed")
     }
   }
 
@@ -1774,55 +1832,66 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.25)",
                 }}
               >
-                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#ff94b4" }}>Draw Winner (Weekly)</h3>
+                <h3 className="text-xl font-bold uppercase mb-1" style={{ color: "#ff94b4" }}>Draw Winner (Weekly)</h3>
+                <p className="text-xs uppercase mb-4" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em" }}>
+                  Leave ticket # blank to auto-draw randomly weighted by ticket count
+                </p>
                 {raffleWinner ? (
-                  <div className="font-bold" style={{ color: "#b5dc58" }}>
-                    Winner already drawn for week of {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
+                  <div className="space-y-3">
+                    <div className="font-bold text-sm p-3 rounded" style={{ background: "rgba(181,220,88,0.1)", border: "1px solid rgba(181,220,88,0.3)", color: "#b5dc58" }}>
+                      Winner drawn for week of {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
+                      {raffleWinner.profiles?.thrill_username && ` — ${raffleWinner.profiles.thrill_username}`}
+                      {" "}<span style={{ color: raffleWinner.claimed ? "#b5dc58" : "#ff94b4" }}>
+                        ({raffleWinner.claimed ? "CLAIMED" : "UNCLAIMED"})
+                      </span>
+                    </div>
+                    {!raffleWinner.claimed && (
+                      <Button
+                        onClick={handleMarkClaimed}
+                        className="font-bold rounded-xl text-black"
+                        style={{ background: "#b5dc58" }}
+                      >
+                        Mark as Claimed
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-end gap-4">
                       <div className="w-40">
-                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Winning Ticket #</Label>
+                        <Label className="text-xs uppercase mb-1 block" style={{ color: "rgba(255,255,255,0.5)" }}>Winning Ticket # (optional)</Label>
                         <Input
                           type="number"
                           value={winnerTicketNumber}
                           onChange={(e) => setWinnerTicketNumber(e.target.value)}
-                          placeholder="#"
-                          className="bg-[#111] border-amber-500/30 text-white"
+                          placeholder="Leave blank = auto"
+                          className="bg-[#080c14] border-white/10 text-white"
                         />
                       </div>
                       <div className="w-36">
-                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Prize ($)</Label>
+                        <Label className="text-xs uppercase mb-1 block" style={{ color: "rgba(255,255,255,0.5)" }}>Prize ($)</Label>
                         <Input
                           type="number"
                           value={prizeAmount}
                           onChange={(e) => setPrizeAmount(e.target.value)}
-                          placeholder="Amount"
-                          className="bg-[#111] border-amber-500/30 text-white"
+                          placeholder={String(raffleSettings.prize_amount)}
+                          className="bg-[#080c14] border-white/10 text-white"
                         />
                       </div>
-                      <div className="flex-1 min-w-[200px]">
-                        <Label className="text-gray-400 text-sm uppercase mb-1 block">Description</Label>
-                        <Input
-                          value={prizeDescription}
-                          onChange={(e) => setPrizeDescription(e.target.value)}
-                          className="bg-[#111] border-amber-500/30 text-white"
-                        />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handlePickWinner}
+                          className="font-bold rounded-xl text-black"
+                          style={{ background: "#ff94b4" }}
+                        >
+                          {winnerTicketNumber ? "Set Winner" : "Auto Draw"}
+                        </Button>
                       </div>
-                      <Button
-                        onClick={handlePickWinner}
-                        disabled={!winnerTicketNumber}
-                        className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
-                      >
-                        Pick Winner
-                      </Button>
                     </div>
 
-                    {/* Ticket range info */}
                     {raffleTickets.length > 0 && (
-                      <p className="text-xs text-gray-500">
-                        Valid ticket range: #1 - #{Math.max(...raffleTickets.map((t: any) => t.ticket_number))} ({raffleTickets.length} total tickets)
+                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        Pool: {raffleTickets.reduce((s: number, t: any) => s + (t.ticket_count || 1), 0)} total tickets across {new Set(raffleTickets.map((t: any) => t.user_id)).size} players
                       </p>
                     )}
                   </div>
@@ -1837,22 +1906,28 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
                 }}
               >
-                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Tickets for {raffleDate}</h3>
+                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#5ac3ff" }}>Tickets for week of {raffleDate}</h3>
                 {raffleTickets.length === 0 ? (
-                  <p className="text-gray-500">No tickets for this date.</p>
+                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>No tickets for this week.</p>
                 ) : (
                   <div className="max-h-64 overflow-y-auto space-y-1">
                     {raffleTickets.map((ticket: any) => (
                       <div
                         key={ticket.id}
-                        className={`flex items-center justify-between px-3 py-2 rounded text-sm ${
-                          raffleWinner?.winning_ticket_number === ticket.ticket_number
-                            ? "bg-[#CCFF00]/20 border border-[#CCFF00]/40"
-                            : "bg-white/5"
-                        }`}
+                        className="flex items-center justify-between px-3 py-2 rounded text-sm"
+                        style={{
+                          background: raffleWinner?.winning_ticket_number === ticket.ticket_number
+                            ? "rgba(181,220,88,0.12)"
+                            : "rgba(255,255,255,0.04)",
+                          border: raffleWinner?.winning_ticket_number === ticket.ticket_number
+                            ? "1px solid rgba(181,220,88,0.35)"
+                            : "1px solid transparent",
+                        }}
                       >
-                        <span className="text-[#CCFF00] font-bold">#{ticket.ticket_number}</span>
-                        <span className="text-gray-400">
+                        <span className="font-bold" style={{ color: "#b5dc58" }}>
+                          {ticket.ticket_count || 1} ticket{(ticket.ticket_count || 1) > 1 ? "s" : ""}
+                        </span>
+                        <span style={{ color: "rgba(255,255,255,0.6)" }}>
                           {ticket.profiles?.thrill_username || ticket.profiles?.username || ticket.user_id.slice(0, 8)}
                         </span>
                       </div>
@@ -1863,28 +1938,27 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
               {/* Recent Winners */}
               <Card
-                className="p-6 rounded-xl border border-teal-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-                }}
+                className="p-6 rounded-xl border border-white/10"
+                style={{ backgroundColor: "rgba(8,12,20,0.98)" }}
               >
-                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Recent Winners (7 Days)</h3>
+                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#5ac3ff" }}>Past Winners</h3>
                 {recentRaffleWinners.length === 0 ? (
-                  <p className="text-gray-500">No winners yet.</p>
+                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>No winners yet. First draw every Friday at midnight UTC.</p>
                 ) : (
                   <div className="space-y-2">
                     {recentRaffleWinners.map((winner: any) => (
-                      <div key={winner.raffle_date} className="flex items-center justify-between px-3 py-2 rounded bg-white/5 text-sm">
+                      <div key={winner.raffle_date} className="flex items-center justify-between px-3 py-2 rounded text-sm" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
                         <div className="flex items-center gap-3">
-                          <span className="text-gray-400">{winner.raffle_date}</span>
-                          <span className="text-white font-bold">
+                          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem" }}>{winner.raffle_date}</span>
+                          <span className="font-bold" style={{ color: "#fff" }}>
                             {winner.profiles?.thrill_username || winner.profiles?.username || "Unknown"}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-[#CCFF00]">Ticket #{winner.winning_ticket_number}</span>
-                          <span className={winner.claimed ? "text-green-400" : "text-red-400"}>
+                          <span className="font-bold" style={{ color: "#b5dc58" }}>
+                            ${winner.prize_amount ?? 250}
+                          </span>
+                          <span className="text-xs font-bold uppercase" style={{ color: winner.claimed ? "#b5dc58" : "#ff94b4" }}>
                             {winner.claimed ? "CLAIMED" : "UNCLAIMED"}
                           </span>
                         </div>
@@ -1892,6 +1966,56 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     ))}
                   </div>
                 )}
+              </Card>
+
+              {/* Raffle Settings */}
+              <Card
+                className="p-6 rounded-xl border border-white/10"
+                style={{ backgroundColor: "rgba(8,12,20,0.98)" }}
+              >
+                <h3 className="text-xl font-bold uppercase mb-1" style={{ color: "#b5dc58" }}>Raffle Settings</h3>
+                <p className="text-xs uppercase mb-4" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em" }}>Changes take effect for the next raffle cycle</p>
+                <div className="flex flex-wrap items-end gap-4 mb-4">
+                  <div className="w-36">
+                    <Label className="text-xs uppercase mb-1 block" style={{ color: "rgba(255,255,255,0.5)" }}>Prize Amount ($)</Label>
+                    <Input
+                      type="number"
+                      value={raffleSettings.prize_amount}
+                      onChange={(e) => setRaffleSettings((s) => ({ ...s, prize_amount: parseFloat(e.target.value) || 0 }))}
+                      className="bg-[#080c14] border-white/10 text-white"
+                    />
+                  </div>
+                  <div className="w-44">
+                    <Label className="text-xs uppercase mb-1 block" style={{ color: "rgba(255,255,255,0.5)" }}>$ Wagered per Ticket</Label>
+                    <Input
+                      type="number"
+                      value={raffleSettings.tickets_per_wager}
+                      onChange={(e) => setRaffleSettings((s) => ({ ...s, tickets_per_wager: parseFloat(e.target.value) || 500 }))}
+                      className="bg-[#080c14] border-white/10 text-white"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 pb-1">
+                    <input
+                      type="checkbox"
+                      id="raffleActive"
+                      checked={raffleSettings.is_active}
+                      onChange={(e) => setRaffleSettings((s) => ({ ...s, is_active: e.target.checked }))}
+                      className="w-4 h-4 accent-[#b5dc58]"
+                    />
+                    <Label htmlFor="raffleActive" className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.7)" }}>Raffle Active</Label>
+                  </div>
+                  <Button
+                    onClick={handleRaffleSettingsSave}
+                    disabled={isSavingRaffleSettings}
+                    className="font-bold rounded-xl text-black"
+                    style={{ background: "#b5dc58" }}
+                  >
+                    {isSavingRaffleSettings ? "Saving..." : "Save Settings"}
+                  </Button>
+                </div>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  Draw schedule: every Friday at 00:00:00 UTC. Current prize: ${raffleSettings.prize_amount} — 1 ticket per ${raffleSettings.tickets_per_wager} wagered.
+                </p>
               </Card>
             </div>
           )}
