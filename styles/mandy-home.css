@@ -370,15 +370,88 @@
 }
 
 /* ================================================================
-   UPDATES
+   UPDATES — sticky holo video background
 ================================================================ */
+
+/*
+  Outer wrapper: tall enough to fully contain the section.
+  The video inside is sticky so it stays fixed while the wrapper scrolls,
+  then gets pushed away when the next black section scrolls over the top.
+*/
+.updates-bg-wrap {
+  position: relative;
+  /* Extra padding so surrounding black sections slide over cleanly */
+  padding: 3rem 0;
+  /* z-index lower than surrounding page sections so they scroll on top */
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Sticky video: fills the wrapper, stays in viewport while user scrolls */
+.updates-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Slight dark overlay so cards read clearly against the bright holo video */
+.updates-bg-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .updates-section {
+  position: relative;
+  z-index: 2; /* above the video and the overlay */
   width: min(1240px, calc(100% - 2rem));
-  margin: 1.75rem auto 0;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 1.75rem;
   align-items: flex-start;
+}
+
+/* Sheen-only UPDATES title — black text with animated gloss, no holo video */
+.updates-title-sheen {
+  display: inline-block;
+  position: relative;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #000000;
+  line-height: 1;
+  /* Thin lime stroke */
+  text-shadow:
+    0 0 0.35px var(--m-stroke),
+    0 0 0.35px var(--m-stroke);
+  isolation: isolate;
+}
+
+/* Animated gloss sweep over the black text */
+.updates-title-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 15%,
+    rgba(255, 255, 255, 0.38) 44%,
+    rgba(255, 255, 255, 0.14) 56%,
+    transparent 85%
+  );
+  background-size: 250% 100%;
+  animation: holoSheen 3.5s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .updates-left {
@@ -811,6 +884,8 @@
   }
 
   .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  .updates-bg-wrap { padding: 2rem 0; }
 
   .updates-section {
     grid-template-columns: 1fr;

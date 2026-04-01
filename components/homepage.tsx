@@ -224,44 +224,51 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* ── Updates ── */}
-      <section className="updates-section" aria-label="Latest updates">
-        <div className="updates-left">
-          <div
-            className="holo-mask updates-title-wrap"
-            onMouseMove={holo.onMove}
-            onMouseLeave={holo.onLeave}
-          >
-            <span className="holo-mask__letters updates-title-size">UPDATES</span>
-            <HoloText />
-            <span className="holo-sheen" aria-hidden="true" />
-          </div>
-          <div className="updates-arrows" aria-label="Updates navigation">
-            <button type="button" className="arrow-btn" onClick={() => scrollFeed("left")} aria-label="Previous update">←</button>
-            <button type="button" className="arrow-btn" onClick={() => scrollFeed("right")} aria-label="Next update">→</button>
-          </div>
-        </div>
+      {/* ── Updates — holo video background, cards float on top ── */}
+      <div className="updates-bg-wrap">
+        {/* Sticky holo video — scrolls with page, stays in place while content passes */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden="true"
+          className="updates-bg-video"
+        >
+          <source src={HOLO_BG_MP4} type="video/mp4" />
+        </video>
 
-        <div ref={feedRef} className="updates-feed" role="list">
-          {announcements.map((item, i) => (
-            <article
-              key={i}
-              role="listitem"
-              className="update-card mandy-card"
-              onMouseMove={card.onMove}
-              onMouseLeave={card.onLeave}
-            >
-              <span className="card-gloss" aria-hidden="true" />
-              <div className="update-card-top">
-                <span className={`tag tag--${item.variant}`}>{item.tag}</span>
-                <time className="update-date">{item.date}</time>
-              </div>
-              <h3 className="update-title">{item.title}</h3>
-              <p className="update-body">{item.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+        <section className="updates-section" aria-label="Latest updates">
+          <div className="updates-left">
+            {/* Plain sheen-only header — no holo video, just animated gloss */}
+            <span className="updates-title-sheen updates-title-size">UPDATES</span>
+            <div className="updates-arrows" aria-label="Updates navigation">
+              <button type="button" className="arrow-btn" onClick={() => scrollFeed("left")} aria-label="Previous update">←</button>
+              <button type="button" className="arrow-btn" onClick={() => scrollFeed("right")} aria-label="Next update">→</button>
+            </div>
+          </div>
+
+          <div ref={feedRef} className="updates-feed" role="list">
+            {announcements.map((item, i) => (
+              <article
+                key={i}
+                role="listitem"
+                className="update-card mandy-card"
+                onMouseMove={card.onMove}
+                onMouseLeave={card.onLeave}
+              >
+                <span className="card-gloss" aria-hidden="true" />
+                <div className="update-card-top">
+                  <span className={`tag tag--${item.variant}`}>{item.tag}</span>
+                  <time className="update-date">{item.date}</time>
+                </div>
+                <h3 className="update-title">{item.title}</h3>
+                <p className="update-body">{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* ── Gambling Gossip / Blog ── */}
       <section className="blog-section" aria-label="Gambling Gossip blog">

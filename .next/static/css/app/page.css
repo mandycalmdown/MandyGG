@@ -1,0 +1,1220 @@
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./styles/site-nav.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* ============================================================
+   MANDY.GG — SITE NAVIGATION + TICKER
+   Ticker is above the nav bar; both are sticky together.
+============================================================ */
+
+.nav-sticky-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ── Ticker ── */
+.nav-ticker {
+  position: relative;
+  overflow: hidden;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.nav-ticker__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.95;
+}
+
+.nav-ticker__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: clamp(0.65rem, 1vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #000000;
+  animation: navTickerScroll 32s linear infinite;
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
+
+.nav-ticker__track span { display: inline-block; }
+
+@keyframes navTickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Nav bar — card-style black ── */
+.site-nav {
+  background: #080b10; /* same as --m-card */
+  border-bottom: 1.5px solid rgba(255,255,255,0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 4px 24px rgba(0,0,0,0.7);
+}
+
+.site-nav__inner {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 0 auto;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Logo */
+.site-nav__logo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-nav__logo-img {
+  height: 40px;
+  width: auto;
+}
+
+/* Desktop links */
+.site-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  flex-wrap: nowrap;
+}
+
+.site-nav__link {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(255,255,255,0.75);
+  padding: 0.38rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  white-space: nowrap;
+}
+
+.site-nav__link:hover {
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+.site-nav__link--active {
+  color: #b5dc58;
+}
+
+/* Desktop auth */
+.site-nav__auth {
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+/* Holo auth button */
+.nav-holo-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.48rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 800;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  min-width: 90px;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  box-shadow: 0 0 0 0.4px #b5dc58;
+  background: transparent;
+}
+
+.nav-holo-btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 0.4px #b5dc58,
+    0 5px 18px rgba(104,89,213,0.4);
+}
+
+.nav-holo-btn__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nav-holo-btn__label {
+  position: relative;
+  z-index: 1;
+  color: #000000;
+  font-weight: 800;
+  text-shadow: 0 0 0.3px #b5dc58;
+}
+
+.nav-holo-btn--wide {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Mobile hamburger */
+.site-nav__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  margin-left: auto;
+}
+
+.hbg-line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.hbg-line--top-open { transform: rotate(45deg) translate(5px, 5px); }
+.hbg-line--mid-open { opacity: 0; }
+.hbg-line--bot-open { transform: rotate(-45deg) translate(5px, -5px); }
+
+/* Mobile drawer */
+.site-nav__mobile-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  background: #080b10;
+}
+
+.site-nav__mobile-link {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(255,255,255,0.75);
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: color 0.18s ease;
+}
+
+.site-nav__mobile-link:hover,
+.site-nav__mobile-link--active { color: #b5dc58; }
+
+.site-nav__mobile-auth {
+  margin-top: 0.75rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .site-nav__links,
+  .site-nav__auth {
+    display: none;
+  }
+
+  .site-nav__hamburger {
+    display: flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-nav__inner {
+    height: 52px;
+  }
+
+  .site-nav__logo-img {
+    height: 34px;
+  }
+
+  .nav-ticker {
+    height: 1.9rem;
+  }
+}
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.25_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./styles/mandy-home.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* ============================================================
+   MANDY.GG — HOMEPAGE STYLES
+   Palette: #b5dc58 lime · #6859d5 purple · #ff94b4 pink · #5ac3ff blue
+============================================================ */
+
+:root {
+  --m-bg:        #000000;
+  --m-card:      #080b10;   /* cool-toned near-black */
+  --m-card2:     #0c1018;
+  --m-white:     #ffffff;
+  --m-lime:      #b5dc58;
+  --m-purple:    #6859d5;
+  --m-pink:      #ff94b4;
+  --m-blue:      #5ac3ff;
+  --m-border:    rgba(255,255,255,0.07);
+  --m-stroke:    #b5dc58;
+}
+
+/* ── Reset ── */
+.mandy-home, .mandy-home * { box-sizing: border-box; }
+
+.mandy-home {
+  background: var(--m-bg);
+  color: var(--m-white);
+  min-height: 100vh;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  overflow-x: hidden;
+}
+
+/* ================================================================
+   HOLO TEXT MASK
+   White letters + video on top with mix-blend-mode:multiply.
+   Black bg → video disappears. White text → video shows through.
+================================================================ */
+.holo-mask {
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  display: inline-block;
+  background: #000000; /* must be pure black for multiply to work */
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out;
+  cursor: default;
+  user-select: none;
+  line-height: 1;
+}
+
+.holo-mask__letters {
+  display: block;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  /* Sub-pixel lime stroke — <0.5 px */
+  text-shadow:
+    0 0 0.35px var(--m-stroke),
+    0 0 0.35px var(--m-stroke);
+}
+
+.holo-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: multiply;
+  filter: brightness(0.82) contrast(1.18);
+}
+
+.holo-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(
+    110deg,
+    transparent 15%,
+    rgba(255,255,255,0.24) 44%,
+    rgba(255,255,255,0.08) 56%,
+    transparent 85%
+  );
+  background-size: 250% 100%;
+  animation: holoSheen 3.5s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+@keyframes holoSheen {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ================================================================
+   HOLO BUTTON
+================================================================ */
+.holo-button {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.72rem 1.6rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  min-width: 148px;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  /* Thin lime stroke around button */
+  box-shadow: 0 0 0 0.4px var(--m-stroke);
+}
+
+.holo-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 0.4px var(--m-stroke),
+    0 6px 22px rgba(104,89,213,0.4);
+}
+
+.holo-btn__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.holo-btn__label {
+  position: relative;
+  z-index: 1;
+  color: #000000;
+  font-weight: 800;
+  text-shadow: 0 0 0.3px var(--m-stroke);
+}
+
+/* ================================================================
+   SHARED CARD  (.mandy-card)
+================================================================ */
+.mandy-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  border-radius: 16px;
+  border: 1.5px solid var(--m-border);
+  background: var(--m-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 2px 24px rgba(0,0,0,0.8);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.12s ease-out, border-color 0.18s ease, box-shadow 0.18s ease;
+  will-change: transform;
+}
+
+/* Iridescent rainbow border on hover — no blur/halo */
+.mandy-card:hover {
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 0 0 1px rgba(90,195,255,0.6),
+    0 0 0 2px rgba(104,89,213,0.3),
+    0 0 18px rgba(255,148,180,0.18),
+    0 0 28px rgba(181,220,88,0.10);
+}
+
+/* Glossy sheen — affects card surface only, never text/images */
+.card-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1; /* above card bg, below content at z-index 2+ */
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,0.16) 0%,
+    rgba(255,255,255,0.05) 45%,
+    transparent 72%
+  );
+  transition: opacity 0.15s ease;
+}
+
+.mandy-card:hover .card-gloss { opacity: 1; }
+
+/* ================================================================
+   HERO
+================================================================ */
+.hero {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 2rem auto 0;
+  text-align: center;
+}
+
+.mandy-logo-size {
+  font-size: clamp(3.5rem, 13vw, 11.2rem);
+  letter-spacing: -0.01em;
+}
+
+.hero-tagline {
+  margin: 1.2rem 0 0;
+  letter-spacing: 0.22em;
+  font-size: clamp(0.68rem, 1.3vw, 0.95rem);
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   FEATURE CARDS
+================================================================ */
+.features {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 1.5rem auto 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding-top: 5.5rem; /* room for overhanging icons */
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.2rem 1.6rem 1.75rem;
+  min-height: 300px;
+  overflow: visible; /* icons hang above the top edge */
+}
+
+/* Icon: z-index 0 — behind text (z-index 2), above card bg */
+.feature-icon-wrap {
+  position: absolute;
+  top: -5rem;
+  left: 50%;
+  transform: translateX(-50%)
+             translateX(var(--icon-x, 0px))
+             translateY(var(--icon-y, 0px));
+  width: 200px;
+  height: 200px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 0;
+  transition: transform 0.12s ease-out;
+}
+
+.feature-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.65));
+  animation: floatIcon 4s ease-in-out infinite;
+}
+
+.features-grid > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
+.features-grid > article:nth-child(3) .feature-icon { animation-delay: -2.8s; }
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* All direct children of feature-card need z-index > 1 to be above gloss */
+.feature-card > .feature-title,
+.feature-card > .feature-desc,
+.feature-card > .holo-button,
+.feature-card > .card-btn {
+  position: relative;
+  z-index: 2;
+}
+
+.feature-title {
+  /* Reserve space for the floating icon */
+  margin-top: 8rem;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  letter-spacing: 0.02em;
+  color: transparent;
+  background-image: linear-gradient(90deg, var(--m-blue) 0%, #a8e6ff 50%, var(--m-blue) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: blueShift 5s linear infinite;
+  margin-bottom: 0;
+  /* white text is handled by the gradient */
+}
+
+@keyframes blueShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.feature-desc {
+  margin: 0.8rem 0 1.4rem;
+  font-size: 0.67rem;
+  line-height: 1.6;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  max-width: 22ch;
+  flex: 1;
+}
+
+.card-btn {
+  margin-top: auto;
+}
+
+/* ================================================================
+   TICKER — tight height, holo-wide video bg, black text
+================================================================ */
+.ticker {
+  margin-top: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  height: 2.3rem; /* snug around the text */
+  display: flex;
+  align-items: center;
+}
+
+.ticker-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.95;
+}
+
+.ticker-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #000000; /* black text on holo video */
+  animation: tickerScroll 32s linear infinite;
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
+
+.ticker-track span { display: inline-block; }
+
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ================================================================
+   UPDATES — sticky holo video background
+================================================================ */
+
+/*
+  Outer wrapper: tall enough to fully contain the section.
+  The video inside is sticky so it stays fixed while the wrapper scrolls,
+  then gets pushed away when the next black section scrolls over the top.
+*/
+.updates-bg-wrap {
+  position: relative;
+  /* Extra padding so surrounding black sections slide over cleanly */
+  padding: 3rem 0;
+  /* z-index lower than surrounding page sections so they scroll on top */
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Sticky video: fills the wrapper, stays in viewport while user scrolls */
+.updates-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Slight dark overlay so cards read clearly against the bright holo video */
+.updates-bg-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.updates-section {
+  position: relative;
+  z-index: 2; /* above the video and the overlay */
+  width: min(1240px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.75rem;
+  align-items: flex-start;
+}
+
+/* Sheen-only UPDATES title — black text with animated gloss, no holo video */
+.updates-title-sheen {
+  display: inline-block;
+  position: relative;
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #000000;
+  line-height: 1;
+  /* Thin lime stroke */
+  text-shadow:
+    0 0 0.35px var(--m-stroke),
+    0 0 0.35px var(--m-stroke);
+  isolation: isolate;
+}
+
+/* Animated gloss sweep over the black text */
+.updates-title-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 15%,
+    rgba(255, 255, 255, 0.38) 44%,
+    rgba(255, 255, 255, 0.14) 56%,
+    transparent 85%
+  );
+  background-size: 250% 100%;
+  animation: holoSheen 3.5s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.updates-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex-shrink: 0;
+}
+
+.updates-title-size {
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.updates-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arrow-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--m-pink);
+  background: transparent;
+  color: var(--m-pink);
+  font-size: 1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.18s ease, color 0.18s ease;
+  font-family: inherit;
+}
+
+.arrow-btn:hover {
+  background: var(--m-pink);
+  color: #000;
+}
+
+.updates-feed {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.updates-feed::-webkit-scrollbar { display: none; }
+
+.update-card {
+  /* Desktop: auto width so multiple cards show */
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+/* Content inside card above gloss */
+.update-card > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
+}
+
+.update-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Tag chips */
+.tag {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.45rem;
+  border-radius: 4px;
+}
+
+.tag--new    { background: var(--m-pink);   color: #000; }
+.tag--update { background: var(--m-blue);   color: #000; }
+.tag--alert  { background: #e63946;         color: #fff; }
+.tag--info   { background: var(--m-purple); color: #fff; }
+.tag--blue   { background: var(--m-blue);   color: #000; }
+
+.update-date, .blog-date {
+  font-size: 0.56rem;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.update-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--m-white);
+  line-height: 1.3;
+}
+
+.update-body {
+  margin: 0;
+  font-size: 0.63rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.48);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ================================================================
+   BLOG / GAMBLING GOSSIP
+================================================================ */
+.blog-section {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 1.75rem auto 0;
+}
+
+.blog-header {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.blog-title-size {
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+  letter-spacing: 0.01em;
+  text-align: right;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.4rem;
+  text-decoration: none;
+  color: var(--m-white);
+  overflow: hidden;
+}
+
+/* Blog card content above gloss */
+.blog-card > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
+}
+
+.blog-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.blog-card-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--m-white);
+}
+
+.blog-card-excerpt {
+  margin: 0;
+  font-size: 0.67rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.48);
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-cta {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--m-blue);
+  text-transform: uppercase;
+}
+
+.blog-more-row {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-sm {
+  min-width: 90px !important;
+  padding: 0.6rem 1.6rem !important;
+}
+
+/* ================================================================
+   FAQ — compact and modern
+================================================================ */
+.faq-section {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 1.75rem auto 0;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.faq-title-wrap {
+  position: sticky;
+  top: 80px;
+}
+
+.faq-title-size {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: 0.06em;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.faq-item {
+  overflow: hidden;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.faq-item--open,
+.faq-item:hover {
+  border-color: transparent !important;
+  box-shadow:
+    0 0 0 1px rgba(104,89,213,0.55),
+    0 0 14px rgba(104,89,213,0.18) !important;
+}
+
+/* FAQ content above gloss */
+.faq-item > *:not(.card-gloss) {
+  position: relative;
+  z-index: 2;
+}
+
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--m-white);
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid var(--m-purple);
+  border-bottom: 2px solid var(--m-purple);
+  transform: rotate(45deg);
+  transition: transform 0.22s ease;
+}
+
+.faq-item--open .faq-chevron {
+  transform: rotate(-135deg);
+}
+
+.faq-answer {
+  padding: 0 1rem 0.85rem;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ================================================================
+   FOOTER — HOLO_BG_FAST video fill
+================================================================ */
+.site-footer {
+  margin-top: 3rem;
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 0 1.5rem;
+}
+
+.footer-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-inner,
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+}
+
+.footer-inner {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* Large bold MANDY.GG — black over holo video */
+.footer-logo {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  color: #000000;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+.footer-sub {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.7);
+  font-weight: 600;
+}
+
+.footer-code {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.6);
+}
+
+.footer-code strong {
+  color: #000;
+  font-weight: 800;
+}
+
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-end;
+}
+
+.footer-nav a {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.75);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.footer-nav a:hover { color: #000; }
+
+.footer-bottom {
+  width: min(1240px, calc(100% - 2rem));
+  margin: 1.5rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-copy {
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  color: rgba(0,0,0,0.5);
+}
+
+.footer-legal {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.footer-legal a {
+  font-size: 0.6rem;
+  letter-spacing: 0.07em;
+  color: rgba(0,0,0,0.5);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.footer-legal a:hover { color: #000; }
+
+/* ================================================================
+   RESPONSIVE — TABLET (≤960px)
+================================================================ */
+@media (max-width: 960px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 6rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  .updates-bg-wrap { padding: 2rem 0; }
+
+  .updates-section {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .updates-left {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .faq-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .faq-title-wrap { position: static; }
+
+  .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+  .footer-nav { align-items: flex-start; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ================================================================
+   RESPONSIVE — MOBILE (≤600px)
+================================================================ */
+@media (max-width: 600px) {
+  .hero,
+  .features,
+  .blog-section,
+  .faq-section,
+  .updates-section {
+    width: calc(100% - 1.5rem);
+  }
+
+  /* MANDY.GG: centered, fits viewport */
+  .hero { text-align: center; }
+  .mandy-logo-size { font-size: clamp(2.8rem, 18vw, 5rem); }
+  .holo-mask { max-width: 100%; }
+
+  /* Updates: full-card snap, no partial cards visible */
+  .updates-feed {
+    scroll-snap-type: x mandatory;
+    gap: 0; /* remove gap so snap stops cleanly at each card */
+  }
+
+  .update-card {
+    flex: 0 0 calc(100vw - 3rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    margin-right: 0;
+  }
+
+  /* Blog: single column */
+  .blog-grid { grid-template-columns: 1fr; }
+
+  /* FAQ: single col */
+  .faq-section { grid-template-columns: 1fr; }
+
+  /* Ticker slightly smaller */
+  .ticker { height: 2rem; }
+
+  .footer-logo { font-size: clamp(1.8rem, 12vw, 3rem); }
+}
+
