@@ -168,13 +168,6 @@ export function Leaderboard() {
       {/* Sticky ticker + nav are handled by SiteNavigation */}
       <SiteNavigation currentPage="leaderboard" />
 
-      {/* ── Banner video ── */}
-      <section style={{ width: "100%" }}>
-        <video autoPlay muted loop playsInline style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }}>
-          <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-leaderboard-header-banner-b693AAvhq4kfJGiTD6o3xHvpVTK5zS.webm" type="video/webm" />
-        </video>
-      </section>
-
       {/* ── Countdown ── */}
       <div style={{ background: "#000", padding: "2rem 1rem 0", textAlign: "center" }}>
         <p style={{ fontWeight: 700, fontSize: "clamp(0.75rem,2vw,1rem)", letterSpacing: "0.18em", textTransform: "uppercase", color: LIME, marginBottom: "0.5rem" }}>
@@ -194,24 +187,42 @@ export function Leaderboard() {
 
         {/* ── Tab buttons ── */}
         <div style={{ display: "flex", justifyContent: "center", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-          {(["current", "past"] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                padding: "0.6rem 1.8rem", borderRadius: "8px", border: "none", cursor: "pointer",
-                fontFamily: "var(--font-poppins), sans-serif", fontWeight: 800, fontSize: "0.78rem",
-                letterSpacing: "0.1em", textTransform: "uppercase",
-                background: activeTab === tab ? LIME : CARD_BG,
-                color: activeTab === tab ? "#000" : "#fff",
-                boxShadow: activeTab === tab ? `0 0 18px ${LIME}55` : "none",
-                transition: "all 0.18s ease",
-              }}
-            >
-              {tab === "current" ? "Current Week" : "Past Week"}
-            </button>
-          ))}
+          {(["current", "past"] as const).map((tab) => {
+            const isActive = activeTab === tab
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  position: "relative", overflow: "hidden",
+                  padding: "0.65rem 1.8rem", borderRadius: "8px", cursor: "pointer",
+                  fontFamily: "var(--font-poppins), sans-serif", fontWeight: 800, fontSize: "0.78rem",
+                  letterSpacing: "0.1em", textTransform: "uppercase",
+                  border: isActive ? "none" : `1.5px solid rgba(255,255,255,0.2)`,
+                  background: isActive ? "transparent" : CARD_BG,
+                  color: isActive ? "#000" : "rgba(255,255,255,0.7)",
+                  transition: "all 0.18s ease",
+                  minWidth: "140px",
+                }}
+              >
+                {isActive && (
+                  <video autoPlay loop muted playsInline aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, borderRadius: "inherit", pointerEvents: "none" }}>
+                    <source src={HOLO_BTN_WEBM} type="video/webm" />
+                    <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                  </video>
+                )}
+                <span style={{ position: "relative", zIndex: 1, color: isActive ? "#000" : "rgba(255,255,255,0.7)" }}>
+                  {tab === "current" ? "CURRENT WEEK" : "PAST WEEK"}
+                </span>
+              </button>
+            )
+          })}
         </div>
+
+        {/* Title matching screenshot layout */}
+        <h1 style={{ fontWeight: 900, fontSize: "clamp(1.6rem, 5vw, 3rem)", letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff", marginBottom: "1.5rem", marginTop: "0.5rem", lineHeight: 1.1 }}>
+          <span style={{ color: LIME }}>$3500</span>{" "}WEEKLY LEADERBOARD
+        </h1>
 
         <HoloButton href="https://thrill.com/?r=MANDY" external>JOIN THE ACTION</HoloButton>
 
