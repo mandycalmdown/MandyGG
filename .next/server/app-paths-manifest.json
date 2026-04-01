@@ -4,6 +4,7 @@
   "/leaderboard/page": "app/leaderboard/page.js",
   "/how-to-join/page": "app/how-to-join/page.js",
   "/rewards/page": "app/rewards/page.js",
-  "/api/leaderboard/route": "app/api/leaderboard/route.js",
-  "/api/raffle/winners/route": "app/api/raffle/winners/route.js"
+  "/api/raffle/tickets/route": "app/api/raffle/tickets/route.js",
+  "/api/raffle/winners/route": "app/api/raffle/winners/route.js",
+  "/api/leaderboard/route": "app/api/leaderboard/route.js"
 }

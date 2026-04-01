@@ -1644,22 +1644,24 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
                 }}
               >
-                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-4">Daily Raffle Management</h2>
+                <h2 className="text-2xl font-bold uppercase mb-1" style={{ color: "#b5dc58" }}>Weekly Raffle Management</h2>
+                <p className="text-xs uppercase mb-4" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em" }}>$250 prize — every Friday at midnight UTC — 1 ticket per $500 wagered</p>
 
                 <div className="flex flex-wrap items-end gap-4 mb-4">
                   <div>
-                    <Label className="text-gray-400 text-sm uppercase mb-1 block">Raffle Date</Label>
+                    <Label className="text-xs uppercase mb-1 block" style={{ color: "rgba(255,255,255,0.5)" }}>Week (any date in the week)</Label>
                     <Input
                       type="date"
                       value={raffleDate}
                       onChange={(e) => setRaffleDate(e.target.value)}
-                      className="bg-[#111] border-teal-500/30 text-white w-48"
+                      className="bg-[#080c14] border-white/10 text-white w-48"
                     />
                   </div>
                   <Button
                     onClick={fetchRaffleData}
                     disabled={isLoadingRaffle}
-                    className="bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl"
+                    className="font-bold rounded-xl text-black"
+                    style={{ background: "#b5dc58" }}
                   >
                     {isLoadingRaffle ? "Loading..." : "Refresh"}
                   </Button>
@@ -1672,23 +1674,29 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 )}
 
                 {/* Current tickets summary */}
-                <div className="bg-[#0a0a0a] rounded-lg border border-white/10 p-4 mb-4">
+                <div className="rounded-lg border border-white/10 p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)" }}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-gray-400 text-sm uppercase">Tickets for {raffleDate}</span>
-                    <span className="text-[#CCFF00] font-bold text-lg">{raffleTickets.length}</span>
+                    <span className="text-xs uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>Total Tickets (week of {raffleDate})</span>
+                    <span className="font-bold text-lg" style={{ color: "#b5dc58" }}>{raffleTickets.reduce((s: number, t: any) => s + (t.ticket_count || 1), 0)}</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>Unique Players</span>
+                    <span className="font-bold text-lg" style={{ color: "#5ac3ff" }}>
+                      {new Set(raffleTickets.map((t: any) => t.user_id)).size}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-sm uppercase">Unique Players</span>
-                    <span className="text-[#CCFF00] font-bold text-lg">
-                      {new Set(raffleTickets.map((t: any) => t.user_id)).size}
+                    <span className="text-xs uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>Total Wager Tracked</span>
+                    <span className="font-bold" style={{ color: "rgba(255,255,255,0.8)" }}>
+                      ${raffleTickets.reduce((s: number, t: any) => s + (t.ticket_count || 1), 0) * 500}
                     </span>
                   </div>
                   {raffleWinner && (
                     <div className="mt-3 pt-3 border-t border-white/10">
-                      <span className="text-green-400 font-bold text-sm uppercase">
+                      <span className="font-bold text-sm uppercase" style={{ color: "#b5dc58" }}>
                         Winner: Ticket #{raffleWinner.winning_ticket_number}
                         {raffleWinner.profiles?.thrill_username && ` (${raffleWinner.profiles.thrill_username})`}
-                        {raffleWinner.claimed ? " - CLAIMED" : " - UNCLAIMED"}
+                        {raffleWinner.claimed ? " — CLAIMED" : " — UNCLAIMED"}
                       </span>
                     </div>
                   )}
@@ -1703,7 +1711,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
                 }}
               >
-                <h3 className="text-xl font-bold text-teal-500 uppercase mb-4">Issue Tickets</h3>
+                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#b5dc58" }}>Issue Tickets (Weekly)</h3>
                 <div className="flex flex-wrap items-end gap-4">
                   <div className="flex-1 min-w-[200px]">
                     <Label className="text-gray-400 text-sm uppercase mb-1 block">User ID</Label>
@@ -1728,7 +1736,8 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   <Button
                     onClick={handleIssueTickets}
                     disabled={!raffleIssueUserId || !raffleIssueCount}
-                    className="bg-[#CCFF00] hover:bg-[#d4ff33] text-black font-bold rounded-xl"
+                    className="font-bold rounded-xl text-black"
+                    style={{ background: "#b5dc58" }}
                   >
                     Issue Tickets
                   </Button>
@@ -1765,10 +1774,10 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.25)",
                 }}
               >
-                <h3 className="text-xl font-bold text-amber-500 uppercase mb-4">Pick Winner</h3>
+                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#ff94b4" }}>Draw Winner (Weekly)</h3>
                 {raffleWinner ? (
-                  <div className="text-green-400 font-bold">
-                    Winner already selected for {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
+                  <div className="font-bold" style={{ color: "#b5dc58" }}>
+                    Winner already drawn for week of {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
                   </div>
                 ) : (
                   <div className="space-y-4">

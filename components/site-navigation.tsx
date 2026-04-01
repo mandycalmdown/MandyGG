@@ -19,7 +19,7 @@ const NAV_LINKS = [
   { href: "/how-to-join",  label: "HOW TO" },
   { href: "/rewards",      label: "REWARDS" },
   { href: "/leaderboard",  label: "LEADERBOARD" },
-  { href: "/tools",        label: "TOOLS" },
+  { href: "/raffle",       label: "RAFFLE" },
   { href: "/blog",         label: "GOSSIP" },
   { href: "/#faq",         label: "FAQ" },
 ];
