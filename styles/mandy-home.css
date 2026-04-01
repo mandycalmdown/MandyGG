@@ -44,6 +44,8 @@
   cursor: default;
   user-select: none;
   line-height: 1;
+  /* overflow:hidden clips the video/sheen exactly to the bounding box of the letters */
+  overflow: hidden;
 }
 
 .holo-mask__letters {
@@ -177,21 +179,28 @@
     0 0 28px rgba(181,220,88,0.10);
 }
 
-/* Glossy sheen — affects card surface only, never text/images */
+/*
+  Glossy sheen layer:
+  - z-index: 1 → above card background
+  - feature icons are z-index: 0 → behind the gloss
+  - all text/buttons are z-index: 2 → ABOVE the gloss
+  So: bg < icons(0) < gloss(1) < text/buttons(2)
+*/
 .card-gloss {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  z-index: 1; /* above card bg, below content at z-index 2+ */
+  z-index: 1;
   opacity: 0;
   background: radial-gradient(
-    ellipse 80% 60% at var(--mx, 50%) var(--my, 50%),
-    rgba(255,255,255,0.16) 0%,
-    rgba(255,255,255,0.05) 45%,
+    ellipse 85% 65% at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,0.22) 0%,
+    rgba(181,220,88,0.06) 35%,
+    rgba(90,195,255,0.04) 55%,
     transparent 72%
   );
-  transition: opacity 0.15s ease;
+  transition: opacity 0.12s ease;
 }
 
 .mandy-card:hover .card-gloss { opacity: 1; }
@@ -224,6 +233,8 @@
 .features {
   width: min(1240px, calc(100% - 2rem));
   margin: 1.5rem auto 0;
+  /* Black padding below cards before the updates section */
+  padding-bottom: 3.5rem;
 }
 
 .features-grid {
@@ -243,7 +254,13 @@
   overflow: visible; /* icons hang above the top edge */
 }
 
-/* Icon: z-index 0 — behind text (z-index 2), above card bg */
+/*
+  Icon layer order:
+  z-index: 0 → sits above card background, below card-gloss (z:1)
+  This means gloss sheen renders ON TOP of the icon visually.
+  But gloss has pointer-events:none and opacity is subtle so icon still reads.
+  Text/buttons are z-index: 2 → always above everything.
+*/
 .feature-icon-wrap {
   position: absolute;
   top: -5rem;
@@ -276,7 +293,7 @@
   50%       { transform: translateY(-10px); }
 }
 
-/* All direct children of feature-card need z-index > 1 to be above gloss */
+/* All text/button content must be z-index 2 — above the gloss (z:1) */
 .feature-card > .feature-title,
 .feature-card > .feature-desc,
 .feature-card > .holo-button,
@@ -286,7 +303,6 @@
 }
 
 .feature-title {
-  /* Reserve space for the floating icon */
   margin-top: 8rem;
   font-weight: 800;
   font-size: clamp(1.2rem, 2vw, 1.65rem);
@@ -298,7 +314,6 @@
   background-clip: text;
   animation: blueShift 5s linear infinite;
   margin-bottom: 0;
-  /* white text is handled by the gradient */
 }
 
 @keyframes blueShift {
@@ -313,7 +328,8 @@
   line-height: 1.6;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
+  /* white text on dark card */
+  color: rgba(255,255,255,0.75);
   max-width: 22ch;
   flex: 1;
 }
@@ -323,71 +339,15 @@
 }
 
 /* ================================================================
-   TICKER — tight height, holo-wide video bg, black text
+   UPDATES — holo video background, sticky scroll effect
 ================================================================ */
-.ticker {
-  margin-top: 1.75rem;
-  position: relative;
-  overflow: hidden;
-  height: 2.3rem; /* snug around the text */
-  display: flex;
-  align-items: center;
-}
-
-.ticker-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.95;
-}
-
-.ticker-track {
-  display: flex;
-  align-items: center;
-  width: max-content;
-  white-space: nowrap;
-  font-family: "Poppins", var(--font-poppins), sans-serif;
-  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  color: #000000; /* black text on holo video */
-  animation: tickerScroll 32s linear infinite;
-  position: relative;
-  z-index: 1;
-  line-height: 1;
-  padding: 0 0.4rem;
-}
-
-.ticker-track span { display: inline-block; }
-
-@keyframes tickerScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* ================================================================
-   UPDATES — sticky holo video background
-================================================================ */
-
-/*
-  Outer wrapper: tall enough to fully contain the section.
-  The video inside is sticky so it stays fixed while the wrapper scrolls,
-  then gets pushed away when the next black section scrolls over the top.
-*/
 .updates-bg-wrap {
   position: relative;
-  /* Extra padding so surrounding black sections slide over cleanly */
-  padding: 3rem 0;
-  /* z-index lower than surrounding page sections so they scroll on top */
+  padding: 3.5rem 0;
   z-index: 0;
   overflow: hidden;
 }
 
-/* Sticky video: fills the wrapper, stays in viewport while user scrolls */
 .updates-bg-video {
   position: absolute;
   inset: 0;
@@ -398,19 +358,19 @@
   z-index: 0;
 }
 
-/* Slight dark overlay so cards read clearly against the bright holo video */
+/* Dark overlay so cards read clearly */
 .updates-bg-wrap::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0,0,0,0.32);
   z-index: 1;
   pointer-events: none;
 }
 
 .updates-section {
   position: relative;
-  z-index: 2; /* above the video and the overlay */
+  z-index: 2;
   width: min(1240px, calc(100% - 2rem));
   margin: 0 auto;
   display: grid;
@@ -419,23 +379,28 @@
   align-items: flex-start;
 }
 
-/* Sheen-only UPDATES title — black text with animated gloss, no holo video */
+/*
+  UPDATES title: black text with sheen clipped to letters only.
+  overflow:hidden on the span ensures ::after pseudo-element
+  is constrained to the bounding box, not bleeding outside.
+  The sheen is mix-blend-mode:overlay so it only brightens the
+  dark letterforms without affecting transparent surroundings.
+*/
 .updates-title-sheen {
   display: inline-block;
   position: relative;
   font-family: "Poppins", var(--font-poppins), sans-serif;
   font-weight: 900;
   text-transform: uppercase;
+  /* Black text — reads on holo video */
   color: #000000;
   line-height: 1;
-  /* Thin lime stroke */
+  overflow: hidden; /* clips sheen to the span bounding box = approx the letters */
   text-shadow:
     0 0 0.35px var(--m-stroke),
     0 0 0.35px var(--m-stroke);
-  isolation: isolate;
 }
 
-/* Animated gloss sweep over the black text */
 .updates-title-sheen::after {
   content: "";
   position: absolute;
@@ -443,13 +408,12 @@
   background: linear-gradient(
     110deg,
     transparent 15%,
-    rgba(255, 255, 255, 0.38) 44%,
-    rgba(255, 255, 255, 0.14) 56%,
+    rgba(255,255,255,0.45) 44%,
+    rgba(255,255,255,0.18) 56%,
     transparent 85%
   );
   background-size: 250% 100%;
   animation: holoSheen 3.5s linear infinite;
-  mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 1;
 }
@@ -457,7 +421,7 @@
 .updates-left {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 1rem;
   flex-shrink: 0;
 }
 
@@ -467,29 +431,51 @@
   white-space: nowrap;
 }
 
+/* Modern arrow buttons */
 .updates-arrows {
   display: flex;
   gap: 0.5rem;
 }
 
 .arrow-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid var(--m-pink);
-  background: transparent;
-  color: var(--m-pink);
-  font-size: 1rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  background: rgba(8,11,16,0.75);
+  color: var(--m-white);
+  font-size: 0;  /* hide emoji character */
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.18s ease, color 0.18s ease;
-  font-family: inherit;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+  position: relative;
+  backdrop-filter: blur(6px);
+}
+
+/* SVG chevron inside button via pseudo elements */
+.arrow-btn::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-right: 2.5px solid var(--m-white);
+  border-top: 2.5px solid var(--m-white);
+  transform: rotate(-135deg) translate(1px,-1px); /* left chevron */
+  transition: border-color 0.18s ease;
+}
+
+.arrow-btn:last-child::before {
+  transform: rotate(45deg) translate(-1px,1px); /* right chevron */
 }
 
 .arrow-btn:hover {
-  background: var(--m-pink);
-  color: #000;
+  background: rgba(181,220,88,0.15);
+  border-color: var(--m-lime);
+  transform: scale(1.08);
+}
+.arrow-btn:hover::before {
+  border-color: var(--m-lime);
 }
 
 .updates-feed {
@@ -506,9 +492,9 @@
 .updates-feed::-webkit-scrollbar { display: none; }
 
 .update-card {
-  /* Desktop: auto width so multiple cards show */
   flex: 0 0 280px;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
   padding: 1rem 1.2rem;
   display: flex;
   flex-direction: column;
@@ -516,7 +502,6 @@
   overflow: hidden;
 }
 
-/* Content inside card above gloss */
 .update-card > *:not(.card-gloss) {
   position: relative;
   z-index: 2;
@@ -547,7 +532,8 @@
 
 .update-date, .blog-date {
   font-size: 0.56rem;
-  color: rgba(255,255,255,0.38);
+  /* white on dark card */
+  color: rgba(255,255,255,0.5);
   letter-spacing: 0.05em;
   white-space: nowrap;
 }
@@ -558,6 +544,7 @@
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  /* white on dark card */
   color: var(--m-white);
   line-height: 1.3;
 }
@@ -566,7 +553,8 @@
   margin: 0;
   font-size: 0.63rem;
   line-height: 1.6;
-  color: rgba(255,255,255,0.48);
+  /* white (slightly muted) on dark card */
+  color: rgba(255,255,255,0.65);
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -606,9 +594,9 @@
   text-decoration: none;
   color: var(--m-white);
   overflow: hidden;
+  transition: transform 0.12s ease-out;
 }
 
-/* Blog card content above gloss */
 .blog-card > *:not(.card-gloss) {
   position: relative;
   z-index: 2;
@@ -627,6 +615,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1.3;
+  /* white on dark card */
   color: var(--m-white);
 }
 
@@ -634,7 +623,8 @@
   margin: 0;
   font-size: 0.67rem;
   line-height: 1.6;
-  color: rgba(255,255,255,0.48);
+  /* white (muted) on dark card */
+  color: rgba(255,255,255,0.65);
   flex: 1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -664,36 +654,43 @@
 }
 
 /* ================================================================
-   FAQ — compact and modern
+   FAQ — compact, modern, desktop: XL vertical "F A Q" label
 ================================================================ */
 .faq-section {
   width: min(1240px, calc(100% - 2rem));
-  margin: 1.75rem auto 0;
+  margin: 1.75rem auto 2rem;
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: min-content 1fr;
   gap: 2rem;
   align-items: flex-start;
 }
 
 .faq-title-wrap {
   position: sticky;
-  top: 80px;
+  top: 100px;
+  /* Stack F.A.Q. vertically one letter per line on desktop */
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg); /* read bottom to top */
+  line-height: 1;
 }
 
 .faq-title-size {
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  letter-spacing: 0.06em;
+  /* Large to fill the column height */
+  font-size: clamp(3rem, 6vw, 6rem);
+  letter-spacing: 0.12em;
 }
 
 .faq-list {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .faq-item {
   overflow: hidden;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  border-radius: 10px;
 }
 
 .faq-item--open,
@@ -704,7 +701,6 @@
     0 0 14px rgba(104,89,213,0.18) !important;
 }
 
-/* FAQ content above gloss */
 .faq-item > *:not(.card-gloss) {
   position: relative;
   z-index: 2;
@@ -716,11 +712,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 1rem;
   background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
+  /* white on dark card */
   color: var(--m-white);
   font-family: "Poppins", var(--font-poppins), sans-serif;
   font-size: 0.7rem;
@@ -731,8 +728,8 @@
 
 .faq-chevron {
   flex-shrink: 0;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-right: 2px solid var(--m-purple);
   border-bottom: 2px solid var(--m-purple);
   transform: rotate(45deg);
@@ -744,20 +741,21 @@
 }
 
 .faq-answer {
-  padding: 0 1rem 0.85rem;
+  padding: 0 1rem 0.8rem;
   font-size: 0.7rem;
   line-height: 1.7;
-  color: rgba(255,255,255,0.6);
+  /* white (muted) on dark card */
+  color: rgba(255,255,255,0.7);
 }
 
 /* ================================================================
    FOOTER — HOLO_BG_FAST video fill
 ================================================================ */
 .site-footer {
-  margin-top: 3rem;
+  margin-top: 2rem;
   position: relative;
   overflow: hidden;
-  padding: 3rem 0 1.5rem;
+  padding: 3.5rem 0 1.5rem;
 }
 
 .footer-video {
@@ -770,10 +768,20 @@
   z-index: 0;
 }
 
+/* Dark overlay for readability */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.28);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .footer-inner,
 .footer-bottom {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .footer-inner {
@@ -781,68 +789,83 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2rem;
+  gap: 3rem;
   align-items: flex-start;
 }
 
 .footer-brand {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.65rem;
 }
 
-/* Large bold MANDY.GG — black over holo video */
+/* Big MANDY.GG — black over the holo video */
 .footer-logo {
   font-family: "Poppins", var(--font-poppins), sans-serif;
   font-weight: 900;
-  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-size: clamp(3rem, 7vw, 6rem);
   color: #000000;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  text-shadow:
+    0 0 0.4px #b5dc58,
+    2px 4px 18px rgba(0,0,0,0.3);
 }
 
 .footer-sub {
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.7);
-  font-weight: 600;
+  /* black over holo video */
+  color: rgba(0,0,0,0.85);
+  font-weight: 700;
 }
 
 .footer-code {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.6);
+  color: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.12);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.18);
+  width: fit-content;
 }
 
 .footer-code strong {
   color: #000;
-  font-weight: 800;
+  font-weight: 900;
+  letter-spacing: 0.14em;
 }
 
 .footer-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 2rem;
+  align-items: start;
+  padding-top: 0.5rem;
 }
 
 .footer-nav a {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(0,0,0,0.75);
+  /* black over holo video */
+  color: rgba(0,0,0,0.8);
   text-decoration: none;
   transition: color 0.18s ease;
+  white-space: nowrap;
 }
 .footer-nav a:hover { color: #000; }
 
 .footer-bottom {
   width: min(1240px, calc(100% - 2rem));
-  margin: 1.5rem auto 0;
+  margin: 1.75rem auto 0;
   padding-top: 1rem;
   border-top: 1px solid rgba(0,0,0,0.2);
   display: flex;
@@ -853,20 +876,21 @@
 }
 
 .footer-copy {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   letter-spacing: 0.07em;
-  color: rgba(0,0,0,0.5);
+  /* black over holo video */
+  color: rgba(0,0,0,0.6);
 }
 
 .footer-legal {
   display: flex;
-  gap: 1.2rem;
+  gap: 1.4rem;
 }
 
 .footer-legal a {
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   letter-spacing: 0.07em;
-  color: rgba(0,0,0,0.5);
+  color: rgba(0,0,0,0.6);
   text-decoration: none;
   transition: color 0.18s ease;
 }
@@ -899,56 +923,103 @@
     width: 100%;
   }
 
+  /* FAQ: switch to stacked layout on tablet */
   .faq-section {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .faq-title-wrap { position: static; }
+  .faq-title-wrap {
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    transform: none;
+    position: static;
+  }
 
-  .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
-  .footer-nav { align-items: flex-start; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .faq-title-size { font-size: clamp(2rem, 6vw, 3rem); }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-nav {
+    grid-template-columns: repeat(3, auto);
+    justify-content: flex-start;
+    gap: 0.4rem 1.5rem;
+  }
 }
 
 /* ================================================================
    RESPONSIVE — MOBILE (≤600px)
 ================================================================ */
 @media (max-width: 600px) {
-  .hero,
-  .features,
-  .blog-section,
-  .faq-section,
-  .updates-section {
-    width: calc(100% - 1.5rem);
+  .hero {
+    margin: 1rem auto 0;
+    padding: 0 0.5rem;
+    overflow: hidden;
   }
 
-  /* MANDY.GG: centered, fits viewport */
-  .hero { text-align: center; }
-  .mandy-logo-size { font-size: clamp(2.8rem, 18vw, 5rem); }
-  .holo-mask { max-width: 100%; }
-
-  /* Updates: full-card snap, no partial cards visible */
-  .updates-feed {
-    scroll-snap-type: x mandatory;
-    gap: 0; /* remove gap so snap stops cleanly at each card */
+  .mandy-logo-size {
+    font-size: clamp(2.8rem, 18vw, 5rem);
+    white-space: nowrap;
+    letter-spacing: -0.02em;
   }
 
+  .holo-mask {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .features {
+    margin: 0.75rem auto 0;
+    padding-bottom: 2rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 5.5rem;
+    max-width: 100%;
+    padding-top: 5rem;
+  }
+
+  .feature-card {
+    min-height: 260px;
+  }
+
+  /* Updates: one full-width card at a time */
   .update-card {
     flex: 0 0 calc(100vw - 3rem);
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    margin-right: 0;
   }
 
-  /* Blog: single column */
-  .blog-grid { grid-template-columns: 1fr; }
+  .updates-feed {
+    gap: 0.75rem;
+    padding: 0 0.5rem;
+  }
 
-  /* FAQ: single col */
-  .faq-section { grid-template-columns: 1fr; }
+  .updates-section {
+    width: 100%;
+    padding: 0 1rem;
+  }
 
-  /* Ticker slightly smaller */
-  .ticker { height: 2rem; }
+  .blog-section,
+  .faq-section {
+    margin: 1rem auto 0;
+  }
 
-  .footer-logo { font-size: clamp(1.8rem, 12vw, 3rem); }
+  .footer-inner { gap: 1rem; }
+  .footer-logo  { font-size: clamp(2.5rem, 14vw, 4rem); }
+
+  .footer-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
 }
