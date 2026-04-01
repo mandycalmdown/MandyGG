@@ -379,6 +379,43 @@
   align-items: flex-start;
 }
 
+/* Arrows row — sits below the feed, aligned right */
+.updates-arrows {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.arrow-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  background: rgba(8,11,16,0.7);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
+}
+.arrow-btn:hover {
+  border-color: var(--m-lime);
+  background: rgba(8,11,16,0.9);
+  transform: scale(1.06);
+}
+.arrow-btn:active { transform: scale(0.96); }
+
+.arrow-btn__chevron {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-top: 2.5px solid #fff;
+  border-right: 2.5px solid #fff;
+}
+.arrow-btn__chevron--left  { transform: rotate(-135deg) translateX(-1px); }
+.arrow-btn__chevron--right { transform: rotate(45deg) translateX(-1px); }
+
 /*
   UPDATES title: black text with sheen clipped to letters only.
   overflow:hidden on the span ensures ::after pseudo-element
@@ -386,43 +423,36 @@
   The sheen is mix-blend-mode:overlay so it only brightens the
   dark letterforms without affecting transparent surroundings.
 */
+/*
+  UPDATES title — background-clip:text technique clips the animated
+  gradient sweep precisely to the letterforms, not the bounding box.
+*/
 .updates-title-sheen {
   display: inline-block;
-  position: relative;
   font-family: "Poppins", var(--font-poppins), sans-serif;
   font-weight: 900;
   text-transform: uppercase;
-  /* Black text — reads on holo video */
-  color: #000000;
   line-height: 1;
-  overflow: hidden; /* clips sheen to the span bounding box = approx the letters */
-  text-shadow:
-    0 0 0.35px var(--m-stroke),
-    0 0 0.35px var(--m-stroke);
-}
-
-.updates-title-sheen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+  /* Animated gradient clipped to letter shapes */
   background: linear-gradient(
     110deg,
-    transparent 15%,
-    rgba(255,255,255,0.45) 44%,
-    rgba(255,255,255,0.18) 56%,
-    transparent 85%
+    #1a1a1a 15%,
+    #ffffff 44%,
+    #aaaaaa 56%,
+    #1a1a1a 85%
   );
   background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
   animation: holoSheen 3.5s linear infinite;
-  pointer-events: none;
-  z-index: 1;
 }
 
-.updates-left {
+.updates-feed-wrap {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .updates-title-size {
@@ -432,52 +462,6 @@
 }
 
 /* Modern arrow buttons */
-.updates-arrows {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.arrow-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(255,255,255,0.18);
-  background: rgba(8,11,16,0.75);
-  color: var(--m-white);
-  font-size: 0;  /* hide emoji character */
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
-  position: relative;
-  backdrop-filter: blur(6px);
-}
-
-/* SVG chevron inside button via pseudo elements */
-.arrow-btn::before {
-  content: "";
-  display: block;
-  width: 8px;
-  height: 8px;
-  border-right: 2.5px solid var(--m-white);
-  border-top: 2.5px solid var(--m-white);
-  transform: rotate(-135deg) translate(1px,-1px); /* left chevron */
-  transition: border-color 0.18s ease;
-}
-
-.arrow-btn:last-child::before {
-  transform: rotate(45deg) translate(-1px,1px); /* right chevron */
-}
-
-.arrow-btn:hover {
-  background: rgba(181,220,88,0.15);
-  border-color: var(--m-lime);
-  transform: scale(1.08);
-}
-.arrow-btn:hover::before {
-  border-color: var(--m-lime);
-}
-
 .updates-feed {
   display: flex;
   gap: 1rem;
@@ -668,15 +652,35 @@
 .faq-title-wrap {
   position: sticky;
   top: 100px;
-  /* Stack F.A.Q. vertically one letter per line on desktop */
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  transform: rotate(180deg); /* read bottom to top */
+  transform: rotate(180deg);
   line-height: 1;
+  /* No holo-mask wrapper needed — use bg-clip sheen directly */
+  background: none;
+}
+
+/* FAQ title — bg-clip text sheen, no video, no halo */
+.faq-title-sheen {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  background: linear-gradient(
+    110deg,
+    #ffffff 15%,
+    var(--m-lime) 44%,
+    #ffffff 56%,
+    #aaaaaa 85%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: holoSheen 3.5s linear infinite;
 }
 
 .faq-title-size {
-  /* Large to fill the column height */
   font-size: clamp(3rem, 6vw, 6rem);
   letter-spacing: 0.12em;
 }
@@ -851,23 +855,22 @@
 }
 
 .footer-nav a {
-  font-size: 0.74rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  /* black over holo video */
-  color: rgba(0,0,0,0.8);
+  color: #000000;
   text-decoration: none;
-  transition: color 0.18s ease;
+  transition: opacity 0.18s ease;
   white-space: nowrap;
 }
-.footer-nav a:hover { color: #000; }
+.footer-nav a:hover { opacity: 0.6; }
 
 .footer-bottom {
   width: min(1240px, calc(100% - 2rem));
   margin: 1.75rem auto 0;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0,0,0,0.2);
+  border-top: 2px solid rgba(0,0,0,0.5);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -876,10 +879,10 @@
 }
 
 .footer-copy {
-  font-size: 0.62rem;
-  letter-spacing: 0.07em;
-  /* black over holo video */
-  color: rgba(0,0,0,0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #000000;
 }
 
 .footer-legal {
@@ -888,13 +891,14 @@
 }
 
 .footer-legal a {
-  font-size: 0.62rem;
-  letter-spacing: 0.07em;
-  color: rgba(0,0,0,0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #000000;
   text-decoration: none;
-  transition: color 0.18s ease;
+  transition: opacity 0.18s ease;
 }
-.footer-legal a:hover { color: #000; }
+.footer-legal a:hover { opacity: 0.65; }
 
 /* ================================================================
    RESPONSIVE — TABLET (≤960px)
