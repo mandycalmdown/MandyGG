@@ -1151,6 +1151,16 @@
 }
 .footer-legal a:hover { opacity: 0.65; }
 
+/* Features grid — 3 columns on desktop */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
 /* ================================================================
    RESPONSIVE — TABLET (≤960px)
 ================================================================ */
