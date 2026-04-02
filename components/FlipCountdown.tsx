@@ -51,8 +51,9 @@ function FlipDigitPair({ value, label }: { value: string; label: string }) {
   return (
     <div className="flip-digit-group">
       <div className="flip-units">
-        <FlipDigit value={digits[0]} />
-        <FlipDigit value={digits[1]} />
+        {digits.map((digit, i) => (
+          <FlipDigit key={i} value={digit} />
+        ))}
       </div>
       <div className="flip-label">{label}</div>
     </div>
