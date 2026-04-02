@@ -212,31 +212,28 @@
   text-transform: uppercase;
 }
 
-/* ================================================================
-   FEATURE CARDS
-================================================================ */
-.features {
-  width: min(1240px, calc(100% - 2rem));
-  margin: 1.5rem auto 0;
-  /* Black padding below cards before the updates section */
-  padding-bottom: 3.5rem;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
-  padding-top: 5.5rem; /* room for overhanging icons */
-}
-
+/* Feature Cards - Original layout, size, colors, and animations */
 .feature-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.2rem 1.6rem 1.75rem;
-  min-height: 300px;
-  overflow: visible; /* icons hang above the top edge */
+  padding: 1.5rem 1.5rem 1.5rem;
+  min-height: 280px;
+  overflow: visible;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 /*
@@ -288,20 +285,15 @@
 }
 
 .feature-title {
-  margin-top: 8rem;
+  margin-top: 5rem;
   font-weight: 800;
-  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
   letter-spacing: 0.02em;
-  color: transparent;
-  background-image: linear-gradient(90deg, var(--m-blue) 0%, #a8e6ff 50%, var(--m-blue) 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: blueShift 5s linear infinite;
-  margin-bottom: 0;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
 }
 
-@keyframes blueShift {
+@keyframes limeShift {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
