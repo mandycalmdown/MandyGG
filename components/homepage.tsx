@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { SiteNavigation } from "@/components/site-navigation";
 import { faqItems } from "@/components/homepage-faq-data";
 import "@/styles/mandy-home.css";
@@ -136,39 +137,86 @@ function useHoloHandlers() {
   return { onMove, onLeave };
 }
 
+/* ── Framer Motion card animation variants ── */
+const cardVariants = {
+  enter: ({ direction }: { direction: number }) => {
+    return { scale: 0.5, x: direction < 1 ? 100 : -100, opacity: 0 };
+  },
+  center: ({ position }: { position: () => string }) => {
+    const pos = position();
+    return {
+      scale: pos === "center" ? 1.1 : 0.8,
+      x: 0,
+      zIndex: pos === "center" ? 2 : pos === "left" ? 1 : 1,
+      opacity: 1,
+    };
+  },
+  exit: ({ direction }: { direction: number }) => {
+    return { scale: 0.5, x: direction < 1 ? -100 : 100, opacity: 0 };
+  },
+};
+
 export function Homepage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [[activeIndex, direction], setActiveIndex] = useState([0, 0]);
   const feedRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
   const logoRef = useRef<HTMLDivElement>(null);
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
 
-  // Center carousel on Weekly Race card (index 2) on mount
-  useEffect(() => {
-    if (cardsRef.current) {
-      const cardWidth = 320; // Fixed card width
-      const gap = 32; // 2rem gap
-      const scrollPos = cardWidth * 1 + gap; // Position for center card
-      setTimeout(() => {
-        if (cardsRef.current) {
-          cardsRef.current.scrollLeft = scrollPos;
-        }
-      }, 100);
-    }
-  }, []);
+  // Feature cards data
+  const featureCards = [
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
+      title: "REWARDS",
+      desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
+      btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
+    },
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
+      title: "THRILL",
+      desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
+      btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
+    },
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
+      title: "$3500 WEEKLY RACE",
+      desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
+      btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+    },
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
+      title: "DEGEN DASHBOARD",
+      desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
+      btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
+    },
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT%20copy-2e0aQhNYvQfKpkRVWeX4IfDCqY199n.webp",
+      title: "POKER NIGHT",
+      desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE EVENTS.",
+      btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
+    },
+    {
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-wEJ9OoZlJBMcU6kfx1FskugZgAaH53.webp",
+      title: "WEEKLY RAFFLE",
+      desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
+      btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
+    },
+  ] as const;
+
+  // Calculate visible cards for infinite carousel
+  const indexInArrayScope = ((activeIndex % featureCards.length) + featureCards.length) % featureCards.length;
+  const visibleCards = [...featureCards, ...featureCards].slice(indexInArrayScope, indexInArrayScope + 3);
+
+  const handleCardClick = (newDirection: number) => {
+    setActiveIndex((prev) => [prev[0] + newDirection, newDirection]);
+  };
 
   const scrollFeed = (dir: "left" | "right") => {
     if (!feedRef.current) return;
     const w = feedRef.current.querySelector<HTMLElement>(".update-feed-card")?.offsetWidth ?? 320;
     feedRef.current.scrollBy({ left: dir === "left" ? -(w + 16) : (w + 16), behavior: "smooth" });
-  };
-
-  const scrollCards = (dir: "left" | "right") => {
-    if (!cardsRef.current) return;
-    const w = cardsRef.current.querySelector<HTMLElement>(".feature-card")?.offsetWidth ?? 300;
-    cardsRef.current.scrollBy({ left: dir === "left" ? -(w + 32) : (w + 32), behavior: "smooth" });
   };
 
   const announcements = [
@@ -198,78 +246,62 @@ export function Homepage() {
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
-      {/* ── Feature Cards ── */}
+      {/* ── Feature Cards Carousel ── */}
       <section className="features" aria-label="Main features">
         <div className="features-carousel-wrap">
-          <div className="features-grid" ref={cardsRef}>
-
-            {([ 
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
-                title: "REWARDS",
-                desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
-                btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
-              },
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
-                title: "THRILL",
-                desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
-                btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
-              },
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
-                title: "$3500 WEEKLY RACE",
-                desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
-                btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
-              },
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
-                title: "DEGEN DASHBOARD",
-                desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
-                btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
-              },
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT%20copy-2e0aQhNYvQfKpkRVWeX4IfDCqY199n.webp",
-                title: "POKER NIGHT",
-                desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE EVENTS.",
-                btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
-              },
-              {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-wEJ9OoZlJBMcU6kfx1FskugZgAaH53.webp",
-                title: "WEEKLY RAFFLE",
-                desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
-                btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
-              },
-            ] as const).map((card_, i) => (
-              <article
-                key={i}
-                className="feature-card mandy-card"
-                onMouseMove={card.onMove}
-                onMouseLeave={card.onLeave}
-              >
-                {/* Gloss only on the card surface — pointer-events:none, z-index above bg, below text */}
-                <span className="card-gloss" aria-hidden="true" />
-                {/* Icon floats above card top, behind text */}
-                <span className="feature-icon-wrap" aria-hidden="true">
-                  <img src={card_.img} alt="" className="feature-icon" />
-                </span>
-                <h2 className="feature-title">{card_.title}</h2>
-                <p className="feature-desc">{card_.desc}</p>
-                <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
-                  {card_.btn.label}
-                </HoloButton>
-              </article>
-            ))}
-
+          <div className="features-carousel-container">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleCards.map((card_, idx) => {
+                const position = idx === 0 ? "left" : idx === 1 ? "center" : "right";
+                return (
+                  <motion.article
+                    key={`${card_.title}-${idx}`}
+                    className="feature-card mandy-card"
+                    layout
+                    custom={{ direction, position: () => position }}
+                    variants={cardVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: 0.4 }}
+                    onMouseMove={card.onMove}
+                    onMouseLeave={card.onLeave}
+                  >
+                    <span className="card-gloss" aria-hidden="true" />
+                    <span className="feature-icon-wrap" aria-hidden="true">
+                      <img src={card_.img} alt="" className="feature-icon" />
+                    </span>
+                    <h2 className="feature-title">{card_.title}</h2>
+                    <p className="feature-desc">{card_.desc}</p>
+                    <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
+                      {card_.btn.label}
+                    </HoloButton>
+                  </motion.article>
+                );
+              })}
+            </AnimatePresence>
           </div>
-          {/* Arrows for carousel navigation */}
+          
+          {/* Navigation arrows */}
           <div className="features-arrows" aria-label="Features carousel navigation">
-            <button type="button" className="arrow-btn" onClick={() => scrollCards("left")} aria-label="Previous features">
+            <motion.button 
+              type="button" 
+              className="arrow-btn" 
+              onClick={() => handleCardClick(-1)} 
+              aria-label="Previous features"
+              whileTap={{ scale: 0.8 }}
+            >
               <span className="arrow-btn__chevron arrow-btn__chevron--left" aria-hidden="true" />
-            </button>
-            <button type="button" className="arrow-btn" onClick={() => scrollCards("right")} aria-label="Next features">
+            </motion.button>
+            <motion.button 
+              type="button" 
+              className="arrow-btn" 
+              onClick={() => handleCardClick(1)} 
+              aria-label="Next features"
+              whileTap={{ scale: 0.8 }}
+            >
               <span className="arrow-btn__chevron arrow-btn__chevron--right" aria-hidden="true" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
