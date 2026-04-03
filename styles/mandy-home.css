@@ -910,6 +910,10 @@
   padding-bottom: 1rem;
 }
 
+/* ================================================================
+   RESPONSIVE — TABLET (≤960px)
+================================================================ */
+@media (max-width: 960px) {
   .updates-section {
     grid-template-columns: 1fr;
     gap: 0.85rem;
