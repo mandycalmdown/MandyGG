@@ -212,27 +212,7 @@
   text-transform: uppercase;
 }
 
-/* ================================================================
-   FEATURES SECTION — moved down with padding
-================================================================ */
-.features {
-  padding: 4rem 0 2rem;
-}
-
-/* Features grid — 3D carousel with semi-circle layout */
-.features-grid {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 1rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 420px;
-  perspective: 1200px;
-  overflow: visible;
-}
-
+/* Feature Cards - Original layout, size, colors, and animations */
 .feature-card {
   display: flex;
   flex-direction: column;
@@ -240,45 +220,13 @@
   text-align: center;
   padding: 1.5rem 1.5rem 1.5rem;
   min-height: 280px;
-  width: 240px;
   overflow: visible;
   position: relative;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-}
-
-/* Center card (3rd) is largest and front */
-.features-grid > .feature-card:nth-child(3),
-.features-grid > .feature-card:nth-child(4) {
-  transform: translateY(0) scale(1.1) rotateY(0deg) rotateX(0deg);
-  z-index: 10;
-}
-
-/* Left cards curve away */
-.features-grid > .feature-card:nth-child(1) {
-  transform: translateX(60px) translateY(80px) scale(0.85) rotateY(35deg) rotateX(5deg);
-  z-index: 6;
-}
-
-.features-grid > .feature-card:nth-child(2) {
-  transform: translateX(20px) translateY(30px) scale(0.95) rotateY(15deg) rotateX(2deg);
-  z-index: 8;
-}
-
-/* Right cards curve away */
-.features-grid > .feature-card:nth-child(5) {
-  transform: translateX(-20px) translateY(30px) scale(0.95) rotateY(-15deg) rotateX(2deg);
-  z-index: 8;
-}
-
-.features-grid > .feature-card:nth-child(6) {
-  transform: translateX(-60px) translateY(80px) scale(0.85) rotateY(-35deg) rotateX(5deg);
-  z-index: 6;
+  transition: all 0.3s ease;
 }
 
 .feature-card:hover {
@@ -302,8 +250,8 @@
   transform: translateX(-50%)
              translateX(var(--icon-x, 0px))
              translateY(var(--icon-y, 0px));
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   display: grid;
   place-items: center;
   pointer-events: none;
@@ -916,48 +864,51 @@
 }
 .footer-legal a:hover { opacity: 0.65; }
 
-/* Features grid — 3 columns on desktop */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+/* Features section — with carousel wrapper */
+.features {
+  padding: 4rem 0 2rem 0;
+  background: var(--m-bg);
 }
 
-/* ================================================================
-   RESPONSIVE — TABLET (≤960px)
-================================================================ */
-@media (max-width: 960px) {
-  .features-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    max-width: 100%;
-    height: auto;
-    padding: 0 1rem;
-  }
+.features-carousel-wrap {
+  position: relative;
+  width: 100%;
+}
 
-  .feature-card {
-    width: 100%;
-    max-width: 380px;
-  }
+/* Features grid — now a carousel/scrollable row */
+.features-grid {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  gap: 2rem;
+  padding: 0 1.5rem 3rem 1.5rem;
+  max-width: 100%;
+  margin: 0 auto;
+  scroll-snap-type: x mandatory;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-  .features-grid > .feature-card:nth-child(1),
-  .features-grid > .feature-card:nth-child(2),
-  .features-grid > .feature-card:nth-child(3),
-  .features-grid > .feature-card:nth-child(4),
-  .features-grid > .feature-card:nth-child(5),
-  .features-grid > .feature-card:nth-child(6) {
-    transform: none;
-    z-index: 1;
-  }
+.features-grid::-webkit-scrollbar {
+  display: none;
+}
 
-  .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
+.feature-card {
+  flex: 0 0 calc((100% - 3rem) / 3.5);
+  min-width: calc((100% - 3rem) / 3.5);
+  scroll-snap-align: start;
+}
 
-  .updates-bg-wrap { padding: 1.5rem 0; }
+/* Features carousel arrows */
+.features-arrows {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
 
   .updates-section {
     grid-template-columns: 1fr;
