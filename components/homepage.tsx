@@ -145,6 +145,20 @@ export function Homepage() {
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
 
+  // Center carousel on Weekly Race card (index 2) on mount
+  useEffect(() => {
+    if (cardsRef.current) {
+      const cardWidth = 320; // Fixed card width
+      const gap = 32; // 2rem gap
+      const scrollPos = cardWidth * 1 + gap; // Position for center card
+      setTimeout(() => {
+        if (cardsRef.current) {
+          cardsRef.current.scrollLeft = scrollPos;
+        }
+      }, 100);
+    }
+  }, []);
+
   const scrollFeed = (dir: "left" | "right") => {
     if (!feedRef.current) return;
     const w = feedRef.current.querySelector<HTMLElement>(".update-feed-card")?.offsetWidth ?? 320;
@@ -191,6 +205,12 @@ export function Homepage() {
 
             {([ 
               {
+                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
+                title: "REWARDS",
+                desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
+                btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
+              },
+              {
                 img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
                 title: "THRILL",
                 desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
@@ -209,19 +229,13 @@ export function Homepage() {
                 btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
               },
               {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
-                title: "REWARDS",
-                desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
-                btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
-              },
-              {
                 img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT%20copy-2e0aQhNYvQfKpkRVWeX4IfDCqY199n.webp",
                 title: "POKER NIGHT",
                 desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE EVENTS.",
                 btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
               },
               {
-                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFbCQNovVoLJSAgFECO.webp",
+                img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-wEJ9OoZlJBMcU6kfx1FskugZgAaH53.webp",
                 title: "WEEKLY RAFFLE",
                 desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
                 btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },

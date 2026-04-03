@@ -257,6 +257,7 @@
   pointer-events: none;
   z-index: 0;
   transition: transform 0.12s ease-out;
+  overflow: visible;
 }
 
 .feature-icon {
@@ -265,6 +266,11 @@
   object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0,0,0,0.65));
   animation: floatIcon 4s ease-in-out infinite;
+}
+
+/* Reduce poker chip (5th card) by 25% */
+.features-grid > article:nth-child(5) .feature-icon {
+  transform: scale(0.75);
 }
 
 .features-grid > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
@@ -873,9 +879,12 @@
 .features-carousel-wrap {
   position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Features grid — now a carousel/scrollable row */
+/* Features grid — center-focused carousel with snap-to-center */
 .features-grid {
   display: flex;
   flex-direction: row;
@@ -883,10 +892,12 @@
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   gap: 2rem;
-  padding: 0 1.5rem 3rem 1.5rem;
-  max-width: 100%;
-  margin: 0 auto;
+  padding: 0 calc((100vw - 340px) / 2 - 1.5rem) 3rem;
+  width: 100vw;
+  margin: 0 calc(-50vw + 50%);
   scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  scroll-padding-inline: calc((100vw - 340px) / 2);
   /* Hide scrollbar */
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -897,9 +908,41 @@
 }
 
 .feature-card {
-  flex: 0 0 calc((100% - 3rem) / 3.5);
-  min-width: calc((100% - 3rem) / 3.5);
-  scroll-snap-align: start;
+  flex: 0 0 320px;
+  min-width: 320px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  /* Allow images and content to overflow the card */
+  overflow: visible;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 1.5rem 1.5rem;
+  min-height: 280px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Scale center card larger, outer cards smaller */
+.feature-card {
+  transform: scale(0.95);
+}
+
+.features-grid:has(> .feature-card:nth-child(3):focus-visible) .feature-card:nth-child(3),
+.features-grid > .feature-card:nth-child(3) {
+  transform: scale(1.08);
+  z-index: 10;
+}
+
+.feature-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* Features carousel arrows */
