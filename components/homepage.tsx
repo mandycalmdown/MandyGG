@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { SiteNavigation } from "@/components/site-navigation";
@@ -169,13 +169,13 @@ const cardVariants = {
 
 export function Homepage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [[activeIndex, direction], setActiveIndex] = useState([0, 0]);
   const feedRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
 
-  // Feature cards data
+  // Feature cards data — ordered with Weekly Race in center
   const featureCards = [
     {
       img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
@@ -208,38 +208,30 @@ export function Homepage() {
       btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
     },
     {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-wEJ9OoZlJBMcU6kfx1FskugZgAaH53.webp",
+      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFbCQNovVoLJSAgFECO.webp",
       title: "WEEKLY RAFFLE",
       desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
       btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
     },
   ] as const;
 
-  // Calculate visible cards for infinite carousel
-  const indexInArrayScope = ((activeIndex % featureCards.length) + featureCards.length) % featureCards.length;
-  const visibleCards = [...featureCards, ...featureCards].slice(indexInArrayScope, indexInArrayScope + 3);
-
-  const handleCardClick = (newDirection: number) => {
-    console.log("[v0] Card click triggered, direction:", newDirection, "currentIndex:", activeIndex);
-    setActiveIndex((prev) => [prev[0] + newDirection, newDirection]);
-  };
-
-  const handleDragEnd = (info: any) => {
-    const swipeThreshold = 50;
-    const velocity = info.velocity.x;
-    const distance = info.offset.x;
-
-    console.log("[v0] Drag ended - velocity:", velocity, "distance:", distance);
-
-    if (Math.abs(velocity) > swipeThreshold || Math.abs(distance) > swipeThreshold) {
-      if (distance < 0 || velocity < 0) {
-        console.log("[v0] Swiping to next card");
-        handleCardClick(1); // Swipe left, go to next
-      } else {
-        console.log("[v0] Swiping to previous card");
-        handleCardClick(-1); // Swipe right, go to prev
-      }
+  // Initialize scroll position on mount to center the Weekly Race card
+  useEffect(() => {
+    if (cardsRef.current) {
+      // Weekly Race is at index 2, card width is roughly 1/3.5 of container
+      const container = cardsRef.current;
+      setTimeout(() => {
+        const cardWidth = container.offsetWidth / 3.5;
+        const scrollPosition = cardWidth * (2 - 0.5); // Index 2, offset by half card for center
+        container.scrollLeft = Math.max(0, scrollPosition - (container.offsetWidth / 2) + (cardWidth / 2));
+      }, 100);
     }
+  }, []);
+
+  const scrollCards = (dir: "left" | "right") => {
+    if (!cardsRef.current) return;
+    const cardWidth = cardsRef.current.offsetWidth / 3.5;
+    cardsRef.current.scrollBy({ left: dir === "left" ? -(cardWidth + 2) : (cardWidth + 2), behavior: "smooth" });
   };
 
   const scrollFeed = (dir: "left" | "right") => {
@@ -278,66 +270,46 @@ export function Homepage() {
       {/* ── Feature Cards Carousel ── */}
       <section className="features" aria-label="Main features">
         <div className="features-carousel-wrap">
-          <motion.div 
-            className="features-carousel-container"
-            drag="x"
-            dragElastic={0.15}
-            dragConstraints={false}
-            onDragEnd={handleDragEnd}
-            whileDrag={{ cursor: "grabbing" }}
-          >
-            <AnimatePresence mode="popLayout" initial={false}>
-              {visibleCards.map((card_, idx) => {
-                const position = idx === 0 ? "left" : idx === 1 ? "center" : "right";
-                return (
-                  <motion.article
-                    key={`${card_.title}-${activeIndex}-${idx}`}
-                    className="feature-card mandy-card"
-                    layout
-                    custom={{ direction, position: () => position }}
-                    variants={cardVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.8 }}
-                    onMouseMove={card.onMove}
-                    onMouseLeave={card.onLeave}
-                  >
-                    <span className="card-gloss" aria-hidden="true" />
-                    <span className="feature-icon-wrap" aria-hidden="true">
-                      <img src={card_.img} alt="" className="feature-icon" />
-                    </span>
-                    <h2 className="feature-title">{card_.title}</h2>
-                    <p className="feature-desc">{card_.desc}</p>
-                    <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
-                      {card_.btn.label}
-                    </HoloButton>
-                  </motion.article>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+          <div className="features-grid" ref={cardsRef}>
+            {/* Infinite loop: duplicate all cards twice */}
+            {[...featureCards, ...featureCards, ...featureCards].map((card_, i) => (
+              <article
+                key={i}
+                className="feature-card mandy-card"
+                onMouseMove={card.onMove}
+                onMouseLeave={card.onLeave}
+              >
+                <span className="card-gloss" aria-hidden="true" />
+                <span className="feature-icon-wrap" aria-hidden="true">
+                  <img src={card_.img} alt="" className="feature-icon" />
+                </span>
+                <h2 className="feature-title">{card_.title}</h2>
+                <p className="feature-desc">{card_.desc}</p>
+                <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
+                  {card_.btn.label}
+                </HoloButton>
+              </article>
+            ))}
+          </div>
           
           {/* Navigation arrows */}
           <div className="features-arrows" aria-label="Features carousel navigation">
-            <motion.button 
+            <button 
               type="button" 
               className="arrow-btn" 
-              onClick={() => handleCardClick(-1)} 
+              onClick={() => scrollCards("left")}
               aria-label="Previous features"
-              whileTap={{ scale: 0.8 }}
             >
               <span className="arrow-btn__chevron arrow-btn__chevron--left" aria-hidden="true" />
-            </motion.button>
-            <motion.button 
+            </button>
+            <button 
               type="button" 
               className="arrow-btn" 
-              onClick={() => handleCardClick(1)} 
+              onClick={() => scrollCards("right")}
               aria-label="Next features"
-              whileTap={{ scale: 0.8 }}
             >
               <span className="arrow-btn__chevron arrow-btn__chevron--right" aria-hidden="true" />
-            </motion.button>
+            </button>
           </div>
         </div>
       </section>
