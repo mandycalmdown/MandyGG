@@ -5,15 +5,8 @@ export const metadata: Metadata = {
   title: "Exclusive Crypto Casino Rewards & Bonuses | Mandy.gg",
   description:
     "Exclusive crypto casino bonuses and rewards for Mandy.gg community. Use code MANDY on Thrill for bonus codes, cash drops, and weekly wager race prizes.",
-  keywords: [
-    "crypto casino rewards",
-    "thrill casino bonuses",
-    "code MANDY rewards",
-    "crypto gambling perks",
-    "VIP casino bonuses",
-    "lossback rewards",
-    "mandy.gg rewards",
-  ],
+  keywords:
+    "crypto casino rewards, thrill casino bonuses, code MANDY rewards, crypto gambling perks, VIP casino bonuses, lossback rewards, mandy.gg rewards",
   openGraph: {
     title: "Exclusive Crypto Casino Rewards & Bonuses | Mandy.gg",
     description: "Exclusive crypto casino bonuses and rewards for Mandy.gg community. Use code MANDY on Thrill.",

@@ -5,16 +5,8 @@ export const metadata: Metadata = {
   title: "How to Join Thrill Casino with Code MANDY | Mandy.gg",
   description:
     "Step-by-step guide to joining Thrill crypto casino with referral code MANDY. Unlock exclusive bonuses, lossback rewards, and weekly wager race prizes.",
-  keywords: [
-    "Thrill casino signup",
-    "referral code MANDY",
-    "mandycalmdown",
-    "casino rewards",
-    "Thrill registration",
-    "MandyGG",
-    "crypto casino bonus",
-    "how to join Thrill",
-  ],
+  keywords:
+    "Thrill casino signup, referral code MANDY, mandycalmdown, casino rewards, Thrill registration, MandyGG, crypto casino bonus, how to join Thrill",
   openGraph: {
     title: "How to Join Thrill Casino with Code MANDY | Mandy.gg",
     description:

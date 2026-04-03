@@ -5,16 +5,8 @@ export const metadata: Metadata = {
   title: "Weekly $3500 Wager Race Leaderboard | Mandy.gg",
   description:
     "Live weekly $3500 crypto casino wager race leaderboard. Use code MANDY on Thrill to compete and win cash prizes every week.",
-  keywords: [
-    "crypto wager race",
-    "thrill casino leaderboard",
-    "weekly crypto competition",
-    "bitcoin gambling leaderboard",
-    "code MANDY",
-    "crypto casino prizes",
-    "wager battle",
-    "mandy.gg leaderboard",
-  ],
+  keywords:
+    "crypto wager race, thrill casino leaderboard, weekly crypto competition, bitcoin gambling leaderboard, code MANDY, crypto casino prizes, wager battle, mandy.gg leaderboard",
   openGraph: {
     title: "Weekly $3500 Wager Race Leaderboard | Mandy.gg",
     description:
