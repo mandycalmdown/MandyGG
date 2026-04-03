@@ -140,19 +140,27 @@ function useHoloHandlers() {
 /* ── Framer Motion card animation variants ── */
 const cardVariants = {
   enter: ({ direction }: { direction: number }) => {
-    return { scale: 0.5, x: direction < 1 ? 100 : -100, opacity: 0 };
+    return { 
+      opacity: 0, 
+      x: direction < 1 ? 400 : -400,
+      scale: 0.5,
+    };
   },
   center: ({ position }: { position: () => string }) => {
     const pos = position();
     return {
-      scale: pos === "center" ? 1.1 : 0.8,
+      scale: pos === "center" ? 1 : 0.85,
       x: 0,
-      zIndex: pos === "center" ? 2 : pos === "left" ? 1 : 1,
       opacity: 1,
+      zIndex: pos === "center" ? 20 : pos === "left" ? 1 : 1,
     };
   },
   exit: ({ direction }: { direction: number }) => {
-    return { scale: 0.5, x: direction < 1 ? -100 : 100, opacity: 0 };
+    return { 
+      opacity: 0, 
+      x: direction < 1 ? -400 : 400,
+      scale: 0.5,
+    };
   },
 };
 
@@ -160,7 +168,6 @@ export function Homepage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [[activeIndex, direction], setActiveIndex] = useState([0, 0]);
   const feedRef = useRef<HTMLDivElement>(null);
-
   const logoRef = useRef<HTMLDivElement>(null);
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
@@ -213,6 +220,20 @@ export function Homepage() {
     setActiveIndex((prev) => [prev[0] + newDirection, newDirection]);
   };
 
+  const handleDragEnd = (info: any) => {
+    const swipeThreshold = 50;
+    const velocity = info.velocity.x;
+    const distance = info.offset.x;
+
+    if (Math.abs(velocity) > swipeThreshold || Math.abs(distance) > swipeThreshold) {
+      if (distance < 0 || velocity < 0) {
+        handleCardClick(1); // Swipe left, go to next
+      } else {
+        handleCardClick(-1); // Swipe right, go to prev
+      }
+    }
+  };
+
   const scrollFeed = (dir: "left" | "right") => {
     if (!feedRef.current) return;
     const w = feedRef.current.querySelector<HTMLElement>(".update-feed-card")?.offsetWidth ?? 320;
@@ -249,13 +270,19 @@ export function Homepage() {
       {/* ── Feature Cards Carousel ── */}
       <section className="features" aria-label="Main features">
         <div className="features-carousel-wrap">
-          <div className="features-carousel-container">
+          <motion.div 
+            className="features-carousel-container"
+            drag="x"
+            dragElastic={0.2}
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={handleDragEnd}
+          >
             <AnimatePresence mode="popLayout" initial={false}>
               {visibleCards.map((card_, idx) => {
                 const position = idx === 0 ? "left" : idx === 1 ? "center" : "right";
                 return (
                   <motion.article
-                    key={`${card_.title}-${idx}`}
+                    key={`${card_.title}-${activeIndex}-${idx}`}
                     className="feature-card mandy-card"
                     layout
                     custom={{ direction, position: () => position }}
@@ -263,7 +290,7 @@ export function Homepage() {
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ duration: 0.4 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 40, mass: 0.8 }}
                     onMouseMove={card.onMove}
                     onMouseLeave={card.onLeave}
                   >
@@ -280,7 +307,7 @@ export function Homepage() {
                 );
               })}
             </AnimatePresence>
-          </div>
+          </motion.div>
           
           {/* Navigation arrows */}
           <div className="features-arrows" aria-label="Features carousel navigation">

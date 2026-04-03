@@ -1179,16 +1179,21 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 520px;
+  height: 380px;
   position: relative;
   overflow: visible;
   padding: 0 1.5rem 3rem 1.5rem;
+  cursor: grab;
+}
+
+.features-carousel-container:active {
+  cursor: grabbing;
 }
 
 .feature-card {
   position: absolute;
-  width: 320px;
-  min-height: 280px;
+  width: 300px;
+  height: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
