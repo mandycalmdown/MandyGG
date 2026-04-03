@@ -874,6 +874,7 @@
 .features {
   padding: 4rem 0 2rem 0;
   background: var(--m-bg);
+  overflow: visible;
 }
 
 .features-carousel-wrap {
@@ -882,6 +883,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
 }
 
 /* Features grid — center-focused carousel with snap-to-center */
@@ -922,27 +924,38 @@
   text-align: center;
   padding: 1.5rem 1.5rem 1.5rem;
   min-height: 280px;
+  background: transparent;
+  z-index: 1;
+}
+
+/* Use pseudo-element for background so border-radius doesn't clip overflow */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: -1;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Scale center card larger, outer cards smaller */
+.feature-card:hover::before {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* Scale outer cards smaller, center card larger */
 .feature-card {
   transform: scale(0.95);
 }
 
-.features-grid:has(> .feature-card:nth-child(3):focus-visible) .feature-card:nth-child(3),
 .features-grid > .feature-card:nth-child(3) {
   transform: scale(1.08);
   z-index: 10;
-}
-
-.feature-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* Features carousel arrows */
