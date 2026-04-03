@@ -140,6 +140,7 @@ function useHoloHandlers() {
 /* ── Framer Motion card animation variants ── */
 const cardVariants = {
   enter: ({ direction }: { direction: number }) => {
+    console.log("[v0] Card entering with direction:", direction);
     return { 
       opacity: 0, 
       x: direction < 1 ? 400 : -400,
@@ -148,6 +149,7 @@ const cardVariants = {
   },
   center: ({ position }: { position: () => string }) => {
     const pos = position();
+    console.log("[v0] Card at position:", pos);
     return {
       scale: pos === "center" ? 1 : 0.85,
       x: 0,
@@ -156,6 +158,7 @@ const cardVariants = {
     };
   },
   exit: ({ direction }: { direction: number }) => {
+    console.log("[v0] Card exiting with direction:", direction);
     return { 
       opacity: 0, 
       x: direction < 1 ? -400 : 400,
@@ -217,6 +220,7 @@ export function Homepage() {
   const visibleCards = [...featureCards, ...featureCards].slice(indexInArrayScope, indexInArrayScope + 3);
 
   const handleCardClick = (newDirection: number) => {
+    console.log("[v0] Card click triggered, direction:", newDirection, "currentIndex:", activeIndex);
     setActiveIndex((prev) => [prev[0] + newDirection, newDirection]);
   };
 
@@ -225,10 +229,14 @@ export function Homepage() {
     const velocity = info.velocity.x;
     const distance = info.offset.x;
 
+    console.log("[v0] Drag ended - velocity:", velocity, "distance:", distance);
+
     if (Math.abs(velocity) > swipeThreshold || Math.abs(distance) > swipeThreshold) {
       if (distance < 0 || velocity < 0) {
+        console.log("[v0] Swiping to next card");
         handleCardClick(1); // Swipe left, go to next
       } else {
+        console.log("[v0] Swiping to previous card");
         handleCardClick(-1); // Swipe right, go to prev
       }
     }
@@ -273,9 +281,10 @@ export function Homepage() {
           <motion.div 
             className="features-carousel-container"
             drag="x"
-            dragElastic={0.2}
-            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            dragConstraints={false}
             onDragEnd={handleDragEnd}
+            whileDrag={{ cursor: "grabbing" }}
           >
             <AnimatePresence mode="popLayout" initial={false}>
               {visibleCards.map((card_, idx) => {

@@ -1197,11 +1197,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
   text-align: center;
-  padding: 1.5rem 1.5rem 1.5rem;
+  padding: 2rem 1.5rem;
   overflow: visible;
   background: transparent;
   z-index: 1;
+}
+
+/* Text and buttons should be on the card */
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.feature-desc {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0.75rem 0 1rem;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-btn {
+  margin-top: auto;
 }
 
 /* Use pseudo-element for background so border-radius doesn't clip overflow */
