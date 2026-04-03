@@ -200,6 +200,24 @@ export function Homepage() {
               desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
               btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
             },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
+              title: "REWARDS",
+              desc: "EARN EXCLUSIVE BONUSES, CASH DROPS, AND VIP PERKS.",
+              btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT%20copy-2e0aQhNYvQfKpkRVWeX4IfDCqY199n.webp",
+              title: "POKER NIGHT",
+              desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE PERKS.",
+              btn: { label: "CHECK PROGRESS", href: "/auth/login", ext: false },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFaQXBqvCQNovVoLJSAgFECO.webp",
+              title: "WEEKLY RAFFLE",
+              desc: "WAGER FOR RAFFLE TICKETS AND WIN $250 EVERY FRIDAY.",
+              btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
+            },
           ] as const).map((card_, i) => (
             <article
               key={i}

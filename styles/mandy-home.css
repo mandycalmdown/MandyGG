@@ -212,7 +212,27 @@
   text-transform: uppercase;
 }
 
-/* Feature Cards - Original layout, size, colors, and animations */
+/* ================================================================
+   FEATURES SECTION — moved down with padding
+================================================================ */
+.features {
+  padding: 4rem 0 2rem;
+}
+
+/* Features grid — 3D carousel with semi-circle layout */
+.features-grid {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 420px;
+  perspective: 1200px;
+  overflow: visible;
+}
+
 .feature-card {
   display: flex;
   flex-direction: column;
@@ -220,13 +240,45 @@
   text-align: center;
   padding: 1.5rem 1.5rem 1.5rem;
   min-height: 280px;
+  width: 240px;
   overflow: visible;
   position: relative;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Center card (3rd) is largest and front */
+.features-grid > .feature-card:nth-child(3),
+.features-grid > .feature-card:nth-child(4) {
+  transform: translateY(0) scale(1.1) rotateY(0deg) rotateX(0deg);
+  z-index: 10;
+}
+
+/* Left cards curve away */
+.features-grid > .feature-card:nth-child(1) {
+  transform: translateX(60px) translateY(80px) scale(0.85) rotateY(35deg) rotateX(5deg);
+  z-index: 6;
+}
+
+.features-grid > .feature-card:nth-child(2) {
+  transform: translateX(20px) translateY(30px) scale(0.95) rotateY(15deg) rotateX(2deg);
+  z-index: 8;
+}
+
+/* Right cards curve away */
+.features-grid > .feature-card:nth-child(5) {
+  transform: translateX(-20px) translateY(30px) scale(0.95) rotateY(-15deg) rotateX(2deg);
+  z-index: 8;
+}
+
+.features-grid > .feature-card:nth-child(6) {
+  transform: translateX(-60px) translateY(80px) scale(0.85) rotateY(-35deg) rotateX(5deg);
+  z-index: 6;
 }
 
 .feature-card:hover {
@@ -245,13 +297,13 @@
 */
 .feature-icon-wrap {
   position: absolute;
-  top: -5rem;
+  top: -4rem;
   left: 50%;
   transform: translateX(-50%)
              translateX(var(--icon-x, 0px))
              translateY(var(--icon-y, 0px));
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   display: grid;
   place-items: center;
   pointer-events: none;
@@ -320,7 +372,7 @@
 ================================================================ */
 .updates-bg-wrap {
   position: relative;
-  padding: 3.5rem 0;
+  padding: 1.5rem 0;
   z-index: 0;
   overflow: hidden;
 }
@@ -879,15 +931,33 @@
 ================================================================ */
 @media (max-width: 960px) {
   .features-grid {
-    grid-template-columns: 1fr;
-    gap: 6rem;
-    max-width: 480px;
-    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 100%;
+    height: auto;
+    padding: 0 1rem;
+  }
+
+  .feature-card {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .features-grid > .feature-card:nth-child(1),
+  .features-grid > .feature-card:nth-child(2),
+  .features-grid > .feature-card:nth-child(3),
+  .features-grid > .feature-card:nth-child(4),
+  .features-grid > .feature-card:nth-child(5),
+  .features-grid > .feature-card:nth-child(6) {
+    transform: none;
+    z-index: 1;
   }
 
   .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
 
-  .updates-bg-wrap { padding: 2rem 0; }
+  .updates-bg-wrap { padding: 1.5rem 0; }
 
   .updates-section {
     grid-template-columns: 1fr;
