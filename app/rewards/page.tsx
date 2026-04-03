@@ -12,20 +12,18 @@ export const metadata: Metadata = {
     description: "Exclusive crypto casino bonuses and rewards for Mandy.gg community. Use code MANDY on Thrill.",
     type: "website",
     url: "https://www.mandy.gg/rewards",
-    images: [
-      {
-        url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Mandy.gg - More Perks, Less Regret",
-      },
-    ],
+    images: {
+      url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+      width: 1200,
+      height: 630,
+      alt: "Mandy.gg - More Perks, Less Regret",
+    },
   },
   twitter: {
     card: "summary_large_image",
     title: "Exclusive Rewards | Mandy.gg",
     description: "Unlock VIP perks and bonuses with code MANDY on Thrill Casino.",
-    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
+    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
   },
   alternates: {
     canonical: "https://www.mandy.gg/rewards",

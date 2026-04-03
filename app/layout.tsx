@@ -26,7 +26,6 @@ export const metadata = {
     "Use code MANDY on Thrill Casino for exclusive crypto casino bonuses, lossback rewards, and a $3500 weekly wager race leaderboard. The best Stake alternative.",
   keywords:
     "crypto casino bonus, Thrill casino code, best crypto casino, Stake alternative, casino lossback, wager race, MANDY code, crypto gambling bonus 2026",
-  authors: [{ name: "Mandy.gg" }],
   creator: "Mandy.gg",
   publisher: "Mandy.gg",
   robots: "index, follow",
@@ -36,21 +35,19 @@ export const metadata = {
     url: "https://www.mandy.gg",
     siteName: "Mandy.gg",
     type: "website",
-    images: [
-      {
-        url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Mandy.gg - More Perks, Less Regret",
-      },
-    ],
+    images: {
+      url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+      width: 1200,
+      height: 630,
+      alt: "Mandy.gg - More Perks, Less Regret",
+    },
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Mandy.gg | Crypto Casino Bonuses with Code MANDY",
     description: "Exclusive crypto casino perks, $3500 weekly wager race, and lossback rewards. Use code MANDY on Thrill.",
-    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
+    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
     creator: "@mandygg",
   },
   icons: {
