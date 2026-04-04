@@ -34,9 +34,19 @@ const BLOG_POSTS = [
   },
 ];
 
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4";
+
+/* ── Holo text mask: white letters + multiply-blend video ── */
+function HoloText() {
+  return (
+    <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+      <source src={HOLO_TEXT_SRC} type="video/mp4" />
+    </video>
+  );
+}
 
 /* ── Holo button: video fills button background ── */
 function HoloButton({
@@ -162,6 +172,7 @@ export function Homepage() {
           onMouseLeave={holo.onLeave}
         >
           <h1 id="hero-title" className="holo-mask__letters mandy-logo-size">MANDY.GG</h1>
+          <HoloText />
           <span className="holo-sheen" aria-hidden="true" />
         </div>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
@@ -193,6 +204,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters updates-title-size">UPDATES</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
 
@@ -238,6 +250,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters blog-title-size">GAMBLING GOSSIP</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>
@@ -277,6 +290,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters faq-title-size">F.A.Q.</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>

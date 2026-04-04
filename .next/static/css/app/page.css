@@ -1184,42 +1184,43 @@
   align-items: center;
   gap: 2.5rem;
   width: 100%;
-  overflow: hidden;   /* clip partially-visible side cards */
-  padding: 3rem 0 1rem;
+  /* overflow hidden clips side cards but must allow icon overflow at top */
+  overflow: hidden;
+  /* extra top padding creates space for floating images above cards */
+  padding: 7rem 0 1rem;
 }
 
 /* Stage holds all cards absolutely positioned relative to center */
 .fc-stage {
   position: relative;
   width: 100%;
-  height: 380px;           /* tall enough for card + floating image */
+  /* tall enough for card content + floating image sticking above */
+  height: 420px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;  /* anchor cards to bottom so icons float up freely */
   justify-content: center;
   cursor: grab;
   user-select: none;
   touch-action: pan-y;
+  overflow: visible;       /* let icons bleed above the stage */
 }
 
 .fc-stage:active { cursor: grabbing; }
 
-/* Each carousel card is absolutely centered then transformed via JS style */
+/* Each carousel card: identical base size — scale via inline JS for center pop */
 .fc-card {
   position: absolute;
+  bottom: 0;               /* anchor to bottom of stage */
   width: 290px;
-  min-height: 300px;
-  transform-origin: center center;
+  min-height: 310px;
+  transform-origin: bottom center; /* scale grows upward from bottom edge */
   will-change: transform, opacity;
-  /* override feature-card hover lift so carousel handles motion */
 }
 
-.fc-card:hover {
-  transform: none !important; /* carousel controls transform, not hover */
-}
-
-/* Floating icon position within carousel */
+/* Floating icon sits above the card top — never clipped */
 .fc-icon-wrap {
-  top: -4.5rem !important;
+  top: -6rem !important;   /* pull image well above card top edge */
+  overflow: visible !important;
 }
 
 /* Arrow row */
@@ -1264,8 +1265,12 @@
    RESPONSIVE — TABLET / MOBILE
 ================================================================ */
 @media (max-width: 960px) {
+  .fc-wrapper {
+    padding-top: 6rem;
+  }
+
   .fc-stage {
-    height: 340px;
+    height: 380px;
   }
 
   .fc-card {

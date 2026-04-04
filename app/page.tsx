@@ -41,12 +41,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://mandy.gg",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   other: {
     "theme-color": "#5cfec0",
     "msapplication-TileColor": "#000000",
