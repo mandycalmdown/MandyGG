@@ -1,15 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { SiteNavigation } from "@/components/site-navigation";
 import { faqItems } from "@/components/homepage-faq-data";
 import "@/styles/mandy-home.css";
-
-const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
-const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4";
-const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
-const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
 const BLOG_POSTS = [
   {
@@ -38,122 +33,19 @@ const BLOG_POSTS = [
   },
 ];
 
-const FEATURE_CARDS = [
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
-    title: "THRILL",
-    desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
-    btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
-    title: "$3500 WEEKLY RACE",
-    desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
-    btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
-    title: "DEGEN DASHBOARD",
-    desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
-    btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
-    title: "REWARDS",
-    desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
-    btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKER_CHIP_MANDYGG-fIvqIhEVsgRxMiDWG7fM6VkuB83oMD.webp",
-    title: "POKER NIGHT",
-    desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE EVENTS.",
-    btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFbCQNovVoLJSAgFECO.webp",
-    title: "WEEKLY RAFFLE",
-    desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
-    btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
-  },
-] as const;
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
+const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
+const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4";
 
-/* ── Feature Carousel with center-scaling animation ── */
-function FeatureCarousel({ card }: { card: ReturnType<typeof useCardHandlers> }) {
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(1); // Start at second card (middle of 6 cards when tripled)
-
-  // Handle carousel scrolling with center-scaling
-  const handleScroll = () => {
-    if (!carouselRef.current) return;
-    const carousel = carouselRef.current;
-    const cardWidth = carousel.querySelector(".carousel-card")?.clientWidth ?? 0;
-    const gap = 32; // 2rem gap
-    const centerPosition = (carousel.scrollLeft + carousel.offsetWidth / 2) / (cardWidth + gap);
-    setActiveIndex(Math.round(centerPosition) % FEATURE_CARDS.length);
-  };
-
-  const scroll = (direction: "left" | "right") => {
-    if (!carouselRef.current) return;
-    const cardWidth = carouselRef.current.querySelector(".carousel-card")?.clientWidth ?? 0;
-    const gap = 32;
-    const distance = cardWidth + gap;
-    carouselRef.current.scrollBy({
-      left: direction === "left" ? -distance : distance,
-      behavior: "smooth",
-    });
-  };
-
-  // Create infinite loop by duplicating cards 3 times
-  const allCards = [...FEATURE_CARDS, ...FEATURE_CARDS, ...FEATURE_CARDS];
-
+/* ── Holo text mask: white letters + multiply-blend video ── */
+function HoloText() {
   return (
-    <div className="feature-carousel-wrapper">
-      <div className="feature-carousel" ref={carouselRef} onScroll={handleScroll}>
-        {allCards.map((card_, i) => (
-          <article
-            key={i}
-            className="carousel-card feature-card mandy-card"
-            data-index={i % FEATURE_CARDS.length}
-            onMouseMove={card.onMove}
-            onMouseLeave={card.onLeave}
-          >
-            <span className="card-gloss" aria-hidden="true" />
-            <span className="feature-icon-wrap" aria-hidden="true">
-              <img src={card_.img} alt="" className="feature-icon" />
-            </span>
-            <h2 className="feature-title">{card_.title}</h2>
-            <p className="feature-desc">{card_.desc}</p>
-            <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
-              {card_.btn.label}
-            </HoloButton>
-          </article>
-        ))}
-      </div>
-
-      {/* Navigation arrows */}
-      <div className="carousel-arrows">
-        <button
-          type="button"
-          className="arrow-btn arrow-btn--left"
-          onClick={() => scroll("left")}
-          aria-label="Previous cards"
-        >
-          <span className="arrow-chevron arrow-chevron--left" aria-hidden="true">‹</span>
-        </button>
-        <button
-          type="button"
-          className="arrow-btn arrow-btn--right"
-          onClick={() => scroll("right")}
-          aria-label="Next cards"
-        >
-          <span className="arrow-chevron arrow-chevron--right" aria-hidden="true">›</span>
-        </button>
-      </div>
-    </div>
+    <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+      <source src={HOLO_TEXT_SRC} type="video/mp4" />
+    </video>
   );
 }
-
-
 
 /* ── Holo button: video fills button background ── */
 function HoloButton({
@@ -279,14 +171,57 @@ export function Homepage() {
           onMouseLeave={holo.onLeave}
         >
           <h1 id="hero-title" className="holo-mask__letters mandy-logo-size">MANDY.GG</h1>
+          <HoloText />
           <span className="holo-sheen" aria-hidden="true" />
         </div>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
-      {/* ── Feature Cards Carousel ── */}
+      {/* ── Feature Cards ── */}
       <section className="features" aria-label="Main features">
-        <FeatureCarousel card={card} />
+        <div className="features-grid">
+
+          {([ 
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
+              title: "THRILL",
+              desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
+              btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
+              title: "$3500 WEEKLY RACE",
+              desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
+              btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
+              title: "DEGEN DASHBOARD",
+              desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
+              btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
+            },
+          ] as const).map((card_, i) => (
+            <article
+              key={i}
+              className="feature-card mandy-card"
+              onMouseMove={card.onMove}
+              onMouseLeave={card.onLeave}
+            >
+              {/* Gloss only on the card surface — pointer-events:none, z-index above bg, below text */}
+              <span className="card-gloss" aria-hidden="true" />
+              {/* Icon floats above card top, behind text */}
+              <span className="feature-icon-wrap" aria-hidden="true">
+                <img src={card_.img} alt="" className="feature-icon" />
+              </span>
+              <h2 className="feature-title">{card_.title}</h2>
+              <p className="feature-desc">{card_.desc}</p>
+              <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
+                {card_.btn.label}
+              </HoloButton>
+            </article>
+          ))}
+
+        </div>
       </section>
 
       {/* ── Updates — holo video background, cards float on top ── */}
@@ -310,6 +245,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters updates-title-size">UPDATES</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
 
@@ -355,6 +291,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters blog-title-size">GAMBLING GOSSIP</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>
@@ -394,6 +331,7 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters faq-title-size">F.A.Q.</span>
+            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>
