@@ -42,7 +42,6 @@ export const metadata: Metadata = {
     canonical: "https://mandy.gg",
   },
   other: {
-    "theme-color": "#5cfec0",
     "msapplication-TileColor": "#000000",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",

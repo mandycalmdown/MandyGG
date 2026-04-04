@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
-  <defs>
-    <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <path
-    d="M 250 50 L 350 200 L 350 400 L 250 450 L 150 400 L 150 200 Z M 200 180 L 200 350 L 250 380 L 300 350 L 300 180 L 250 150 Z"
-    fill="url(#yellowGradient)"
-  />
-  <text x="250" y="300" font-family="Arial Black, sans-serif" font-size="200" font-weight="bold" fill="#000" text-anchor="middle" dominant-baseline="middle">
-    M
-  </text>
-</svg>
+Non-image binary files cannot be read directly. It is available at the following URL: https://v0chat-agent-data-prod.s3.us-east-1.amazonaws.com/vm-binary/TFhXL6Wgkac/520cb66bacfc2db43845912d571aba3bce6965305173ade36b0964ae563fd21d.ico?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA52KF4VHQDTZ5RDMT%2F20260404%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260404T234458Z&X-Amz-Expires=3600&X-Amz-Signature=540fa5ad122a8d34f0673df3fd9a9432f8402826d1e2a4b7773d354ba4ca138d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
