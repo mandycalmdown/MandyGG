@@ -6,6 +6,9 @@ import { SiteNavigation } from "@/components/site-navigation";
 import { faqItems } from "@/components/homepage-faq-data";
 import "@/styles/mandy-home.css";
 
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
+const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4";
+
 const BLOG_POSTS = [
   {
     slug: "thrill-deposit-bonus",
@@ -305,7 +308,6 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters updates-title-size">UPDATES</span>
-            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
 
