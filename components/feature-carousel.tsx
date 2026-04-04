@@ -6,6 +6,12 @@ import Link from "next/link";
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
+// Card dimensions — square cards
+const CARD_W = 270;   // px
+const CARD_H = 270;   // px — same as width = square
+const CARD_GAP = 24;  // px — equal spacing between every card
+const STEP = CARD_W + CARD_GAP;  // total slot width
+
 const CARDS = [
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
@@ -38,7 +44,7 @@ const CARDS = [
     btn: { label: "OPEN DASHBOARD", href: "/auth/login", ext: false },
   },
   {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFbCQNovVoLJSAgFECO.webp",
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-2riBeZGxolnq3wp0udz3lpqmAgcL6L.webp",
     title: "WEEKLY RAFFLE",
     desc: "WAGER TO EARN TICKETS. $250 WINNER DRAWN EVERY FRIDAY.",
     btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
@@ -61,36 +67,38 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
   return <Link href={href} className="holo-button card-btn">{inner}</Link>;
 }
 
-/* Returns the scale / opacity / z-index for a card at `offset` slots from center */
-function getCardStyle(offset: number): React.CSSProperties {
+// Compute pixel translateX and scale for a card at `offset` slots from center
+function getCardStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
   const abs = Math.abs(offset);
-  const scale   = abs === 0 ? 1 : abs === 1 ? 0.84 : 0.70;
-  const opacity = abs === 0 ? 1 : abs === 1 ? 0.80 : 0.55;
+  // Center card is 18% larger — non-center cards are all identical base size
+  const scale   = abs === 0 ? 1.18 : 1;
+  const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
   const zIndex  = abs === 0 ? 10 : abs === 1 ? 6 : 3;
-  const tx      = offset * 96; // % offset so side cards peek out
+  // Fixed pixel spacing keeps equal gap between every card regardless of scale
+  const tx = offset * STEP + dragOffset;
   return {
-    transform: `translateX(${tx}%) scale(${scale})`,
+    width:  `${CARD_W}px`,
+    height: `${CARD_W}px`,  // square: same as width
+    transform: `translateX(${tx}px) scale(${scale})`,
     opacity,
     zIndex,
-    transition: "transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.55s cubic-bezier(0.25,0.46,0.45,0.94)",
+    transition: dragOffset !== 0
+      ? "none"
+      : "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94)",
   };
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent] = useState(1); // start on Weekly Race (index 1)
-  const [dragging, setDragging] = useState(false);
-  const dragStart = useRef<number>(0);
-  const dragDelta = useRef<number>(0);
-  const reduceMotion = useRef(false);
-
-  useEffect(() => {
-    reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }, []);
+  const [current, setCurrent] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const isDragging = useRef(false);
+  const dragStart = useRef(0);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   const prev = useCallback(() => setCurrent(c => (c - 1 + TOTAL) % TOTAL), []);
   const next = useCallback(() => setCurrent(c => (c + 1) % TOTAL), []);
 
-  // Keyboard support
+  // Keyboard
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft")  prev();
@@ -100,52 +108,56 @@ export function FeatureCarousel() {
     return () => window.removeEventListener("keydown", handler);
   }, [prev, next]);
 
-  // Touch / pointer drag
+  // Pointer (mouse + touch via pointer events)
   const onPointerDown = (e: React.PointerEvent) => {
-    setDragging(true);
-    dragStart.current = e.clientX;
-    dragDelta.current = 0;
+    isDragging.current = true;
+    dragStart.current  = e.clientX;
+    setDragOffset(0);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
+
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging) return;
-    dragDelta.current = e.clientX - dragStart.current;
-  };
-  const onPointerUp = () => {
-    if (!dragging) return;
-    setDragging(false);
-    if (dragDelta.current < -50) next();
-    else if (dragDelta.current > 50) prev();
-    dragDelta.current = 0;
+    if (!isDragging.current) return;
+    const delta = e.clientX - dragStart.current;
+    setDragOffset(delta);
   };
 
-  // Build visible slot offsets: show center ±2
+  const onPointerUp = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    if (dragOffset < -60) next();
+    else if (dragOffset > 60) prev();
+    setDragOffset(0);
+  };
+
+  // Show center ±2 slots (5 cards visible, edges partially clipped)
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
   return (
     <div className="fc-wrapper">
-      {/* Carousel stage */}
       <div
+        ref={stageRef}
         className="fc-stage"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        aria-label="Feature cards carousel"
         role="region"
+        aria-label="Feature cards carousel"
       >
         {visibleOffsets.map((offset) => {
           const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
           const c = CARDS[idx];
-          const style = getCardStyle(offset);
+          const style = getCardStyle(offset, isDragging.current ? dragOffset : 0);
           return (
             <article
-              key={idx + "-" + offset}
+              key={`${idx}-${offset}`}
               className="fc-card feature-card mandy-card"
               style={style}
               aria-hidden={offset !== 0}
             >
               <span className="card-gloss" aria-hidden="true" />
+              {/* Icon overhangs top of card */}
               <span className="feature-icon-wrap fc-icon-wrap" aria-hidden="true">
                 <img src={c.img} alt="" className="feature-icon" />
               </span>
@@ -159,24 +171,14 @@ export function FeatureCarousel() {
         })}
       </div>
 
-      {/* Arrows */}
+      {/* Navigation arrows */}
       <div className="fc-arrows">
-        <button
-          type="button"
-          className="fc-arrow-btn"
-          onClick={prev}
-          aria-label="Previous feature card"
-        >
+        <button type="button" className="fc-arrow-btn" onClick={prev} aria-label="Previous feature card">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M11 14L6 9L11 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <button
-          type="button"
-          className="fc-arrow-btn"
-          onClick={next}
-          aria-label="Next feature card"
-        >
+        <button type="button" className="fc-arrow-btn" onClick={next} aria-label="Next feature card">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             <path d="M7 4L12 9L7 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

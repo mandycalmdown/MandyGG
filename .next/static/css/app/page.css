@@ -406,25 +406,26 @@
   text-transform: uppercase;
   min-width: 148px;
   transition: transform 0.14s ease, box-shadow 0.14s ease;
-  /* Thin lime stroke around button */
-  box-shadow: 0 0 0 0.4px var(--m-stroke);
+  /* No box-shadow stroke — it creates visible black edge artifacts */
+  box-shadow: none;
+  /* Clip video precisely to rounded corners */
+  isolation: isolate;
 }
 
 .holo-button:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 0 0 0.4px var(--m-stroke),
-    0 6px 22px rgba(104,89,213,0.4);
+  box-shadow: 0 6px 22px rgba(104,89,213,0.4);
 }
 
 .holo-btn__video {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -1px;      /* extend 1px beyond edges to hide any sub-pixel gap */
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
   object-fit: cover;
   pointer-events: none;
   z-index: 0;
+  border-radius: inherit;
 }
 
 .holo-btn__label {
@@ -432,7 +433,6 @@
   z-index: 1;
   color: #000000;
   font-weight: 800;
-  text-shadow: 0 0 0.3px var(--m-stroke);
 }
 
 /* ================================================================
@@ -574,10 +574,10 @@
 .feature-title {
   margin-top: 5rem;
   font-weight: 800;
-  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
   letter-spacing: 0.02em;
-  color: #ffffff;
-  margin-bottom: 0.75rem;
+  color: var(--m-lime);
+  margin-bottom: 0.5rem;
 }
 
 @keyframes limeShift {
@@ -1170,7 +1170,7 @@
 
 /* Features section — desktop spacing */
 .features {
-  padding-top: 9rem;
+  padding-top: 2rem;
   background: var(--m-bg);
   padding-bottom: 3rem;
 }
@@ -1182,45 +1182,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
   width: 100%;
-  /* overflow hidden clips side cards but must allow icon overflow at top */
-  overflow: hidden;
-  /* extra top padding creates space for floating images above cards */
-  padding: 7rem 0 1rem;
+  overflow: hidden;          /* clips partially-visible edge cards horizontally */
+  /* Top padding = image overhang height so icons are never clipped */
+  padding: 9rem 0 1rem;
 }
 
-/* Stage holds all cards absolutely positioned relative to center */
+/* Stage: all cards sit here, centered on the viewport */
 .fc-stage {
   position: relative;
   width: 100%;
-  /* tall enough for card content + floating image sticking above */
-  height: 420px;
+  /*
+    Height = card square height (270px) + extra for center card scale (×1.18 = ~319px)
+    We align cards by their bottom edge so they grow upward
+  */
+  height: 320px;
   display: flex;
-  align-items: flex-end;  /* anchor cards to bottom so icons float up freely */
+  align-items: flex-end;
   justify-content: center;
   cursor: grab;
   user-select: none;
   touch-action: pan-y;
-  overflow: visible;       /* let icons bleed above the stage */
+  overflow: visible;         /* icons bleed above without clipping */
 }
 
 .fc-stage:active { cursor: grabbing; }
 
-/* Each carousel card: identical base size — scale via inline JS for center pop */
+/* Cards: square, absolutely centered in the stage, transform via JS */
 .fc-card {
   position: absolute;
-  bottom: 0;               /* anchor to bottom of stage */
-  width: 290px;
-  min-height: 310px;
-  transform-origin: bottom center; /* scale grows upward from bottom edge */
+  bottom: 0;                 /* all cards anchor to same bottom edge */
+  transform-origin: bottom center;
   will-change: transform, opacity;
+  /* width/height set by inline JS style (270×270) */
+  min-height: unset !important;
 }
 
-/* Floating icon sits above the card top — never clipped */
+/* Icon overhangs: image is 200px tall, we want 75% (150px) inside card
+   and 25% (50px) + extra above. top = -(200px * 0.75) = -150px from card top,
+   but icon-wrap is 200px tall so top = -(200 - card_img_inside) = use -5.5rem */
 .fc-icon-wrap {
-  top: -6rem !important;   /* pull image well above card top edge */
+  top: -5.5rem !important;
   overflow: visible !important;
+  z-index: 3 !important;
 }
 
 /* Arrow row */
@@ -1246,7 +1251,8 @@
 
 .fc-arrow-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: var(--m-lime);
+  color: var(--m-lime);
   transform: scale(1.1);
 }
 
@@ -1266,15 +1272,11 @@
 ================================================================ */
 @media (max-width: 960px) {
   .fc-wrapper {
-    padding-top: 6rem;
+    padding-top: 7rem;
   }
 
   .fc-stage {
-    height: 380px;
-  }
-
-  .fc-card {
-    width: 240px;
+    height: 280px;
   }
 }
 
