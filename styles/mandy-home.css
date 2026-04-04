@@ -245,7 +245,7 @@
 */
 .feature-icon-wrap {
   position: absolute;
-  top: -4rem;
+  top: -5rem;
   left: 50%;
   transform: translateX(-50%)
              translateX(var(--icon-x, 0px))
@@ -257,7 +257,6 @@
   pointer-events: none;
   z-index: 0;
   transition: transform 0.12s ease-out;
-  overflow: visible;
 }
 
 .feature-icon {
@@ -266,11 +265,6 @@
   object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0,0,0,0.65));
   animation: floatIcon 4s ease-in-out infinite;
-}
-
-/* Reduce poker chip (5th card) by 25% */
-.features-grid > article:nth-child(5) .feature-icon {
-  transform: scale(0.75);
 }
 
 .features-grid > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
@@ -326,7 +320,7 @@
 ================================================================ */
 .updates-bg-wrap {
   position: relative;
-  padding: 1.5rem 0;
+  padding: 3.5rem 0;
   z-index: 0;
   overflow: hidden;
 }
@@ -870,210 +864,31 @@
 }
 .footer-legal a:hover { opacity: 0.65; }
 
-/* Features section — with carousel wrapper */
-.features {
-  padding: 4rem 0 2rem 0;
-  background: var(--m-bg);
-  overflow: visible;
-}
-
-.features-carousel-wrap {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: visible;
-}
-
-/* Features carousel container — Framer Motion layout with absolute positioning */
-.features-carousel-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 380px;
-  position: relative;
-  overflow: visible;
-  padding: 0 1.5rem 3rem 1.5rem;
-  cursor: grab;
-}
-
-.features-carousel-container:active {
-  cursor: grabbing;
-}
-
-.feature-card {
-  position: absolute;
-  width: 300px;
-  height: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  text-align: center;
-  padding: 2rem 1.5rem;
-  overflow: visible;
-  background: transparent;
-  z-index: 1;
-}
-
-/* Text and buttons should be on the card */
-.feature-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin: 0.5rem 0;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.feature-desc {
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0.75rem 0 1rem;
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-btn {
-  margin-top: auto;
-}
-
-/* Use pseudo-element for background so border-radius doesn't clip overflow */
-.feature-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  z-index: -1;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.feature-card:hover::before {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
-}
-
-/* All text/button content must be z-index 2 — above the background */
-.feature-card > .feature-title,
-.feature-card > .feature-desc,
-.feature-card > .holo-button,
-.feature-card > .card-btn,
-.feature-card > .feature-icon-wrap {
-  position: relative;
-  z-index: 2;
-}
-
-/* Reduce poker chip (5th card) by 25% */
-.features-carousel-container > article:nth-child(5) .feature-icon {
-  transform: scale(0.75);
-}
-
-.features-carousel-container > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
-.features-carousel-container > article:nth-child(3) .feature-icon { animation-delay: -2.8s; }
-
-.features-carousel-wrap {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: visible;
-}
-
-/* Features grid — center-focused carousel with snap-to-center */
+/* Features grid — 3 columns on desktop */
 .features-grid {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  padding: 0 calc((100vw - 340px) / 2 - 1.5rem) 3rem;
-  width: 100vw;
-  margin: 0 calc(-50vw + 50%);
-  scroll-snap-type: x mandatory;
-  scroll-snap-stop: always;
-  scroll-padding-inline: calc((100vw - 340px) / 2);
-  /* Hide scrollbar */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.features-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.feature-card {
-  flex: 0 0 320px;
-  min-width: 320px;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-  transition: transform 0.3s ease, filter 0.3s ease;
-  /* Allow images and content to overflow the card */
-  overflow: visible;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 1.5rem 1.5rem 1.5rem;
-  min-height: 280px;
-  background: transparent;
-  z-index: 1;
-}
-
-/* Use pseudo-element for background so border-radius doesn't clip overflow */
-.feature-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  z-index: -1;
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.feature-card:hover::before {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
-}
-
-/* Scale outer cards smaller, center card larger */
-.feature-card {
-  transform: scale(0.95);
-}
-
-.features-grid > .feature-card:nth-child(3) {
-  transform: scale(1.08);
-  z-index: 10;
-}
-
-/* Features carousel arrows */
-.features-arrows {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding-bottom: 1rem;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
 /* ================================================================
    RESPONSIVE — TABLET (≤960px)
 ================================================================ */
 @media (max-width: 960px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 6rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  .updates-bg-wrap { padding: 2rem 0; }
+
   .updates-section {
     grid-template-columns: 1fr;
     gap: 0.85rem;

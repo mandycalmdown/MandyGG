@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
 import { SiteNavigation } from "@/components/site-navigation";
 import { faqItems } from "@/components/homepage-faq-data";
 import "@/styles/mandy-home.css";
@@ -137,102 +136,13 @@ function useHoloHandlers() {
   return { onMove, onLeave };
 }
 
-/* ── Framer Motion card animation variants ── */
-const cardVariants = {
-  enter: ({ direction }: { direction: number }) => {
-    console.log("[v0] Card entering with direction:", direction);
-    return { 
-      opacity: 0, 
-      x: direction < 1 ? 400 : -400,
-      scale: 0.5,
-    };
-  },
-  center: ({ position }: { position: () => string }) => {
-    const pos = position();
-    console.log("[v0] Card at position:", pos);
-    return {
-      scale: pos === "center" ? 1 : 0.85,
-      x: 0,
-      opacity: 1,
-      zIndex: pos === "center" ? 20 : pos === "left" ? 1 : 1,
-    };
-  },
-  exit: ({ direction }: { direction: number }) => {
-    console.log("[v0] Card exiting with direction:", direction);
-    return { 
-      opacity: 0, 
-      x: direction < 1 ? -400 : 400,
-      scale: 0.5,
-    };
-  },
-};
-
 export function Homepage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const feedRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+
   const logoRef = useRef<HTMLDivElement>(null);
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
-
-  // Feature cards data — ordered with Weekly Race in center
-  const featureCards = [
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
-      title: "REWARDS",
-      desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASH REWARDS FOR LOYAL PLAYERS.",
-      btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
-    },
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
-      title: "THRILL",
-      desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
-      btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
-    },
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
-      title: "$3500 WEEKLY RACE",
-      desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
-      btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
-    },
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
-      title: "DEGEN DASHBOARD",
-      desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
-      btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
-    },
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKERCHIP__FLOATING_ELEMENT%20copy-2e0aQhNYvQfKpkRVWeX4IfDCqY199n.webp",
-      title: "POKER NIGHT",
-      desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY FOR EXCLUSIVE EVENTS.",
-      btn: { label: "DEGEN DASHBOARD", href: "/auth/login", ext: false },
-    },
-    {
-      img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-SF5pASQFbCQNovVoLJSAgFECO.webp",
-      title: "WEEKLY RAFFLE",
-      desc: "EARN TICKETS EVERY $500 WAGERED. $250 WINNER DRAWN EVERY FRIDAY.",
-      btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
-    },
-  ] as const;
-
-  // Initialize scroll position on mount to center the Weekly Race card
-  useEffect(() => {
-    if (cardsRef.current) {
-      // Weekly Race is at index 2, card width is roughly 1/3.5 of container
-      const container = cardsRef.current;
-      setTimeout(() => {
-        const cardWidth = container.offsetWidth / 3.5;
-        const scrollPosition = cardWidth * (2 - 0.5); // Index 2, offset by half card for center
-        container.scrollLeft = Math.max(0, scrollPosition - (container.offsetWidth / 2) + (cardWidth / 2));
-      }, 100);
-    }
-  }, []);
-
-  const scrollCards = (dir: "left" | "right") => {
-    if (!cardsRef.current) return;
-    const cardWidth = cardsRef.current.offsetWidth / 3.5;
-    cardsRef.current.scrollBy({ left: dir === "left" ? -(cardWidth + 2) : (cardWidth + 2), behavior: "smooth" });
-  };
 
   const scrollFeed = (dir: "left" | "right") => {
     if (!feedRef.current) return;
@@ -267,50 +177,50 @@ export function Homepage() {
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
       </section>
 
-      {/* ── Feature Cards Carousel ── */}
+      {/* ── Feature Cards ── */}
       <section className="features" aria-label="Main features">
-        <div className="features-carousel-wrap">
-          <div className="features-grid" ref={cardsRef}>
-            {/* Infinite loop: duplicate all cards twice */}
-            {[...featureCards, ...featureCards, ...featureCards].map((card_, i) => (
-              <article
-                key={i}
-                className="feature-card mandy-card"
-                onMouseMove={card.onMove}
-                onMouseLeave={card.onLeave}
-              >
-                <span className="card-gloss" aria-hidden="true" />
-                <span className="feature-icon-wrap" aria-hidden="true">
-                  <img src={card_.img} alt="" className="feature-icon" />
-                </span>
-                <h2 className="feature-title">{card_.title}</h2>
-                <p className="feature-desc">{card_.desc}</p>
-                <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
-                  {card_.btn.label}
-                </HoloButton>
-              </article>
-            ))}
-          </div>
-          
-          {/* Navigation arrows */}
-          <div className="features-arrows" aria-label="Features carousel navigation">
-            <button 
-              type="button" 
-              className="arrow-btn" 
-              onClick={() => scrollCards("left")}
-              aria-label="Previous features"
+        <div className="features-grid">
+
+          {([ 
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
+              title: "THRILL",
+              desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
+              btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
+              title: "$3500 WEEKLY RACE",
+              desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
+              btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+            },
+            {
+              img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
+              title: "DEGEN DASHBOARD",
+              desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
+              btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
+            },
+          ] as const).map((card_, i) => (
+            <article
+              key={i}
+              className="feature-card mandy-card"
+              onMouseMove={card.onMove}
+              onMouseLeave={card.onLeave}
             >
-              <span className="arrow-btn__chevron arrow-btn__chevron--left" aria-hidden="true" />
-            </button>
-            <button 
-              type="button" 
-              className="arrow-btn" 
-              onClick={() => scrollCards("right")}
-              aria-label="Next features"
-            >
-              <span className="arrow-btn__chevron arrow-btn__chevron--right" aria-hidden="true" />
-            </button>
-          </div>
+              {/* Gloss only on the card surface — pointer-events:none, z-index above bg, below text */}
+              <span className="card-gloss" aria-hidden="true" />
+              {/* Icon floats above card top, behind text */}
+              <span className="feature-icon-wrap" aria-hidden="true">
+                <img src={card_.img} alt="" className="feature-icon" />
+              </span>
+              <h2 className="feature-title">{card_.title}</h2>
+              <p className="feature-desc">{card_.desc}</p>
+              <HoloButton href={card_.btn.href} external={card_.btn.ext} className="card-btn">
+                {card_.btn.label}
+              </HoloButton>
+            </article>
+          ))}
+
         </div>
       </section>
 
