@@ -274,7 +274,6 @@ export function Homepage() {
           onMouseLeave={holo.onLeave}
         >
           <h1 id="hero-title" className="holo-mask__letters mandy-logo-size">MANDY.GG</h1>
-          <HoloText />
           <span className="holo-sheen" aria-hidden="true" />
         </div>
         <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
