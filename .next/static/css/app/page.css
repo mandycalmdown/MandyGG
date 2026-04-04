@@ -1172,16 +1172,105 @@
 .features {
   padding-top: 9rem;
   background: var(--m-bg);
+  padding-bottom: 3rem;
 }
 
-/* Features grid — 3 columns on desktop */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 1.5rem 3rem 1.5rem;
+/* ================================================================
+   FEATURE CAROUSEL
+================================================================ */
+.fc-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+  overflow: hidden;   /* clip partially-visible side cards */
+  padding: 3rem 0 1rem;
+}
+
+/* Stage holds all cards absolutely positioned relative to center */
+.fc-stage {
+  position: relative;
+  width: 100%;
+  height: 380px;           /* tall enough for card + floating image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.fc-stage:active { cursor: grabbing; }
+
+/* Each carousel card is absolutely centered then transformed via JS style */
+.fc-card {
+  position: absolute;
+  width: 290px;
+  min-height: 300px;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  /* override feature-card hover lift so carousel handles motion */
+}
+
+.fc-card:hover {
+  transform: none !important; /* carousel controls transform, not hover */
+}
+
+/* Floating icon position within carousel */
+.fc-icon-wrap {
+  top: -4.5rem !important;
+}
+
+/* Arrow row */
+.fc-arrows {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.fc-arrow-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.fc-arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
+}
+
+.fc-arrow-btn:active {
+  transform: scale(0.94);
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .fc-card {
+    transition: none !important;
+  }
+}
+
+/* ================================================================
+   RESPONSIVE — TABLET / MOBILE
+================================================================ */
+@media (max-width: 960px) {
+  .fc-stage {
+    height: 340px;
+  }
+
+  .fc-card {
+    width: 240px;
+  }
 }
 
 /* ================================================================
