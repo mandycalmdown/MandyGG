@@ -245,7 +245,7 @@
 */
 .feature-icon-wrap {
   position: absolute;
-  top: -3rem;
+  top: -0.5rem;
   left: 50%;
   transform: translateX(-50%)
              translateX(var(--icon-x, 0px))
