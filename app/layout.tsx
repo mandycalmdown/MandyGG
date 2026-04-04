@@ -1,4 +1,5 @@
 import type React from "react"
+import type { Viewport } from "next"
 import { JetBrains_Mono, Poppins } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
@@ -16,6 +17,14 @@ const poppins = Poppins({
   variable: "--font-poppins",
   weight: ["300", "400", "500", "600", "700"],
 })
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000",
+}
 
 export const metadata = {
   title: {
