@@ -887,25 +887,113 @@
   background: var(--m-bg);
 }
 
-/* Features grid — 3 columns on desktop */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* Feature Carousel Container */
+.feature-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 1.5rem 3rem 1.5rem;
+}
+
+.feature-carousel {
+  display: flex;
+  gap: 2rem;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1.5rem;
+  max-width: 100%;
+  scroll-snap-type: x mandatory;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.feature-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  flex: 0 0 320px;
+  scroll-snap-align: center;
+  transition: transform 0.3s ease;
+  transform: scale(var(--card-scale, 0.85));
+}
+
+/* Center card gets full scale */
+.carousel-card[data-index="1"] {
+  --card-scale: 1;
+}
+
+/* Adjacent cards get 90% scale */
+.carousel-card[data-index="0"],
+.carousel-card[data-index="2"] {
+  --card-scale: 0.92;
+}
+
+/* Far cards get 80% scale */
+.carousel-card[data-index="3"],
+.carousel-card[data-index="5"] {
+  --card-scale: 0.82;
+}
+
+/* Carousel navigation arrows */
+.carousel-arrows {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0 1.5rem;
+}
+
+.arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arrow-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.arrow-btn:active {
+  transform: scale(0.95);
+}
+
+.arrow-chevron {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
 }
 
 /* ================================================================
    RESPONSIVE — TABLET (≤960px)
 ================================================================ */
 @media (max-width: 960px) {
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 6rem;
-    max-width: 480px;
-    margin: 0 auto;
+  .carousel-card {
+    flex: 0 0 280px;
+  }
+
+  .carousel-arrows {
+    gap: 1.5rem;
+  }
+
+  .arrow-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .arrow-chevron {
+    font-size: 1.2rem;
   }
 
   .blog-grid { grid-template-columns: 1fr; gap: 1rem; }
