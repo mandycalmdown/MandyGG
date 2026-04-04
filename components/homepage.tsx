@@ -353,7 +353,6 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters blog-title-size">GAMBLING GOSSIP</span>
-            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>
@@ -393,7 +392,6 @@ export function Homepage() {
             onMouseLeave={holo.onLeave}
           >
             <span className="holo-mask__letters faq-title-size">F.A.Q.</span>
-            <HoloText />
             <span className="holo-sheen" aria-hidden="true" />
           </div>
         </div>
