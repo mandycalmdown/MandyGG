@@ -531,16 +531,33 @@
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 1.4rem;
+  padding: 0;
   text-decoration: none;
   color: var(--m-white);
   overflow: hidden;
   transition: transform 0.12s ease-out;
 }
 
-.blog-card > *:not(.card-gloss) {
+.blog-image-placeholder {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, rgba(100, 200, 255, 0.1) 0%, rgba(150, 100, 255, 0.1) 100%);
+  border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: rgba(100, 200, 255, 0.4);
+}
+
+.blog-card > *:not(.card-gloss):not(.blog-image-placeholder) {
   position: relative;
   z-index: 2;
+  padding: 0 1.4rem;
+}
+
+.blog-card > *:last-child:not(.card-gloss):not(.blog-image-placeholder) {
+  padding-bottom: 1.4rem;
 }
 
 .blog-meta {

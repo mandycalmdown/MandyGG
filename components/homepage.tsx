@@ -305,6 +305,7 @@ export function Homepage() {
               onMouseLeave={card.onLeave}
             >
               <span className="card-gloss" aria-hidden="true" />
+              <div className="blog-image-placeholder" aria-hidden="true" />
               <div className="blog-meta">
                 <span className="tag tag--blue">{post.tag}</span>
                 <span className="blog-date">{post.date}</span>
