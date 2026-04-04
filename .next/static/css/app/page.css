@@ -532,7 +532,7 @@
 */
 .feature-icon-wrap {
   position: absolute;
-  top: -0.5rem;
+  top: -5rem;
   left: 50%;
   transform: translateX(-50%)
              translateX(var(--icon-x, 0px))
@@ -1150,6 +1150,12 @@
   transition: opacity 0.18s ease;
 }
 .footer-legal a:hover { opacity: 0.65; }
+
+/* Features section — desktop spacing */
+.features {
+  padding-top: 9rem;
+  background: var(--m-bg);
+}
 
 /* Features grid — 3 columns on desktop */
 .features-grid {
