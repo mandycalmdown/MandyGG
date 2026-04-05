@@ -7,9 +7,8 @@ const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
 // Card dimensions — square cards
-const CARD_W = 270;   // px
-const CARD_H = 270;   // px — same as width = square
-const CARD_GAP = 24;  // px — equal spacing between every card
+const CARD_W = 280;   // px
+const CARD_GAP = 28;  // px — equal spacing between every card
 const STEP = CARD_W + CARD_GAP;  // total slot width
 
 const CARDS = [
@@ -89,7 +88,8 @@ function getCardStyle(offset: number, dragOffset: number = 0): React.CSSProperti
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent] = useState(0);
+  // Start on "$3500 WEEKLY RACE" (index 1)
+  const [current, setCurrent] = useState(1);
   const [dragOffset, setDragOffset] = useState(0);
   const isDragging = useRef(false);
   const dragStart = useRef(0);
@@ -156,11 +156,15 @@ export function FeatureCarousel() {
               style={style}
               aria-hidden={offset !== 0}
             >
+              {/* Card background layer (z-index 0 via .feature-card base) */}
               <span className="card-gloss" aria-hidden="true" />
-              {/* Icon overhangs top of card */}
-              <span className="feature-icon-wrap fc-icon-wrap" aria-hidden="true">
-                <img src={c.img} alt="" className="feature-icon" />
-              </span>
+
+              {/* Image: above card background (z-index 1), behind text (z-index 2) */}
+              <div className="fc-img-wrap" aria-hidden="true">
+                <img src={c.img} alt="" className="fc-img" />
+              </div>
+
+              {/* Text + button: z-index 2, always above image */}
               <h2 className="feature-title">{c.title}</h2>
               <p className="feature-desc">{c.desc}</p>
               <HoloButton href={c.btn.href} ext={c.btn.ext}>

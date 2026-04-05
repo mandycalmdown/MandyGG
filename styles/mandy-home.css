@@ -212,70 +212,68 @@
   text-transform: uppercase;
 }
 
-/* Feature Cards - Original layout, size, colors, and animations */
+/* Feature Cards */
 .feature-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.5rem 1.5rem 1.5rem;
-  min-height: 280px;
-  overflow: visible;
+  padding: 1rem 1.25rem 1.25rem;
+  overflow: hidden;            /* everything stays inside the card */
   position: relative;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
   border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  transform: translateY(-2px);
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 /*
-  Icon layer order:
-  z-index: 0 → sits above card background, below card-gloss (z:1)
-  This means gloss sheen renders ON TOP of the icon visually.
-  But gloss has pointer-events:none and opacity is subtle so icon still reads.
-  Text/buttons are z-index: 2 → always above everything.
+  Layer order inside each card:
+  z-index 0 → card background / card-gloss
+  z-index 1 → element image (above card, below text)
+  z-index 2 → title, description, button (always readable on top)
 */
-.feature-icon-wrap {
-  position: absolute;
-  top: -5rem;
-  left: 50%;
-  transform: translateX(-50%)
-             translateX(var(--icon-x, 0px))
-             translateY(var(--icon-y, 0px));
-  width: 200px;
-  height: 200px;
-  display: grid;
-  place-items: center;
+
+/* Image container: covers top 40% of the card, sits at z-index 1 */
+.fc-img-wrap {
+  position: relative;
+  z-index: 1;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   pointer-events: none;
-  z-index: 0;
-  transition: transform 0.12s ease-out;
+  margin-top: 0.5rem;
 }
 
-.feature-icon {
-  max-width: 100%;
-  max-height: 100%;
+.fc-img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.65));
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
   animation: floatIcon 4s ease-in-out infinite;
 }
 
-.features-grid > article:nth-child(2) .feature-icon { animation-delay: -1.4s; }
-.features-grid > article:nth-child(3) .feature-icon { animation-delay: -2.8s; }
+/* Stagger float animation per card position */
+.fc-card:nth-child(2) .fc-img { animation-delay: -1.3s; }
+.fc-card:nth-child(3) .fc-img { animation-delay: -2.6s; }
+.fc-card:nth-child(4) .fc-img { animation-delay: -0.65s; }
+.fc-card:nth-child(5) .fc-img { animation-delay: -1.95s; }
 
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-10px); }
+  50%       { transform: translateY(-8px); }
 }
 
-/* All text/button content must be z-index 2 — above the gloss (z:1) */
+/* All text/button content: z-index 2 — always above image */
 .feature-card > .feature-title,
 .feature-card > .feature-desc,
 .feature-card > .holo-button,
@@ -285,12 +283,12 @@
 }
 
 .feature-title {
-  margin-top: 5rem;
+  margin-top: 0.5rem;
   font-weight: 800;
-  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
   letter-spacing: 0.02em;
   color: var(--m-lime);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 @keyframes limeShift {
@@ -898,8 +896,7 @@
   gap: 2rem;
   width: 100%;
   overflow: hidden;          /* clips partially-visible edge cards horizontally */
-  /* Top padding = image overhang height so icons are never clipped */
-  padding: 9rem 0 1rem;
+  padding: 1rem 0 1rem;
 }
 
 /* Stage: all cards sit here, centered on the viewport */
@@ -907,17 +904,17 @@
   position: relative;
   width: 100%;
   /*
-    Height = card square height (270px) + extra for center card scale (×1.18 = ~319px)
-    We align cards by their bottom edge so they grow upward
+    Card height = 280px (CARD_W). Center card scales 1.18 → 330px.
+    Add a little headroom and align bottom edges.
   */
-  height: 320px;
+  height: 340px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   cursor: grab;
   user-select: none;
   touch-action: pan-y;
-  overflow: visible;         /* icons bleed above without clipping */
+  overflow: hidden;
 }
 
 .fc-stage:active { cursor: grabbing; }
@@ -928,17 +925,8 @@
   bottom: 0;                 /* all cards anchor to same bottom edge */
   transform-origin: bottom center;
   will-change: transform, opacity;
-  /* width/height set by inline JS style (270×270) */
   min-height: unset !important;
-}
-
-/* Icon overhangs: image is 200px tall, we want 75% (150px) inside card
-   and 25% (50px) + extra above. top = -(200px * 0.75) = -150px from card top,
-   but icon-wrap is 200px tall so top = -(200 - card_img_inside) = use -5.5rem */
-.fc-icon-wrap {
-  top: -5.5rem !important;
-  overflow: visible !important;
-  z-index: 3 !important;
+  overflow: hidden !important;
 }
 
 /* Arrow row */
@@ -984,12 +972,13 @@
    RESPONSIVE — TABLET / MOBILE
 ================================================================ */
 @media (max-width: 960px) {
-  .fc-wrapper {
-    padding-top: 7rem;
+  .fc-stage {
+    height: 300px;
   }
 
-  .fc-stage {
-    height: 280px;
+  .fc-img-wrap {
+    width: 110px;
+    height: 110px;
   }
 }
 
