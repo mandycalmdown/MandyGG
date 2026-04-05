@@ -6,10 +6,24 @@ import Link from "next/link";
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
-// Card dimensions — square cards
-const CARD_W = 280;   // px
-const CARD_GAP = 28;  // px — equal spacing between every card
-const STEP = CARD_W + CARD_GAP;  // total slot width
+// Image height in px — 50% bleeds above the card, 50% sits on the card
+const IMG_H   = 168;  // 20% bigger than previous 140px
+const IMG_BLEED = IMG_H / 2; // px above card top
+
+// Card panel dimensions (the visible card rectangle)
+const CARD_W  = 280;  // px
+const CARD_H  = 300;  // px  — panel height (text + button)
+
+// Total slot height for the stage = bleed + card panel
+const SLOT_H  = IMG_BLEED + CARD_H;
+
+// Gap between card panels (visual gap between card edges)
+const CARD_GAP = 28;  // px
+
+// STEP = card width + gap.  We do NOT adjust for center scale here —
+// instead we translate by STEP * offset so panel edges are always CARD_GAP apart.
+// The center card scales from center so it equally encroaches left and right.
+const STEP = CARD_W + CARD_GAP;
 
 const CARDS = [
   {
@@ -66,39 +80,39 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
   return <Link href={href} className="holo-button card-btn">{inner}</Link>;
 }
 
-// Compute pixel translateX and scale for a card at `offset` slots from center
-function getCardStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
-  const abs = Math.abs(offset);
-  // Center card is 18% larger — non-center cards are all identical base size
-  const scale   = abs === 0 ? 1.18 : 1;
-  const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
-  const zIndex  = abs === 0 ? 10 : abs === 1 ? 6 : 3;
-  // Fixed pixel spacing keeps equal gap between every card regardless of scale
-  const tx = offset * STEP + dragOffset;
+// Returns styles for the entire slot (image + card panel together).
+// translateX uses STEP * offset so card PANEL edges are always CARD_GAP apart.
+// The center card scales 1.15× from its center — because transform-origin is
+// "center center" of the slot, the scale expands equally left and right,
+// meaning the visual gap between center card and neighbours stays symmetric.
+function getSlotStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
+  const abs    = Math.abs(offset);
+  const scale  = abs === 0 ? 1.15 : 1;
+  const opacity= abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
+  const zIndex = abs === 0 ? 10 : abs === 1 ? 6 : 3;
+  const tx     = offset * STEP + dragOffset;
   return {
     width:  `${CARD_W}px`,
-    height: `${CARD_W}px`,  // square: same as width
     transform: `translateX(${tx}px) scale(${scale})`,
+    transformOrigin: "bottom center",
     opacity,
     zIndex,
     transition: dragOffset !== 0
       ? "none"
-      : "transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s cubic-bezier(0.25,0.46,0.45,0.94)",
+      : "transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.45s ease",
   };
 }
 
 export function FeatureCarousel() {
-  // Start on "$3500 WEEKLY RACE" (index 1)
-  const [current, setCurrent] = useState(1);
+  const [current, setCurrent]     = useState(1); // default: $3500 WEEKLY RACE
   const [dragOffset, setDragOffset] = useState(0);
   const isDragging = useRef(false);
-  const dragStart = useRef(0);
-  const stageRef = useRef<HTMLDivElement>(null);
+  const dragStart  = useRef(0);
 
   const prev = useCallback(() => setCurrent(c => (c - 1 + TOTAL) % TOTAL), []);
   const next = useCallback(() => setCurrent(c => (c + 1) % TOTAL), []);
 
-  // Keyboard
+  // Keyboard nav
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft")  prev();
@@ -108,20 +122,16 @@ export function FeatureCarousel() {
     return () => window.removeEventListener("keydown", handler);
   }, [prev, next]);
 
-  // Pointer (mouse + touch via pointer events)
   const onPointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
     dragStart.current  = e.clientX;
     setDragOffset(0);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
-
   const onPointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
-    const delta = e.clientX - dragStart.current;
-    setDragOffset(delta);
+    setDragOffset(e.clientX - dragStart.current);
   };
-
   const onPointerUp = () => {
     if (!isDragging.current) return;
     isDragging.current = false;
@@ -130,14 +140,14 @@ export function FeatureCarousel() {
     setDragOffset(0);
   };
 
-  // Show center ±2 slots (5 cards visible, edges partially clipped)
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
   return (
     <div className="fc-wrapper">
+      {/* Stage clips horizontal overflow but reveals image bleed at top */}
       <div
-        ref={stageRef}
         className="fc-stage"
+        style={{ height: `${SLOT_H}px` }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -147,30 +157,36 @@ export function FeatureCarousel() {
       >
         {visibleOffsets.map((offset) => {
           const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
-          const c = CARDS[idx];
-          const style = getCardStyle(offset, isDragging.current ? dragOffset : 0);
+          const c   = CARDS[idx];
+          const slotStyle = getSlotStyle(offset, isDragging.current ? dragOffset : 0);
+
           return (
-            <article
+            <div
               key={`${idx}-${offset}`}
-              className="fc-card feature-card mandy-card"
-              style={style}
+              className="fc-slot"
+              style={slotStyle}
               aria-hidden={offset !== 0}
             >
-              {/* Card background layer (z-index 0 via .feature-card base) */}
-              <span className="card-gloss" aria-hidden="true" />
-
-              {/* Image: above card background (z-index 1), behind text (z-index 2) */}
-              <div className="fc-img-wrap" aria-hidden="true">
-                <img src={c.img} alt="" className="fc-img" />
+              {/* Image: floats above card panel, 50% above / 50% on card */}
+              <div className="fc-img-wrap">
+                <img
+                  src={c.img}
+                  alt=""
+                  className="fc-img"
+                  style={{ width: `${IMG_H}px`, height: `${IMG_H}px` }}
+                />
               </div>
 
-              {/* Text + button: z-index 2, always above image */}
-              <h2 className="feature-title">{c.title}</h2>
-              <p className="feature-desc">{c.desc}</p>
-              <HoloButton href={c.btn.href} ext={c.btn.ext}>
-                {c.btn.label}
-              </HoloButton>
-            </article>
+              {/* Card panel: visible card rectangle with all text+button */}
+              <article className="fc-card feature-card mandy-card">
+                <span className="card-gloss" aria-hidden="true" />
+                <h2 className="feature-title">{c.title}</h2>
+                <p className="feature-desc">{c.desc}</p>
+                <HoloButton href={c.btn.href} ext={c.btn.ext}>
+                  {c.btn.label}
+                </HoloButton>
+              </article>
+            </div>
           );
         })}
       </div>

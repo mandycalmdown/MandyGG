@@ -499,15 +499,19 @@
   text-transform: uppercase;
 }
 
-/* Feature Cards */
+/* ================================================================
+   FEATURE CARD — base panel styles
+================================================================ */
 .feature-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem 1.25rem 1.25rem;
-  overflow: hidden;            /* everything stays inside the card */
+  padding: 0.75rem 1.25rem 1.25rem;
+  overflow: hidden;
   position: relative;
+  width: 100%;
+  flex: 1;                     /* fill remaining height of the slot */
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -520,57 +524,56 @@
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
-/*
-  Layer order inside each card:
-  z-index 0 → card background / card-gloss
-  z-index 1 → element image (above card, below text)
-  z-index 2 → title, description, button (always readable on top)
-*/
+/* ── Slot: vertical flex column = image (above) + card panel (below) ── */
+.fc-slot {
+  position: absolute;
+  bottom: 0;                   /* all slots anchor to the same bottom */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform, opacity;
+}
 
-/* Image container: covers top 40% of the card, sits at z-index 1 */
+/* ── Image wrapper: sits above the card panel, 50% bleeds up ── */
 .fc-img-wrap {
-  position: relative;
-  z-index: 1;
-  width: 140px;
-  height: 140px;
+  /* negative margin pulls it down so exactly half is above card border */
+  margin-bottom: -84px;        /* half of IMG_H (168/2) */
+  z-index: 2;                  /* above card surface */
+  pointer-events: none;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  pointer-events: none;
-  margin-top: 0.5rem;
 }
 
 .fc-img {
-  width: 100%;
-  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.7));
   animation: floatIcon 4s ease-in-out infinite;
 }
 
-/* Stagger float animation per card position */
-.fc-card:nth-child(2) .fc-img { animation-delay: -1.3s; }
-.fc-card:nth-child(3) .fc-img { animation-delay: -2.6s; }
-.fc-card:nth-child(4) .fc-img { animation-delay: -0.65s; }
-.fc-card:nth-child(5) .fc-img { animation-delay: -1.95s; }
+.fc-slot:nth-child(2) .fc-img { animation-delay: -1.3s; }
+.fc-slot:nth-child(3) .fc-img { animation-delay: -2.6s; }
+.fc-slot:nth-child(4) .fc-img { animation-delay: -0.65s; }
+.fc-slot:nth-child(5) .fc-img { animation-delay: -1.95s; }
 
 @keyframes floatIcon {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-8px); }
 }
 
-/* All text/button content: z-index 2 — always above image */
+/* Text and button inside card: all relative, stacked below image overlap */
 .feature-card > .feature-title,
 .feature-card > .feature-desc,
 .feature-card > .holo-button,
 .feature-card > .card-btn {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 .feature-title {
-  margin-top: 0.5rem;
+  /* push title down past the 50% image that overlaps the card top */
+  margin-top: 5.5rem;          /* ≈ half IMG_H (84px) + small gap */
   font-weight: 800;
   font-size: clamp(0.9rem, 1.4vw, 1.15rem);
   letter-spacing: 0.02em;
@@ -1182,39 +1185,27 @@
   align-items: center;
   gap: 2rem;
   width: 100%;
-  overflow: hidden;          /* clips partially-visible edge cards horizontally */
-  padding: 1rem 0 1rem;
+  /* Clip left/right (side cards) but allow top bleed (image above cards) */
+  overflow: hidden;
+  /* Extra padding-top = image bleed height (84px) so images aren't clipped */
+  padding: 5.5rem 0 1rem;
 }
 
-/* Stage: all cards sit here, centered on the viewport */
+/* Stage: height is set via inline style from JS (SLOT_H = IMG_BLEED + CARD_H) */
 .fc-stage {
   position: relative;
   width: 100%;
-  /*
-    Card height = 280px (CARD_W). Center card scales 1.18 → 330px.
-    Add a little headroom and align bottom edges.
-  */
-  height: 340px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   cursor: grab;
   user-select: none;
   touch-action: pan-y;
-  overflow: hidden;
+  /* overflow visible so image bleed above stage isn't clipped */
+  overflow: visible;
 }
 
 .fc-stage:active { cursor: grabbing; }
-
-/* Cards: square, absolutely centered in the stage, transform via JS */
-.fc-card {
-  position: absolute;
-  bottom: 0;                 /* all cards anchor to same bottom edge */
-  transform-origin: bottom center;
-  will-change: transform, opacity;
-  min-height: unset !important;
-  overflow: hidden !important;
-}
 
 /* Arrow row */
 .fc-arrows {
@@ -1259,13 +1250,8 @@
    RESPONSIVE — TABLET / MOBILE
 ================================================================ */
 @media (max-width: 960px) {
-  .fc-stage {
-    height: 300px;
-  }
-
-  .fc-img-wrap {
-    width: 110px;
-    height: 110px;
+  .fc-wrapper {
+    padding-top: 4rem;
   }
 }
 
