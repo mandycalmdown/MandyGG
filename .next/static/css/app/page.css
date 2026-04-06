@@ -583,7 +583,7 @@
   font-weight: 800;
   font-size: clamp(1rem, 1.5vw, 1.25rem);
   letter-spacing: 0.02em;
-  color: var(--m-lime);
+  color: #3C7BFF;
   margin: 0 0 0.35rem;
 }
 
@@ -607,6 +607,10 @@
 
 .card-btn {
   margin-top: auto;
+  font-size: 0.6rem !important;
+  padding: 0.5rem 1.1rem !important;
+  min-width: 110px !important;
+  letter-spacing: 0.1em !important;
 }
 
 /* ================================================================
@@ -1177,7 +1181,7 @@
 
 /* Features section — desktop spacing */
 .features {
-  padding-top: 2rem;
+  padding-top: 0;
   background: var(--m-bg);
   padding-bottom: 3rem;
 }
@@ -1193,8 +1197,8 @@
   width: 100%;
   /* Clip cards that scroll off left/right edges */
   overflow: hidden;
-  /* padding-top = image bleed (100px) + a little extra so images aren't clipped */
-  padding: 7rem 0 1rem;
+  /* padding-top = image bleed (100px) only — no extra gap between tagline and image */
+  padding: 6.5rem 0 1rem;
 }
 
 /* Stage height = SLOT_H = IMG_BLEED + CARD_H = 100 + 340 = 440px */
@@ -1236,9 +1240,9 @@
 }
 
 .fc-arrow-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--m-lime);
-  color: var(--m-lime);
+  background: rgba(60, 123, 255, 0.12);
+  border-color: #3C7BFF;
+  color: #3C7BFF;
   transform: scale(1.1);
 }
 
