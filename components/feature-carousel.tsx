@@ -4,25 +4,17 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
-const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
-// Image dimensions
-const IMG_H = 220;  // px — image height
-const IMG_BLEED = 120;  // px above card top (50% of IMG_H)
+const IMG_H    = 220;   // px
+const CARD_W   = 280;   // px
+const CARD_H   = 340;   // px
+const CARD_GAP = 24;    // px — visual gap between card edges
+const STEP     = CARD_W + CARD_GAP;  // 304 px per slot
 
-// Card panel dimensions
-const CARD_W = 280;  // px
-const CARD_H = 340;  // px — tall enough for image overlap + title + desc + btn
-
-// Total slot height = image bleed above + card panel
-const SLOT_H = IMG_BLEED + CARD_H;
-
-// Gap between card PANEL edges (visual gap, always equal)
-const CARD_GAP = 24;  // px
-
-// STEP: how far each card translates. Using panel width + gap keeps
-// the visual distance between card edges constant regardless of center scaling.
-const STEP = CARD_W + CARD_GAP;
+// Snap velocity threshold: if finger/cursor releases moving faster than this
+// (px/ms) snap one card in the direction of motion, otherwise snap to nearest.
+const FLICK_VELOCITY = 0.35;
 
 const CARDS = [
   {
@@ -70,7 +62,7 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
     <>
       <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
         <source src={HOLO_BTN_WEBM} type="video/webm" />
-        <source src={HOLO_BTN_MP4} type="video/mp4" />
+        <source src={HOLO_BTN_MP4}  type="video/mp4"  />
       </video>
       <span className="holo-btn__label">{children}</span>
     </>
@@ -79,52 +71,65 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
   return <Link href={href} className="holo-button card-btn">{inner}</Link>;
 }
 
-// Returns styles for the entire slot (image + card panel together).
-// translateX uses STEP * offset so card PANEL edges are always CARD_GAP apart.
-// The center card scales 1.15× from its center — because transform-origin is
-// "center center" of the slot, the scale expands equally left and right,
-// meaning the visual gap between center card and neighbours stays symmetric.
-function getSlotX(offset: number) {
-  if (offset === 0) return 0;
-  if (offset === -1) return -310;
-  if (offset === 1) return 310;
-  if (offset === -2) return -604;
-  if (offset === 2) return 604
-  return offset * STEP;
+// Derive the visual translateX for a card at `offset` slots from center,
+// adjusted by the live drag delta. The center card does not shift position —
+// only the drag delta moves all cards together.
+function slotTranslate(offset: number, drag: number): number {
+  return offset * STEP + drag;
 }
 
-function getSlotStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
-  const abs = Math.abs(offset);
-  const scale = abs === 0 ? 1.12 : 1;
+// Returns the CSS for a slot given its offset and drag state.
+// While dragging: no CSS transition, position follows pointer exactly.
+// While snapping: smooth cubic-bezier transition takes over.
+function getSlotStyle(
+  offset: number,
+  drag: number,
+  dragging: boolean,
+): React.CSSProperties {
+  const abs     = Math.abs(offset);
+  // During drag, interpolate scale based on how close a card is to center
+  // so side cards grow slightly as they approach the middle.
+  const proximity = dragging
+    ? Math.max(0, 1 - Math.abs(offset - drag / STEP) / 1.5)
+    : 0;
+  const scale   = abs === 0 ? 1.12 : dragging ? 1 + proximity * 0.12 : 1;
   const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
-  const zIndex = abs === 0 ? 10 : abs === 1 ? 6 : 3;
-  const tx = getSlotX(offset) + dragOffset;
+  const zIndex  = abs === 0 ? 10 : abs === 1 ? 6 : 3;
+  const tx      = slotTranslate(offset, drag);
 
   return {
-    transform: `translateX(${tx}px) scale(${scale})`,
+    transform:       `translateX(${tx}px) scale(${scale})`,
     transformOrigin: "bottom center",
     opacity,
     zIndex,
-    transition:
-      dragOffset !== 0
-        ? "none"
-        : "transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.45s ease",
+    transition: dragging
+      ? "opacity 0.15s ease"                                           // no position transition while dragging
+      : "transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease",
   };
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent] = useState(1); // default: $3500 WEEKLY RACE
-  const [dragOffset, setDragOffset] = useState(0);
-  const isDragging = useRef(false);
-  const dragStart = useRef(0);
+  const [current, setCurrent]     = useState(1);   // default: $3500 WEEKLY RACE
+  const [drag, setDrag]           = useState(0);
+  const [dragging, setDragging]   = useState(false);
 
-  const prev = useCallback(() => setCurrent(c => (c - 1 + TOTAL) % TOTAL), []);
-  const next = useCallback(() => setCurrent(c => (c + 1) % TOTAL), []);
+  // Refs for velocity calculation
+  const pointerStartX  = useRef(0);
+  const pointerLastX   = useRef(0);
+  const pointerLastT   = useRef(0);
+  const velocityRef    = useRef(0);   // px / ms, updated on every pointermove
+
+  const go = useCallback((delta: number) => {
+    setCurrent(c => (c + delta + TOTAL) % TOTAL);
+  }, []);
+
+  const prev = useCallback(() => go(-1), [go]);
+  const next = useCallback(() => go( 1), [go]);
 
   // Keyboard nav
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowLeft")  prev();
       if (e.key === "ArrowRight") next();
     };
     window.addEventListener("keydown", handler);
@@ -132,28 +137,57 @@ export function FeatureCarousel() {
   }, [prev, next]);
 
   const onPointerDown = (e: React.PointerEvent) => {
-    isDragging.current = true;
-    dragStart.current = e.clientX;
-    setDragOffset(0);
+    // Only respond to primary pointer (finger, left-mouse, trackpad tap)
+    if (e.button !== 0 && e.pointerType === "mouse") return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    pointerStartX.current = e.clientX;
+    pointerLastX.current  = e.clientX;
+    pointerLastT.current  = e.timeStamp;
+    velocityRef.current   = 0;
+    setDrag(0);
+    setDragging(true);
   };
+
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDragging.current) return;
-    setDragOffset(e.clientX - dragStart.current);
+    if (!dragging) return;
+    const now    = e.timeStamp;
+    const dt     = now - pointerLastT.current;
+    const dx     = e.clientX - pointerLastX.current;
+    // Exponential moving average for velocity — smoother than instantaneous
+    if (dt > 0) {
+      velocityRef.current = velocityRef.current * 0.6 + (dx / dt) * 0.4;
+    }
+    pointerLastX.current = e.clientX;
+    pointerLastT.current = now;
+    setDrag(e.clientX - pointerStartX.current);
   };
-  const onPointerUp = () => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-    if (dragOffset < -60) next();
-    else if (dragOffset > 60) prev();
-    setDragOffset(0);
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    setDragging(false);
+
+    const totalDrag  = e.clientX - pointerStartX.current;
+    const velocity   = velocityRef.current; // px/ms
+
+    let delta = 0;
+    if (Math.abs(velocity) >= FLICK_VELOCITY) {
+      // Fast flick — go one card in the direction of the flick
+      delta = velocity < 0 ? 1 : -1;
+    } else {
+      // Slow drag — snap to whichever card is closest to center
+      // A drag of >STEP/2 means we've passed the halfway point to next card
+      if (totalDrag < -STEP / 2) delta =  1;
+      else if (totalDrag > STEP / 2) delta = -1;
+    }
+
+    setDrag(0);
+    if (delta !== 0) go(delta);
   };
 
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
   return (
     <div className="fc-wrapper">
-      {/* Stage clips horizontal overflow but reveals image bleed at top */}
       <div
         className="fc-stage"
         onPointerDown={onPointerDown}
@@ -165,24 +199,20 @@ export function FeatureCarousel() {
       >
         {visibleOffsets.map((offset) => {
           const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
-          const c = CARDS[idx];
-          const slotStyle = getSlotStyle(offset, isDragging.current ? dragOffset : 0);
+          const c   = CARDS[idx];
 
           return (
             <div
               key={`${idx}-${offset}`}
               className="fc-slot"
-              style={slotStyle}
+              style={getSlotStyle(offset, dragging ? drag : 0, dragging)}
               aria-hidden={offset !== 0}
             >
-              {/* Card: overflow visible at top so image bleeds above border */}
               <article
                 className="fc-card feature-card mandy-card"
                 style={{ width: `${CARD_W}px`, height: `${CARD_H}px` }}
               >
                 <span className="card-gloss" aria-hidden="true" />
-
-                {/* Image: absolutely positioned, centered, bleeds above card top */}
                 <div className="fc-img-wrap" aria-hidden="true">
                   <img
                     src={c.img}
@@ -191,8 +221,6 @@ export function FeatureCarousel() {
                     style={{ width: `${IMG_H}px`, height: `${IMG_H}px` }}
                   />
                 </div>
-
-                {/* Text + button: sit below image bottom inside card */}
                 <h2 className="feature-title">{c.title}</h2>
                 <p className="feature-desc">{c.desc}</p>
                 <HoloButton href={c.btn.href} ext={c.btn.ext}>
@@ -204,7 +232,6 @@ export function FeatureCarousel() {
         })}
       </div>
 
-      {/* Navigation arrows */}
       <div className="fc-arrows">
         <button type="button" className="fc-arrow-btn" onClick={prev} aria-label="Previous feature card">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

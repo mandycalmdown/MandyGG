@@ -1027,6 +1027,9 @@
   .shrink-0 {
     flex-shrink: 0;
   }
+  .grow {
+    flex-grow: 1;
+  }
   .origin-\(--radix-select-content-transform-origin\) {
     transform-origin: var(--radix-select-content-transform-origin);
   }
