@@ -213,18 +213,19 @@
 }
 
 /* ================================================================
-   FEATURE CARD — base panel styles
+   FEATURE CARD — card panel (the visible rectangle)
 ================================================================ */
 .feature-card {
+  /* flex column: title → desc → button stacked vertically */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0.75rem 1.25rem 1.25rem;
-  overflow: hidden;
+  /* top padding = image bleed (100px) + small gap so title clears image bottom */
+  padding: 120px 1.25rem 1.5rem;
+  /* overflow visible allows image to bleed above card top border */
+  overflow: visible;
   position: relative;
-  width: 100%;
-  flex: 1;                     /* fill remaining height of the slot */
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -237,23 +238,27 @@
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Slot: vertical flex column = image (above) + card panel (below) ── */
+/* ── Slot: absolutely positioned in the stage, anchored to bottom ── */
 .fc-slot {
   position: absolute;
-  bottom: 0;                   /* all slots anchor to the same bottom */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  bottom: 0;
   will-change: transform, opacity;
 }
 
-/* ── Image wrapper: sits above the card panel, 50% bleeds up ── */
+/*
+  Image: absolute inside the card, horizontally centered.
+  top: -100px bleeds 100px above the card top border.
+  The image is 200px tall so 100px is above the card, 100px is on the card.
+  z-index: 1 — above card background/gloss (z:0), but BELOW text (z:2)
+  so the title reads on top of the image.
+*/
 .fc-img-wrap {
-  /* negative margin pulls it down so exactly half is above card border */
-  margin-bottom: -84px;        /* half of IMG_H (168/2) */
-  z-index: 2;                  /* above card surface */
+  position: absolute;
+  top: -100px;                 /* bleed = IMG_BLEED = IMG_H / 2 = 100px */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
   pointer-events: none;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,7 +266,7 @@
 
 .fc-img {
   object-fit: contain;
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.7));
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,0.8));
   animation: floatIcon 4s ease-in-out infinite;
 }
 
@@ -275,23 +280,24 @@
   50%       { transform: translateY(-8px); }
 }
 
-/* Text and button inside card: all relative, stacked below image overlap */
+/* card-gloss sits at z-index 0 (base), image at z:1, text at z:2 */
+.feature-card > .card-gloss { z-index: 0; }
+
+/* All text + button: z-index 2 so they render above the image */
 .feature-card > .feature-title,
 .feature-card > .feature-desc,
 .feature-card > .holo-button,
 .feature-card > .card-btn {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .feature-title {
-  /* push title down past the 50% image that overlaps the card top */
-  margin-top: 5.5rem;          /* ≈ half IMG_H (84px) + small gap */
   font-weight: 800;
-  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
   letter-spacing: 0.02em;
   color: var(--m-lime);
-  margin-bottom: 0.25rem;
+  margin: 0 0 0.35rem;
 }
 
 @keyframes limeShift {
@@ -898,23 +904,24 @@
   align-items: center;
   gap: 2rem;
   width: 100%;
-  /* Clip left/right (side cards) but allow top bleed (image above cards) */
+  /* Clip cards that scroll off left/right edges */
   overflow: hidden;
-  /* Extra padding-top = image bleed height (84px) so images aren't clipped */
-  padding: 5.5rem 0 1rem;
+  /* padding-top = image bleed (100px) + a little extra so images aren't clipped */
+  padding: 7rem 0 1rem;
 }
 
-/* Stage: height is set via inline style from JS (SLOT_H = IMG_BLEED + CARD_H) */
+/* Stage height = SLOT_H = IMG_BLEED + CARD_H = 100 + 340 = 440px */
 .fc-stage {
   position: relative;
   width: 100%;
+  height: 440px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   cursor: grab;
   user-select: none;
   touch-action: pan-y;
-  /* overflow visible so image bleed above stage isn't clipped */
+  /* overflow visible so image bleed (100px above card top) is not clipped */
   overflow: visible;
 }
 

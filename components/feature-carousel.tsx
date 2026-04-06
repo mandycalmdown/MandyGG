@@ -6,23 +6,22 @@ import Link from "next/link";
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
-// Image height in px — 50% bleeds above the card, 50% sits on the card
-const IMG_H   = 168;  // 20% bigger than previous 140px
-const IMG_BLEED = IMG_H / 2; // px above card top
+// Image dimensions
+const IMG_H     = 200;  // px — image height
+const IMG_BLEED = 100;  // px above card top (50% of IMG_H)
 
-// Card panel dimensions (the visible card rectangle)
+// Card panel dimensions
 const CARD_W  = 280;  // px
-const CARD_H  = 300;  // px  — panel height (text + button)
+const CARD_H  = 340;  // px — tall enough for image overlap + title + desc + btn
 
-// Total slot height for the stage = bleed + card panel
+// Total slot height = image bleed above + card panel
 const SLOT_H  = IMG_BLEED + CARD_H;
 
-// Gap between card panels (visual gap between card edges)
-const CARD_GAP = 28;  // px
+// Gap between card PANEL edges (visual gap, always equal)
+const CARD_GAP = 24;  // px
 
-// STEP = card width + gap.  We do NOT adjust for center scale here —
-// instead we translate by STEP * offset so panel edges are always CARD_GAP apart.
-// The center card scales from center so it equally encroaches left and right.
+// STEP: how far each card translates. Using panel width + gap keeps
+// the visual distance between card edges constant regardless of center scaling.
 const STEP = CARD_W + CARD_GAP;
 
 const CARDS = [
@@ -87,12 +86,11 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
 // meaning the visual gap between center card and neighbours stays symmetric.
 function getSlotStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
   const abs    = Math.abs(offset);
-  const scale  = abs === 0 ? 1.15 : 1;
+  const scale  = abs === 0 ? 1.12 : 1;
   const opacity= abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
   const zIndex = abs === 0 ? 10 : abs === 1 ? 6 : 3;
   const tx     = offset * STEP + dragOffset;
   return {
-    width:  `${CARD_W}px`,
     transform: `translateX(${tx}px) scale(${scale})`,
     transformOrigin: "bottom center",
     opacity,
@@ -147,7 +145,6 @@ export function FeatureCarousel() {
       {/* Stage clips horizontal overflow but reveals image bleed at top */}
       <div
         className="fc-stage"
-        style={{ height: `${SLOT_H}px` }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -167,19 +164,24 @@ export function FeatureCarousel() {
               style={slotStyle}
               aria-hidden={offset !== 0}
             >
-              {/* Image: floats above card panel, 50% above / 50% on card */}
-              <div className="fc-img-wrap">
-                <img
-                  src={c.img}
-                  alt=""
-                  className="fc-img"
-                  style={{ width: `${IMG_H}px`, height: `${IMG_H}px` }}
-                />
-              </div>
-
-              {/* Card panel: visible card rectangle with all text+button */}
-              <article className="fc-card feature-card mandy-card">
+              {/* Card: overflow visible at top so image bleeds above border */}
+              <article
+                className="fc-card feature-card mandy-card"
+                style={{ width: `${CARD_W}px`, height: `${CARD_H}px` }}
+              >
                 <span className="card-gloss" aria-hidden="true" />
+
+                {/* Image: absolutely positioned, centered, bleeds above card top */}
+                <div className="fc-img-wrap" aria-hidden="true">
+                  <img
+                    src={c.img}
+                    alt=""
+                    className="fc-img"
+                    style={{ width: `${IMG_H}px`, height: `${IMG_H}px` }}
+                  />
+                </div>
+
+                {/* Text + button: sit below image bottom inside card */}
                 <h2 className="feature-title">{c.title}</h2>
                 <p className="feature-desc">{c.desc}</p>
                 <HoloButton href={c.btn.href} ext={c.btn.ext}>
