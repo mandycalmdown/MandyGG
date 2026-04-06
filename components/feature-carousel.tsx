@@ -4,18 +4,18 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
-const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
 // Image dimensions
-const IMG_H     = 200;  // px — image height
+const IMG_H = 200;  // px — image height
 const IMG_BLEED = 100;  // px above card top (50% of IMG_H)
 
 // Card panel dimensions
-const CARD_W  = 280;  // px
-const CARD_H  = 340;  // px — tall enough for image overlap + title + desc + btn
+const CARD_W = 280;  // px
+const CARD_H = 340;  // px — tall enough for image overlap + title + desc + btn
 
 // Total slot height = image bleed above + card panel
-const SLOT_H  = IMG_BLEED + CARD_H;
+const SLOT_H = IMG_BLEED + CARD_H;
 
 // Gap between card PANEL edges (visual gap, always equal)
 const CARD_GAP = 24;  // px
@@ -70,7 +70,7 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
     <>
       <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
         <source src={HOLO_BTN_WEBM} type="video/webm" />
-        <source src={HOLO_BTN_MP4}  type="video/mp4" />
+        <source src={HOLO_BTN_MP4} type="video/mp4" />
       </video>
       <span className="holo-btn__label">{children}</span>
     </>
@@ -84,28 +84,39 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
 // The center card scales 1.15× from its center — because transform-origin is
 // "center center" of the slot, the scale expands equally left and right,
 // meaning the visual gap between center card and neighbours stays symmetric.
+function getSlotX(offset: number) {
+  if (offset === 0) return 0;
+  if (offset === -1) return -310;
+  if (offset === 1) return 310;
+  if (offset === -2) return -604;
+  if (offset === 2) return 604
+  return offset * STEP;
+}
+
 function getSlotStyle(offset: number, dragOffset: number = 0): React.CSSProperties {
-  const abs    = Math.abs(offset);
-  const scale  = abs === 0 ? 1.12 : 1;
-  const opacity= abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
+  const abs = Math.abs(offset);
+  const scale = abs === 0 ? 1.12 : 1;
+  const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : 0.6;
   const zIndex = abs === 0 ? 10 : abs === 1 ? 6 : 3;
-  const tx     = offset * STEP + dragOffset;
+  const tx = getSlotX(offset) + dragOffset;
+
   return {
     transform: `translateX(${tx}px) scale(${scale})`,
     transformOrigin: "bottom center",
     opacity,
     zIndex,
-    transition: dragOffset !== 0
-      ? "none"
-      : "transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.45s ease",
+    transition:
+      dragOffset !== 0
+        ? "none"
+        : "transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.45s ease",
   };
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent]     = useState(1); // default: $3500 WEEKLY RACE
+  const [current, setCurrent] = useState(1); // default: $3500 WEEKLY RACE
   const [dragOffset, setDragOffset] = useState(0);
   const isDragging = useRef(false);
-  const dragStart  = useRef(0);
+  const dragStart = useRef(0);
 
   const prev = useCallback(() => setCurrent(c => (c - 1 + TOTAL) % TOTAL), []);
   const next = useCallback(() => setCurrent(c => (c + 1) % TOTAL), []);
@@ -113,7 +124,7 @@ export function FeatureCarousel() {
   // Keyboard nav
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft")  prev();
+      if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     };
     window.addEventListener("keydown", handler);
@@ -122,7 +133,7 @@ export function FeatureCarousel() {
 
   const onPointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
-    dragStart.current  = e.clientX;
+    dragStart.current = e.clientX;
     setDragOffset(0);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
@@ -154,7 +165,7 @@ export function FeatureCarousel() {
       >
         {visibleOffsets.map((offset) => {
           const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
-          const c   = CARDS[idx];
+          const c = CARDS[idx];
           const slotStyle = getSlotStyle(offset, isDragging.current ? dragOffset : 0);
 
           return (
@@ -197,12 +208,12 @@ export function FeatureCarousel() {
       <div className="fc-arrows">
         <button type="button" className="fc-arrow-btn" onClick={prev} aria-label="Previous feature card">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-            <path d="M11 14L6 9L11 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M11 14L6 9L11 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         <button type="button" className="fc-arrow-btn" onClick={next} aria-label="Next feature card">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-            <path d="M7 4L12 9L7 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7 4L12 9L7 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
