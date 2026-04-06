@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
-const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
-const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
+const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
+const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 
 function HoloButton({ type = "button", disabled = false, children }: {
   type?: "button" | "submit"
@@ -138,7 +138,7 @@ export default function SignUpPage() {
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontWeight: 900,
             fontSize: "clamp(2rem, 8vw, 2.8rem)",
-            color: "#b5dc58",
+            color: "#3e6bf7",
             textDecoration: "none",
             letterSpacing: "0.02em",
             textTransform: "uppercase",
@@ -165,7 +165,7 @@ export default function SignUpPage() {
           <p style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontSize: "0.8rem",
-            color: "#b5dc58",
+            color: "#3e6bf7",
             marginBottom: "2rem",
             letterSpacing: "0.04em",
           }}>Track your Thrill stats and compete on the leaderboard</p>

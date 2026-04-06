@@ -12,10 +12,17 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/auth/login/page": [
+    "/leaderboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/login/page.js"
+      "static/css/app/leaderboard/page.css",
+      "static/chunks/app/leaderboard/page.js"
+    ],
+    "/how-to-join/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/how-to-join/page.css",
+      "static/chunks/app/how-to-join/page.js"
     ]
   }
 }
