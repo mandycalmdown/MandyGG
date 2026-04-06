@@ -7,8 +7,8 @@ const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 
 // Image dimensions
-const IMG_H = 200;  // px — image height
-const IMG_BLEED = 100;  // px above card top (50% of IMG_H)
+const IMG_H = 220;  // px — image height
+const IMG_BLEED = 120;  // px above card top (50% of IMG_H)
 
 // Card panel dimensions
 const CARD_W = 280;  // px
