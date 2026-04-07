@@ -828,7 +828,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
               }}
             >
               <p className="text-gray-400 text-xs uppercase mb-2">Total Prizes</p>
-              <p className="text-2xl font-bold text-yellow-500">{formatCurrency(totalPrizes)}</p>
+              <p className="text-2xl font-bold text-[#3C7BFF]">{formatCurrency(totalPrizes)}</p>
             </Card>
           </div>
 
@@ -843,7 +843,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
             </Button>
             {forceRefreshStatus && (
               <span
-                className={`ml-4 text-sm self-center ${forceRefreshStatus.includes("success") ? "text-green-500" : "text-yellow-500"}`}
+                className={`ml-4 text-sm self-center ${forceRefreshStatus.includes("success") ? "text-green-500" : "text-[#3C7BFF]"}`}
               >
                 {forceRefreshStatus}
               </span>
@@ -982,7 +982,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                               <span
                                 className={`font-bold ${
                                   index === 0
-                                    ? "text-yellow-400"
+                                    ? "text-[#3C7BFF]"
                                     : index === 1
                                       ? "text-gray-300"
                                       : index === 2
@@ -1018,7 +1018,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   </div>
                   <div className="text-center">
                     <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
-                    <p className="text-2xl font-bold text-yellow-400">
+                    <p className="text-2xl font-bold text-[#3C7BFF]">
                       ${(dailyLeaderboard[0]?.wager || 0).toLocaleString()}
                     </p>
                   </div>
@@ -1239,7 +1239,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                                 <span
                                   className={`font-bold ${
                                     index === 0
-                                      ? "text-yellow-400"
+                                      ? "text-[#3C7BFF]"
                                       : index === 1
                                         ? "text-gray-300"
                                         : index === 2
@@ -1274,7 +1274,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       </div>
                       <div className="text-center">
                         <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
-                        <p className="text-2xl font-bold text-yellow-400">
+                        <p className="text-2xl font-bold text-[#3C7BFF]">
                           ${(customStats[0]?.wager || 0).toLocaleString()}
                         </p>
                       </div>
@@ -1344,11 +1344,11 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 </div>
 
                 {!tickerTableExists && (
-                  <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="mb-6 p-4 bg-[#3C7BFF]/10 border border-[#3C7BFF]/30 rounded-lg flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-[#3C7BFF] flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-yellow-500 font-bold mb-1">Database Table Missing</p>
-                      <p className="text-yellow-200 text-sm">
+                      <p className="text-[#3C7BFF] font-bold mb-1">Database Table Missing</p>
+                      <p className="text-white/80 text-sm">
                         The ticker_settings table doesn't exist yet. Please run the SQL script{" "}
                         <code className="bg-black/30 px-2 py-0.5 rounded">scripts/004_add_ticker_settings.sql</code> to
                         enable customization.
@@ -1589,7 +1589,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                               size="sm"
                               className={`${
                                 announcement.is_active
-                                  ? "bg-yellow-600 hover:bg-yellow-700"
+                                  ? "bg-[#3C7BFF] hover:bg-[#5A93FF]"
                                   : "bg-teal-500 hover:bg-teal-600"
                               } text-white font-bold uppercase rounded-lg`}
                             >
@@ -1702,7 +1702,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
                 }}
               >
-                <h2 className="text-2xl font-bold uppercase mb-1" style={{ color: "#b5dc58" }}>Weekly Raffle Management</h2>
+                <h2 className="text-2xl font-bold uppercase mb-1" style={{ color: "#3C7BFF" }}>Weekly Raffle Management</h2>
                 <p className="text-xs uppercase mb-4" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em" }}>$250 prize — every Friday at midnight UTC — 1 ticket per $500 wagered</p>
 
                 <div className="flex flex-wrap items-end gap-4 mb-4">
@@ -1719,7 +1719,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     onClick={fetchRaffleData}
                     disabled={isLoadingRaffle}
                     className="font-bold rounded-xl text-black"
-                    style={{ background: "#b5dc58" }}
+                    style={{ background: "#3C7BFF" }}
                   >
                     {isLoadingRaffle ? "Loading..." : "Refresh"}
                   </Button>
@@ -1735,7 +1735,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 <div className="rounded-lg border border-white/10 p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)" }}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>Total Tickets (week of {raffleDate})</span>
-                    <span className="font-bold text-lg" style={{ color: "#b5dc58" }}>{raffleTickets.reduce((s: number, t: any) => s + (t.ticket_count || 1), 0)}</span>
+                    <span className="font-bold text-lg" style={{ color: "#3C7BFF" }}>{raffleTickets.reduce((s: number, t: any) => s + (t.ticket_count || 1), 0)}</span>
                   </div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase" style={{ color: "rgba(255,255,255,0.5)" }}>Unique Players</span>
@@ -1751,7 +1751,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   </div>
                   {raffleWinner && (
                     <div className="mt-3 pt-3 border-t border-white/10">
-                      <span className="font-bold text-sm uppercase" style={{ color: "#b5dc58" }}>
+                      <span className="font-bold text-sm uppercase" style={{ color: "#3C7BFF" }}>
                         Winner: Ticket #{raffleWinner.winning_ticket_number}
                         {raffleWinner.profiles?.thrill_username && ` (${raffleWinner.profiles.thrill_username})`}
                         {raffleWinner.claimed ? " — CLAIMED" : " — UNCLAIMED"}
@@ -1769,7 +1769,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
                 }}
               >
-                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#b5dc58" }}>Issue Tickets (Weekly)</h3>
+                <h3 className="text-xl font-bold uppercase mb-4" style={{ color: "#3C7BFF" }}>Issue Tickets (Weekly)</h3>
                 <div className="flex flex-wrap items-end gap-4">
                   <div className="flex-1 min-w-[200px]">
                     <Label className="text-gray-400 text-sm uppercase mb-1 block">User ID</Label>
@@ -1795,7 +1795,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     onClick={handleIssueTickets}
                     disabled={!raffleIssueUserId || !raffleIssueCount}
                     className="font-bold rounded-xl text-black"
-                    style={{ background: "#b5dc58" }}
+                    style={{ background: "#3C7BFF" }}
                   >
                     Issue Tickets
                   </Button>
@@ -1838,10 +1838,10 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 </p>
                 {raffleWinner ? (
                   <div className="space-y-3">
-                    <div className="font-bold text-sm p-3 rounded" style={{ background: "rgba(181,220,88,0.1)", border: "1px solid rgba(181,220,88,0.3)", color: "#b5dc58" }}>
+                    <div className="font-bold text-sm p-3 rounded" style={{ background: "rgba(60,123,255,0.1)", border: "1px solid rgba(60,123,255,0.3)", color: "#3C7BFF" }}>
                       Winner drawn for week of {raffleDate}: Ticket #{raffleWinner.winning_ticket_number}
                       {raffleWinner.profiles?.thrill_username && ` — ${raffleWinner.profiles.thrill_username}`}
-                      {" "}<span style={{ color: raffleWinner.claimed ? "#b5dc58" : "#ff94b4" }}>
+                      {" "}<span style={{ color: raffleWinner.claimed ? "#3C7BFF" : "#ff94b4" }}>
                         ({raffleWinner.claimed ? "CLAIMED" : "UNCLAIMED"})
                       </span>
                     </div>
@@ -1849,7 +1849,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       <Button
                         onClick={handleMarkClaimed}
                         className="font-bold rounded-xl text-black"
-                        style={{ background: "#b5dc58" }}
+                        style={{ background: "#3C7BFF" }}
                       >
                         Mark as Claimed
                       </Button>
@@ -1917,14 +1917,14 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                         className="flex items-center justify-between px-3 py-2 rounded text-sm"
                         style={{
                           background: raffleWinner?.winning_ticket_number === ticket.ticket_number
-                            ? "rgba(181,220,88,0.12)"
+                            ? "rgba(60,123,255,0.12)"
                             : "rgba(255,255,255,0.04)",
                           border: raffleWinner?.winning_ticket_number === ticket.ticket_number
-                            ? "1px solid rgba(181,220,88,0.35)"
+                            ? "1px solid rgba(60,123,255,0.35)"
                             : "1px solid transparent",
                         }}
                       >
-                        <span className="font-bold" style={{ color: "#b5dc58" }}>
+                        <span className="font-bold" style={{ color: "#3C7BFF" }}>
                           {ticket.ticket_count || 1} ticket{(ticket.ticket_count || 1) > 1 ? "s" : ""}
                         </span>
                         <span style={{ color: "rgba(255,255,255,0.6)" }}>
@@ -1955,10 +1955,10 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="font-bold" style={{ color: "#b5dc58" }}>
+                          <span className="font-bold" style={{ color: "#3C7BFF" }}>
                             ${winner.prize_amount ?? 250}
                           </span>
-                          <span className="text-xs font-bold uppercase" style={{ color: winner.claimed ? "#b5dc58" : "#ff94b4" }}>
+                          <span className="text-xs font-bold uppercase" style={{ color: winner.claimed ? "#3C7BFF" : "#ff94b4" }}>
                             {winner.claimed ? "CLAIMED" : "UNCLAIMED"}
                           </span>
                         </div>
@@ -1973,7 +1973,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                 className="p-6 rounded-xl border border-white/10"
                 style={{ backgroundColor: "rgba(8,12,20,0.98)" }}
               >
-                <h3 className="text-xl font-bold uppercase mb-1" style={{ color: "#b5dc58" }}>Raffle Settings</h3>
+                <h3 className="text-xl font-bold uppercase mb-1" style={{ color: "#3C7BFF" }}>Raffle Settings</h3>
                 <p className="text-xs uppercase mb-4" style={{ color: "rgba(255,255,255,0.4)", letterSpacing: "0.1em" }}>Changes take effect for the next raffle cycle</p>
                 <div className="flex flex-wrap items-end gap-4 mb-4">
                   <div className="w-36">
@@ -2000,7 +2000,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                       id="raffleActive"
                       checked={raffleSettings.is_active}
                       onChange={(e) => setRaffleSettings((s) => ({ ...s, is_active: e.target.checked }))}
-                      className="w-4 h-4 accent-[#b5dc58]"
+                      className="w-4 h-4 accent-[#3C7BFF]"
                     />
                     <Label htmlFor="raffleActive" className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.7)" }}>Raffle Active</Label>
                   </div>
@@ -2008,7 +2008,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                     onClick={handleRaffleSettingsSave}
                     disabled={isSavingRaffleSettings}
                     className="font-bold rounded-xl text-black"
-                    style={{ background: "#b5dc58" }}
+                    style={{ background: "#3C7BFF" }}
                   >
                     {isSavingRaffleSettings ? "Saving..." : "Save Settings"}
                   </Button>

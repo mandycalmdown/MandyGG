@@ -103,7 +103,7 @@ export default function LoginPage() {
           border: "1px solid rgba(255,255,255,0.1)",
           borderRadius: "16px",
           padding: "2.5rem 2rem",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(181,220,88,0.08)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(60,123,255,0.12)",
         }}>
           <h1 style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",

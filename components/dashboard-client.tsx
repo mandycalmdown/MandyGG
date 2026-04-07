@@ -561,8 +561,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                     </p>
                   )}
                   {profile?.thrill_username && !profile?.thrill_username_locked && (
-                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-                      <p className="text-sm text-yellow-400 flex items-center gap-2">
+                    <div className="p-3 bg-[#3C7BFF]/10 border border-[#3C7BFF]/20 rounded-md">
+                      <p className="text-sm text-[#3C7BFF] flex items-center gap-2">
                         <AlertCircle className="h-4 w-4" />
                         To unlink your Thrill username, please contact admin support. This process may take a few days.
                       </p>
@@ -718,17 +718,17 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
               {statsError && (
                 <Card
-                  className="p-6 rounded-xl border border-yellow-500/30 mb-6"
+                  className="p-6 rounded-xl border border-[#3C7BFF]/30 mb-6"
                   style={{
                     backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(234, 179, 8, 0.15)",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60,123,255,0.12)",
                   }}
                 >
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-[#3C7BFF] flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-yellow-500 font-semibold mb-1">Stats Not Available</p>
-                      <p className="text-gray-300 text-sm">{statsError}</p>
+                      <p className="text-[#3C7BFF] font-semibold mb-1">Stats Not Available</p>
+                      <p className="text-white/70 text-sm">{statsError}</p>
                     </div>
                   </div>
                 </Card>

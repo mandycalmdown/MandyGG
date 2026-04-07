@@ -1,5 +1,8 @@
 {
   "/page": "app/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/api/leaderboard/route": "app/api/leaderboard/route.js",
+  "/api/raffle/winners/route": "app/api/raffle/winners/route.js",
+  "/api/raffle/tickets/route": "app/api/raffle/tickets/route.js",
+  "/api/raffle/tickets/leaderboard/route": "app/api/raffle/tickets/leaderboard/route.js"
 }

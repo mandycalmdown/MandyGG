@@ -47,7 +47,7 @@ export function ComingSoonPage({ currentPage }: ComingSoonPageProps) {
             maxWidth: "560px",
             width: "100%",
             textAlign: "center",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(181,220,88,0.07)",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px rgba(60,123,255,0.10)",
           }}>
             <h1 style={{
               fontFamily: "var(--font-poppins), Poppins, sans-serif",

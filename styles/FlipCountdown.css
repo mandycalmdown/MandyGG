@@ -55,7 +55,7 @@
   background: #08090f;
   border-radius: 0 0 6px 6px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-top: 2px solid rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 2;
 }
 

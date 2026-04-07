@@ -264,8 +264,8 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
                       display: "grid", gridTemplateColumns: "2rem 1fr auto",
                       gap: "0.5rem", alignItems: "center",
                       padding: "0.5rem 0.75rem", borderRadius: "8px",
-                      background: entry.is_me ? "rgba(181,220,88,0.08)" : "rgba(255,255,255,0.03)",
-                      border: entry.is_me ? `1px solid rgba(181,220,88,0.25)` : "1px solid transparent",
+                      background: entry.is_me ? "rgba(60,123,255,0.08)" : "rgba(255,255,255,0.03)",
+                      border: entry.is_me ? `1px solid rgba(60,123,255,0.25)` : "1px solid transparent",
                     }}
                   >
                     <span style={{ fontWeight: 900, fontSize: "0.7rem", color: entry.rank <= 3 ? LIME : "rgba(255,255,255,0.4)" }}>#{entry.rank}</span>

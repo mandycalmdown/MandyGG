@@ -12,7 +12,8 @@ import { clearLeaderboardCacheAction } from "@/app/actions/admin-actions"
 const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
-const MANDY_THRILL  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDY_THRILL_LOGOS-vrk4YU1T2lEjEIRe252VC4iUNZphaG.webp"
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
+const HEADER_IMG    = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/417fa33f-f573-4579-9583-f8d12921dcd6.jpeg"
 
 /* Cool-toned blacks — never warm */
 const PAGE_BG  = "#00020a"   // very dark cool blue-black
@@ -174,7 +175,7 @@ export function Leaderboard() {
   const rest     = entries.slice(3)
 
   /* Podium order: desktop shows 2nd / 1st / 3rd, but we render 1st/2nd/3rd in DOM order for mobile */
-  const PODIUM_RANK_COLORS = [LIME, "rgba(255,255,255,0.75)", "#cd7f32"]
+  const PODIUM_RANK_COLORS = [LIME, LIME, LIME]
 
   const cardBase: React.CSSProperties = {
     background: CARD_BG,
@@ -188,28 +189,33 @@ export function Leaderboard() {
       <SiteNavigation currentPage="leaderboard" />
       <div style={{ minHeight: "100vh", background: PAGE_BG, color: "#fff", fontFamily: "var(--font-poppins), sans-serif", paddingTop: "90px" }}>
 
-      {/* ── Mandy + Thrill logo header ── */}
-      <div style={{ background: PAGE_BG, padding: "2.5rem 1rem 0", textAlign: "center" }}>
+      {/* ── Header image ── */}
+      <div style={{ background: PAGE_BG, padding: "2rem 1rem 0", textAlign: "center" }}>
         <img
-          src={MANDY_THRILL}
-          alt="Mandy + Thrill"
-          style={{ width: "min(420px, 80vw)", height: "auto", display: "inline-block" }}
+          src={HEADER_IMG}
+          alt="$3500 Weekly Race"
+          style={{ width: "min(480px, 90vw)", height: "auto", display: "inline-block", borderRadius: "16px" }}
         />
       </div>
 
-      {/* ── Countdown ── */}
+      {/* ── Countdown + controls ── */}
       <div style={{ background: PAGE_BG, padding: "1.5rem 1rem 0", textAlign: "center" }}>
-        <p style={{ fontWeight: 700, fontSize: "clamp(0.65rem,2vw,0.8rem)", letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: "0.25rem" }}>
+        <p style={{ fontWeight: 700, fontSize: "clamp(0.65rem,2vw,0.8rem)", letterSpacing: "0.22em", textTransform: "uppercase", color: "#fff", marginBottom: "0.25rem" }}>
           TIME REMAINING
         </p>
         <FlipCountdown timeString={timeLeft} />
 
         {/* Title */}
-        <h1 style={{ fontWeight: 900, fontSize: "clamp(1.4rem,5vw,2.8rem)", letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff", marginBottom: "1.25rem", lineHeight: 1.1 }}>
+        <h1 style={{ fontWeight: 900, fontSize: "clamp(1.4rem,5vw,2.8rem)", letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff", marginBottom: "1.25rem", lineHeight: 1.1, marginTop: "1rem" }}>
           <span style={{ color: LIME }}>$3500</span>{" "}WEEKLY LEADERBOARD
         </h1>
 
-        {/* Tab buttons — smaller */}
+        {/* CTA — above the tab buttons */}
+        <div style={{ marginBottom: "1rem" }}>
+          <HoloButton href="https://thrill.com/?r=MANDY" external>JOIN THE RACE</HoloButton>
+        </div>
+
+        {/* Tab buttons */}
         <div style={{ display: "flex", justifyContent: "center", gap: "0.6rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
           {(["current", "past"] as const).map((tab) => {
             const isActive = activeTab === tab
@@ -224,7 +230,7 @@ export function Leaderboard() {
                   letterSpacing: "0.1em", textTransform: "uppercase",
                   border: isActive ? "none" : "1.5px solid rgba(255,255,255,0.18)",
                   background: isActive ? "transparent" : CARD_BG,
-                  color: isActive ? "#000" : "rgba(255,255,255,0.6)",
+                  color: isActive ? "#000" : "#fff",
                   minWidth: "100px",
                   transition: "all 0.18s ease",
                 }}
@@ -242,9 +248,6 @@ export function Leaderboard() {
             )
           })}
         </div>
-
-        {/* CTA */}
-        <HoloButton href="https://thrill.com/?r=MANDY" external>JOIN THE RACE</HoloButton>
 
         {isLoading && <p style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.4)", marginTop: "0.75rem", letterSpacing: "0.06em" }}>Loading…</p>}
         {error     && <p style={{ fontSize: "0.72rem", color: PINK, marginTop: "0.75rem", letterSpacing: "0.06em" }}>Using cached data</p>}
@@ -299,7 +302,7 @@ export function Leaderboard() {
                   <p style={{ fontSize: "clamp(1.2rem,3.5vw,1.8rem)", fontWeight: 900, color: "#fff", marginBottom: "0.15rem" }}>
                     {fmt(entry?.wager ?? 0)}
                   </p>
-                  <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
+                  <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", color: "#fff", textTransform: "uppercase" }}>
                     PRIZE: {fmt(entry?.prize ?? 0)}
                   </p>
                 </div>
@@ -310,7 +313,7 @@ export function Leaderboard() {
           {/* ── Table header ── */}
           <div style={{ display: "grid", gridTemplateColumns: "2.5rem 1fr 1fr 1fr", gap: "0.5rem", padding: "1.25rem 1.25rem 0.5rem", marginTop: "1.5rem" }}>
             {["RANK", "PLAYER", "WAGERED", "PRIZE"].map((h, i) => (
-              <span key={h} style={{ fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.12em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", textAlign: i >= 2 ? "right" : "left" }}>{h}</span>
+              <span key={h} style={{ fontSize: "0.62rem", fontWeight: 800, letterSpacing: "0.12em", color: "#fff", textTransform: "uppercase", textAlign: i >= 2 ? "right" : "left" }}>{h}</span>
             ))}
           </div>
 

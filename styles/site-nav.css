@@ -182,7 +182,7 @@ body > main:first-of-type,
   left: 0.6rem;
   right: 0.6rem;
   height: 2px;
-  background: #b5dc58;
+  background: #3C7BFF;
   border-radius: 2px;
 }
 
@@ -211,15 +211,15 @@ body > main:first-of-type,
   text-transform: uppercase;
   min-width: 88px;
   transition: transform 0.14s ease, box-shadow 0.14s ease;
-  box-shadow: 0 0 0 0.4px #b5dc58;
+  box-shadow: 0 0 0 0.4px #3C7BFF;
   background: transparent;
 }
 
 .nav-holo-btn:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 0 0 0.4px #b5dc58,
-    0 5px 18px rgba(104,89,213,0.4);
+    0 0 0 0.4px #3C7BFF,
+    0 5px 18px rgba(60,123,255,0.35);
 }
 
 .nav-holo-btn__video {
@@ -238,7 +238,7 @@ body > main:first-of-type,
   /* black on holo video button */
   color: #000000;
   font-weight: 800;
-  text-shadow: 0 0 0.3px #b5dc58;
+  text-shadow: none;
 }
 
 .nav-holo-btn--wide {
@@ -296,7 +296,7 @@ body > main:first-of-type,
 }
 
 .site-nav__mobile-link:hover,
-.site-nav__mobile-link--active { color: #b5dc58; }
+.site-nav__mobile-link--active { color: #3C7BFF; }
 
 .site-nav__mobile-auth {
   margin-top: 0.85rem;
