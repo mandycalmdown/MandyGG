@@ -593,9 +593,17 @@ body > main:first-of-type,
 }
 
 .fc-img {
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   filter: drop-shadow(0 10px 28px rgba(0,0,0,0.8));
   animation: floatIcon 4s ease-in-out infinite;
+}
+
+/* Default card size */
+.fc-card {
+  width: 280px;
+  height: 340px;
 }
 
 .fc-slot:nth-child(2) .fc-img { animation-delay: -1.3s; }
@@ -1236,8 +1244,9 @@ body > main:first-of-type,
   align-items: center;
   gap: 2rem;
   width: 100%;
-  /* Clip cards that scroll off left/right edges */
-  overflow: hidden;
+  /* Clip only horizontally (side cards), allow vertical image bleed */
+  overflow-x: clip;
+  overflow-y: visible;
   /* padding-top = image bleed (100px) only — no extra gap between tagline and image */
   padding: 6.5rem 0 1rem;
 }
@@ -1311,43 +1320,60 @@ body > main:first-of-type,
    RESPONSIVE — MOBILE ONLY (compact feature cards)
 ================================================================ */
 @media (max-width: 640px) {
-  /* Reduce stage height for shorter cards */
-  .fc-stage {
-    height: 320px;
+  /* Add space between tagline and cards */
+  .fc-wrapper {
+    padding-top: 5rem;
+    overflow: visible;
   }
 
-  /* Smaller image, same relative position (50% above card) */
+  /* Allow images to show above cards */
+  .fc-stage {
+    height: 300px;
+    overflow: visible;
+  }
+
+  /* Smaller image with less bleed above card */
   .fc-img-wrap {
-    top: -70px;   /* reduced from -100px */
+    top: -60px;
   }
 
   .fc-img {
-    width: 150px !important;
-    height: 150px !important;
+    width: 130px !important;
+    height: 130px !important;
   }
 
-  /* Compact card: less top padding (image overlaps less), tighter spacing */
+  /* Card: allow overflow for image, auto height for compact layout */
+  .fc-card {
+    width: 260px !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Compact padding — push title just below image bottom */
   .feature-card {
-    padding: 85px 1rem 1rem;  /* reduced from 120px top padding */
+    padding: 75px 1rem 1.25rem;
+    overflow: visible;
   }
 
   /* Tighter text spacing */
   .feature-title {
-    font-size: 0.9rem;
-    margin-bottom: 0.2rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
   }
 
   .feature-desc {
-    margin: 0.4rem 0 0.8rem;
-    font-size: 0.6rem;
-    max-width: 20ch;
+    margin: 0.35rem 0 0.75rem;
+    font-size: 0.62rem;
+    max-width: 22ch;
+    flex: 0;  /* don't flex-grow, removes extra space */
   }
 
-  /* Slightly smaller button */
+  /* Button sits right below description */
   .card-btn {
     font-size: 0.55rem !important;
-    padding: 0.4rem 0.9rem !important;
-    min-width: 100px !important;
+    padding: 0.45rem 1rem !important;
+    min-width: 105px !important;
+    margin-top: 0 !important;
   }
 }
 
