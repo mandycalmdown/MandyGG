@@ -15,8 +15,9 @@ function HoloText() {
 
 export function RewardsPage() {
   return (
-    <div className="mandy-home">
+    <>
       <SiteNavigation currentPage="rewards" />
+      <div className="mandy-home">
 
       {/* Hero Section with Holo Title */}
       <section className="hero" style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: "6rem" }}>
@@ -119,5 +120,6 @@ export function RewardsPage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

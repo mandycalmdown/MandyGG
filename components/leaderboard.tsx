@@ -184,8 +184,9 @@ export function Leaderboard() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: PAGE_BG, color: "#fff", fontFamily: "var(--font-poppins), sans-serif" }}>
+    <>
       <SiteNavigation currentPage="leaderboard" />
+      <div style={{ minHeight: "100vh", background: PAGE_BG, color: "#fff", fontFamily: "var(--font-poppins), sans-serif", paddingTop: "90px" }}>
 
       {/* ── Mandy + Thrill logo header ── */}
       <div style={{ background: PAGE_BG, padding: "2.5rem 1rem 0", textAlign: "center" }}>
@@ -372,5 +373,6 @@ export function Leaderboard() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

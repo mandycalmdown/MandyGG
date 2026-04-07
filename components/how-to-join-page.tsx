@@ -95,8 +95,9 @@ const STEPS = [
 
 export function HowToJoinPage() {
   return (
-    <div className="mandy-home" style={{ minHeight: "100vh", background: "#000", color: "#fff", fontFamily: "var(--font-poppins), sans-serif" }}>
+    <>
       <SiteNavigation currentPage="how-to-join" />
+      <div className="mandy-home" style={{ minHeight: "100vh", background: "#000", color: "#fff", fontFamily: "var(--font-poppins), sans-serif" }}>
 
       {/* ── Hero with Holo Header ── */}
       <section style={{ padding: "6rem 1rem 3rem", textAlign: "center", maxWidth: "900px", margin: "0 auto" }}>
@@ -255,5 +256,6 @@ export function HowToJoinPage() {
         }
       `}</style>
     </div>
+    </>
   )
 }
