@@ -13,7 +13,7 @@ const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
-const HEADER_IMG    = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/417fa33f-f573-4579-9583-f8d12921dcd6.jpeg"
+const HEADER_IMG    = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDY_THRILL_LOGO_BLUE-Lz0ZbCXRoUM1B34hDApWmfjyR9PLal.webp"
 
 /* Cool-toned blacks — never warm */
 const PAGE_BG  = "#00020a"   // very dark cool blue-black
@@ -194,7 +194,7 @@ export function Leaderboard() {
         <img
           src={HEADER_IMG}
           alt="$3500 Weekly Race"
-          style={{ width: "min(480px, 90vw)", height: "auto", display: "inline-block", borderRadius: "16px" }}
+          style={{ width: "min(400px, 85vw)", height: "auto", display: "inline-block" }}
         />
       </div>
 
