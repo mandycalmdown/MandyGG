@@ -82,22 +82,54 @@
   display: inline-flex;
   align-items: center;
   margin-right: 0.5rem;
-}
-
-.site-nav__logo-img {
-  height: 38px;
-  width: auto;
-}
-
-/* ── Logo text fallback (if image fails or not present) ── */
-.site-nav__logo-text {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-size: 1.15rem;
-  letter-spacing: -0.01em;
-  color: #b5dc58;
   text-decoration: none;
+}
+
+/* ── Nav Logo Holo Style ── */
+.nav-logo-holo {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-logo-holo__text {
+  font-family: "Poppins", var(--font-poppins), sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+  /* text acts as mask for video */
+  background: #ffffff;
+  -webkit-background-clip: text;
+  background-clip: text;
+  mix-blend-mode: normal;
+}
+
+.nav-logo-holo__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+
+/* Desktop: show full text, hide mobile */
+.nav-logo-holo__text--desktop { display: inline; }
+.nav-logo-holo__text--mobile  { display: none; }
+
+/* Mobile: show "M", hide full text */
+@media (max-width: 640px) {
+  .nav-logo-holo__text--desktop { display: none; }
+  .nav-logo-holo__text--mobile  { display: inline; font-size: 1.4rem; }
 }
 
 /* Desktop links */
@@ -132,9 +164,9 @@
   border-color: rgba(255,255,255,0.1);
 }
 
-/* Active link gets lime accent underline */
+/* Active link gets blue accent underline */
 .site-nav__link--active {
-  color: #b5dc58;
+  color: #3C7BFF;
 }
 
 .site-nav__link--active::after {

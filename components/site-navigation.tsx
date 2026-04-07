@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import "@/styles/site-nav.css";
 
-const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
-const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_TEXT_SRC  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
+const HOLO_BTN_WEBM  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
+const HOLO_BTN_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
 const HOLO_WIDE_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-CNLyaOSVK5cArFRfu1FNHzb433j8iI.webm";
 const HOLO_WIDE_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-RpqZaJvObzwBscZHWnnvAXCjgzTJWB.mp4";
 
@@ -67,15 +68,13 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
       <nav className="site-nav" aria-label="Main navigation">
         <div className="site-nav__inner">
 
-          {/* Logo */}
-          <Link href="/" className="site-nav__logo" aria-label="Mandy.gg home">
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandy-gg-logo-small-REJQ74xYMktKwzxz1LsyZINIDXNKJs.webp"
-              alt="Mandy.gg"
-              width={120}
-              height={48}
-              className="site-nav__logo-img"
-            />
+          {/* Logo — holo text, "MANDY.GG" on desktop, "M" on mobile */}
+          <Link href="/" className="site-nav__logo nav-logo-holo" aria-label="Mandy.gg home">
+            <span className="nav-logo-holo__text nav-logo-holo__text--desktop">MANDY.GG</span>
+            <span className="nav-logo-holo__text nav-logo-holo__text--mobile">M</span>
+            <video autoPlay loop muted playsInline aria-hidden="true" className="nav-logo-holo__video">
+              <source src={HOLO_TEXT_SRC} type="video/mp4" />
+            </video>
           </Link>
 
           {/* Desktop links */}
