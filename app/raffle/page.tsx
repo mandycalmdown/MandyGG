@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 
 const PAGE_BG = "#00020a"
-const LIME    = "#b5dc58"
+const LIME    = "#3C7BFF"
 
 export default function RafflePage() {
   return (

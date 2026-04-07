@@ -11,6 +11,24 @@
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
+    ],
+    "/rewards/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/rewards/page.css",
+      "static/chunks/app/rewards/page.js"
+    ],
+    "/how-to-join/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/how-to-join/page.css",
+      "static/chunks/app/how-to-join/page.js"
+    ],
+    "/leaderboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/leaderboard/page.css",
+      "static/chunks/app/leaderboard/page.js"
     ]
   }
 }

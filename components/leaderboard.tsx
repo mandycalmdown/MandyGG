@@ -7,7 +7,6 @@ import { DailyRaffle } from "@/components/leaderboard-daily-raffle"
 import FlipCountdown from "@/components/FlipCountdown"
 import { isAdminSessionValid } from "@/lib/admin-session"
 import { clearLeaderboardCacheAction } from "@/app/actions/admin-actions"
-import MailingListForm from "@/components/MailingListForm"
 
 /* ── Theme constants ─ cool-toned blacks only ── */
 const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
@@ -20,7 +19,7 @@ const PAGE_BG  = "#00020a"   // very dark cool blue-black
 const CARD_BG  = "#080c14"   // off-black card, cool-toned
 const CARD_BG2 = "#0c1018"   // slightly lighter cool card
 
-const LIME   = "#b5dc58"
+const LIME   = "#3C7BFF"
 const PINK   = "#ff94b4"
 const PURPLE = "#6859d5"
 const BLUE   = "#5ac3ff"
@@ -361,7 +360,7 @@ export function Leaderboard() {
               <Link key={l.href} href={l.href} style={{ fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.1em", color: "#000", textDecoration: "none" }}>{l.label}</Link>
             ))}
           </nav>
-          <MailingListForm />
+
           <div style={{ marginTop: "2rem", borderTop: "2px solid rgba(0,0,0,0.45)", paddingTop: "1.25rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
             <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", letterSpacing: "0.06em" }}>© 2025 MANDY.GG. ALL RIGHTS RESERVED.</p>
             <div style={{ display: "flex", gap: "1.25rem" }}>

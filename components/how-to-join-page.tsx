@@ -4,16 +4,25 @@ import { SiteNavigation } from "@/components/site-navigation"
 import { ExternalLink, CheckCircle2, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import MailingListForm from "@/components/MailingListForm"
+import "@/styles/mandy-home.css"
 
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
 const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 
-const LIME   = "#b5dc58"
+const ACCENT = "#3C7BFF"
 const PINK   = "#ff94b4"
 const BLUE   = "#5ac3ff"
 const CARD   = "#080b10"
+
+function HoloText() {
+  return (
+    <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+      <source src={HOLO_TEXT_SRC} type="video/mp4" />
+    </video>
+  )
+}
 
 function HoloButton({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -41,7 +50,7 @@ function HoloButton({ href, children }: { href: string; children: React.ReactNod
 const STEPS = [
   {
     number: 1,
-    accent: LIME,
+    accent: ACCENT,
     title: "Visit Thrill with Code MANDY",
     body: "Click the button below to open Thrill.com. Make sure to use this specific link so you're registered under code MANDY and eligible for all exclusive rewards.",
     checks: [
@@ -70,7 +79,7 @@ const STEPS = [
   },
   {
     number: 3,
-    accent: LIME,
+    accent: ACCENT,
     title: "Verify Your Referral Code",
     body: "After signing up, click on your profile and verify that you are referred by mandycalmdown. This is crucial for reward eligibility.",
     checks: [
@@ -86,18 +95,26 @@ const STEPS = [
 
 export function HowToJoinPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#000", color: "#fff", fontFamily: "var(--font-poppins), sans-serif" }}>
+    <div className="mandy-home" style={{ minHeight: "100vh", background: "#000", color: "#fff", fontFamily: "var(--font-poppins), sans-serif" }}>
       <SiteNavigation currentPage="how-to-join" />
 
-      {/* ── Hero ── */}
-      <section style={{ padding: "6rem 1rem 3rem", textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
-        <h1 style={{ fontWeight: 900, fontSize: "clamp(2rem,7vw,4.5rem)", letterSpacing: "-0.01em", textTransform: "uppercase", lineHeight: 1.05, marginBottom: "1.25rem" }}>
-          HOW TO JOIN{" "}
-          <span style={{ color: LIME }}>THRILL</span>
-        </h1>
+      {/* ── Hero with Holo Header ── */}
+      <section style={{ padding: "6rem 1rem 3rem", textAlign: "center", maxWidth: "900px", margin: "0 auto" }}>
+        <div className="holo-mask" style={{ marginBottom: "1.5rem" }}>
+          <h1 className="holo-mask__letters" style={{
+            fontSize: "clamp(2.5rem, 10vw, 6rem)",
+            fontFamily: "Poppins, var(--font-poppins), sans-serif",
+            fontWeight: 900,
+            letterSpacing: "0.02em",
+          }}>
+            HOW TO JOIN
+          </h1>
+          <HoloText />
+          <span className="holo-sheen" aria-hidden="true" />
+        </div>
         <p style={{ fontSize: "clamp(0.9rem,2vw,1.1rem)", fontWeight: 600, color: "rgba(255,255,255,0.75)", letterSpacing: "0.04em", lineHeight: 1.6 }}>
           Follow these steps to join Thrill.com with code{" "}
-          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" style={{ color: LIME, fontWeight: 800, textDecoration: "none" }}>MANDY</a>{" "}
+          <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT, fontWeight: 800, textDecoration: "none" }}>MANDY</a>{" "}
           and unlock exclusive rewards.
         </p>
       </section>
@@ -180,9 +197,9 @@ export function HowToJoinPage() {
               </h3>
               <p style={{ fontSize: "0.95rem", fontWeight: 500, color: "rgba(255,255,255,0.85)", lineHeight: 1.7, marginBottom: "0.75rem" }}>
                 {"If your profile does not show \"Referred by mandycalmdown\" you "}
-                <strong style={{ color: LIME }}>MUST</strong>
+                <strong style={{ color: ACCENT }}>MUST</strong>
                 {" contact Thrill support before making any deposits or wagers. Otherwise you will not be under code "}
-                <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" style={{ color: LIME, fontWeight: 800, textDecoration: "none" }}>MANDY</a>
+                <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" style={{ color: ACCENT, fontWeight: 800, textDecoration: "none" }}>MANDY</a>
                 {" and will not be eligible for any rewards, cash drops, or leaderboard prizes."}
               </p>
               <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "rgba(255,255,255,0.65)" }}>
@@ -221,7 +238,7 @@ export function HowToJoinPage() {
             ))}
             <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.1em", color: "#000", textDecoration: "none" }}>SUPPORT</a>
           </nav>
-          <MailingListForm />
+
           <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(0,0,0,0.6)", letterSpacing: "0.06em", marginTop: "1.5rem" }}>
             © 2026 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+.
           </p>

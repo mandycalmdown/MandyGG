@@ -1,7 +1,6 @@
 "use client"
 
 import { SiteNavigation } from "@/components/site-navigation"
-import MailingListForm from "@/components/MailingListForm"
 import "@/styles/mandy-home.css"
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
@@ -43,7 +42,7 @@ export function RewardsPage() {
             fontFamily: "Poppins, var(--font-poppins), sans-serif",
             fontWeight: 800,
             fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-            color: "#b5dc58",
+            color: "#3C7BFF",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
             marginBottom: "1.5rem",
@@ -104,7 +103,7 @@ export function RewardsPage() {
               </a>
             ))}
           </div>
-          <MailingListForm />
+
           <p style={{
             fontFamily: "Poppins, var(--font-poppins), sans-serif",
             fontSize: "0.7rem",

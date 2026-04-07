@@ -11,7 +11,7 @@ const RAFFLE_ICON   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/R
 const PAGE_BG  = "#00020a"
 const CARD_BG  = "#080c14"
 const CARD_BG2 = "#0c1018"
-const LIME     = "#b5dc58"
+const LIME     = "#3C7BFF"
 const PINK     = "#ff94b4"
 const BLUE     = "#5ac3ff"
 

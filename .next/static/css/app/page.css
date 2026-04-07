@@ -295,12 +295,12 @@
   --m-card:      #080b10;   /* cool-toned near-black */
   --m-card2:     #0c1018;
   --m-white:     #ffffff;
-  --m-lime:      #b5dc58;
+  --m-lime:      #3C7BFF;
   --m-purple:    #6859d5;
   --m-pink:      #ff94b4;
   --m-blue:      #5ac3ff;
   --m-border:    rgba(255,255,255,0.07);
-  --m-stroke:    #b5dc58;
+  --m-stroke:    #3C7BFF;
 }
 
 /* ── Reset ── */

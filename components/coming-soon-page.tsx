@@ -65,7 +65,7 @@ export function ComingSoonPage({ currentPage }: ComingSoonPageProps) {
               fontFamily: "var(--font-poppins), Poppins, sans-serif",
               fontWeight: 700,
               fontSize: "1.1rem",
-              color: "#b5dc58",
+              color: "#3C7BFF",
               textTransform: "uppercase",
               letterSpacing: "0.04em",
               marginBottom: "0.5rem",

@@ -16,7 +16,7 @@ export default function SignUpSuccessPage() {
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontWeight: 900,
             fontSize: "clamp(2rem, 8vw, 2.8rem)",
-            color: "#b5dc58",
+            color: "#3C7BFF",
             textDecoration: "none",
             letterSpacing: "0.02em",
             textTransform: "uppercase",
@@ -32,7 +32,7 @@ export default function SignUpSuccessPage() {
           textAlign: "center",
         }}>
           <div style={{ fontSize: "3rem", marginBottom: "1rem", lineHeight: 1 }}>
-            <span style={{ color: "#b5dc58", fontFamily: "var(--font-poppins), sans-serif", fontWeight: 900 }}>&#10003;</span>
+            <span style={{ color: "#3C7BFF", fontFamily: "var(--font-poppins), sans-serif", fontWeight: 900 }}>&#10003;</span>
           </div>
           <h1 style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
@@ -46,7 +46,7 @@ export default function SignUpSuccessPage() {
           <p style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontSize: "0.8rem",
-            color: "#b5dc58",
+            color: "#3C7BFF",
             marginBottom: "1.5rem",
             letterSpacing: "0.04em",
           }}>{"We've sent you a confirmation link"}</p>
@@ -58,7 +58,7 @@ export default function SignUpSuccessPage() {
           </p>
           <Link href="/auth/login" style={{
             display: "block",
-            background: "#b5dc58",
+            background: "#3C7BFF",
             color: "#000000",
             borderRadius: "8px",
             padding: "0.85rem 1.6rem",

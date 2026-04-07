@@ -90,7 +90,7 @@ export default function LoginPage() {
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontWeight: 900,
             fontSize: "clamp(2rem, 8vw, 2.8rem)",
-            color: "#b5dc58",
+            color: "#3C7BFF",
             textDecoration: "none",
             letterSpacing: "0.02em",
             textTransform: "uppercase",
@@ -117,7 +117,7 @@ export default function LoginPage() {
           <p style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
             fontSize: "0.8rem",
-            color: "#b5dc58",
+            color: "#3C7BFF",
             marginBottom: "2rem",
             letterSpacing: "0.04em",
           }}>Sign in to access your stats and rewards</p>
