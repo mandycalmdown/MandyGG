@@ -1232,6 +1232,15 @@
     --tw-border-style: dashed;
     border-style: dashed;
   }
+  .border-\[\#3C7BFF\] {
+    border-color: #3C7BFF;
+  }
+  .border-\[\#3C7BFF\]\/20 {
+    border-color: color-mix(in oklab, #3C7BFF 20%, transparent);
+  }
+  .border-\[\#3C7BFF\]\/50 {
+    border-color: color-mix(in oklab, #3C7BFF 50%, transparent);
+  }
   .border-\[\#5cfec0\] {
     border-color: #5cfec0;
   }
@@ -1405,6 +1414,15 @@
   }
   .bg-\[\#1a1a1a\] {
     background-color: #1a1a1a;
+  }
+  .bg-\[\#3C7BFF\] {
+    background-color: #3C7BFF;
+  }
+  .bg-\[\#3C7BFF\]\/10 {
+    background-color: color-mix(in oklab, #3C7BFF 10%, transparent);
+  }
+  .bg-\[\#3C7BFF\]\/20 {
+    background-color: color-mix(in oklab, #3C7BFF 20%, transparent);
   }
   .bg-\[\#5cfec0\] {
     background-color: #5cfec0;
@@ -1767,6 +1785,12 @@
   }
   .text-\[\#000000\] {
     color: #000000;
+  }
+  .text-\[\#3C7BFF\] {
+    color: #3C7BFF;
+  }
+  .text-\[\#3C7BFF\]\/80 {
+    color: color-mix(in oklab, #3C7BFF 80%, transparent);
   }
   .text-\[\#5cfec0\] {
     color: #5cfec0;
@@ -2134,6 +2158,13 @@
       }
     }
   }
+  .hover\:border-\[\#3C7BFF\]\/40 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: color-mix(in oklab, #3C7BFF 40%, transparent);
+      }
+    }
+  }
   .hover\:border-\[\#5cfec0\]\/60 {
     &:hover {
       @media (hover: hover) {
@@ -2176,6 +2207,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: #4de8ad;
+      }
+    }
+  }
+  .hover\:bg-\[\#5A93FF\] {
+    &:hover {
+      @media (hover: hover) {
+        background-color: #5A93FF;
       }
     }
   }

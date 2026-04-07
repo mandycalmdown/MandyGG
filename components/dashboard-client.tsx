@@ -16,6 +16,10 @@ import type { User } from "@supabase/supabase-js"
 import { Camera, AlertCircle, CheckCircle, Lock, Ticket } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { SiteNavigation } from "@/components/site-navigation"
+import "@/styles/mandy-home.css"
+
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
+const ACCENT = "#3C7BFF"
 
 interface Profile {
   id: string
@@ -423,29 +427,45 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
   }
 
   return (
-    <div className="min-h-screen bg-black font-sans">
-      <div className="relative z-10">
-        {/* Navigation */}
-        <SiteNavigation currentPage="dashboard" />
+    <>
+      <SiteNavigation currentPage="dashboard" />
+      <div className="mandy-home min-h-screen bg-black font-sans">
+        <div className="relative z-10">
+          {/* Dashboard Content */}
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            {/* Holo Header */}
+            <div className="holo-mask mb-8" style={{ textAlign: "center" }}>
+              <h1
+                className="holo-mask__letters"
+                style={{
+                  fontSize: "clamp(2rem, 8vw, 4rem)",
+                  fontFamily: "Poppins, var(--font-poppins), sans-serif",
+                  fontWeight: 900,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                DEGEN DASHBOARD
+              </h1>
+              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+                <source src={HOLO_TEXT_SRC} type="video/mp4" />
+              </video>
+              <span className="holo-sheen" aria-hidden="true" />
+            </div>
 
-        {/* Dashboard Content */}
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-teal-500 mb-8 uppercase text-center">DEGEN DASHBOARD</h1>
-
-          {/* Profile Section */}
-          <Card
-            className="p-6 md:p-8 mb-6 rounded-xl border border-white/30"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
+            {/* Profile Section */}
+            <Card
+              className="p-6 md:p-8 mb-6 rounded-xl border border-white/10"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
               boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
             }}
           >
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative group">
-                <Avatar className="h-24 w-24 border-2 border-teal-500">
+                <Avatar className="h-24 w-24 border-2 border-[#3C7BFF]">
                   <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                  <AvatarFallback className="bg-[#1a1a1a] text-teal-500 text-2xl font-bold">
+                  <AvatarFallback className="bg-[#1a1a1a] text-[#3C7BFF] text-2xl font-bold">
                     {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -455,7 +475,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                   className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer disabled:cursor-not-allowed"
                   aria-label="Upload profile photo"
                 >
-                  <Camera className="h-8 w-8 text-teal-500" />
+                  <Camera className="h-8 w-8 text-[#3C7BFF]" />
                 </button>
                 <input
                   ref={fileInputRef}
@@ -474,15 +494,15 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 <p className="text-gray-400 mb-1">{user.email}</p>
                 {profile?.thrill_username && (
                   <div className="flex items-center gap-2 justify-center md:justify-start">
-                    <p className="text-teal-500 font-semibold">Thrill: @{profile.thrill_username}</p>
+                    <p className="text-[#3C7BFF] font-semibold">Thrill: @{profile.thrill_username}</p>
                     {profile.thrill_username_verified && (
-                      <div className="flex items-center gap-1 bg-teal-500/20 px-2 py-1 rounded-md">
-                        <CheckCircle className="h-4 w-4 text-teal-500" />
-                        <span className="text-xs text-teal-500 font-bold">VERIFIED</span>
+                      <div className="flex items-center gap-1 bg-[#3C7BFF]/20 px-2 py-1 rounded-md">
+                        <CheckCircle className="h-4 w-4 text-[#3C7BFF]" />
+                        <span className="text-xs text-[#3C7BFF] font-bold">VERIFIED</span>
                       </div>
                     )}
                     {profile.thrill_username_locked && (
-                      <Lock className="h-4 w-4 text-teal-500" title="Account locked" />
+                      <Lock className="h-4 w-4 text-[#3C7BFF]" title="Account locked" />
                     )}
                   </div>
                 )}
@@ -492,14 +512,14 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               {!profile?.thrill_username_locked && (
                 <Button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="bg-teal-500 text-black hover:bg-teal-400 font-bold rounded-xl"
+                  className="bg-[#3C7BFF] text-black hover:bg-[#5A93FF] font-bold rounded-xl"
                 >
                   {isEditing ? "Cancel" : "Edit Profile"}
                 </Button>
               )}
               {profile?.thrill_username_locked && (
                 <div className="text-center md:text-right">
-                  <div className="flex items-center gap-2 text-teal-500 mb-1">
+                  <div className="flex items-center gap-2 text-[#3C7BFF] mb-1">
                     <Lock className="h-5 w-5" />
                     <span className="font-bold">Account Locked</span>
                   </div>
@@ -589,8 +609,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 )}
 
                 {success && (
-                  <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-md">
-                    <p className="text-sm text-teal-500">{success}</p>
+                  <div className="p-3 bg-[#3C7BFF]/10 border border-[#3C7BFF]/20 rounded-md">
+                    <p className="text-sm text-[#3C7BFF]">{success}</p>
                   </div>
                 )}
 
@@ -612,7 +632,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 style={{
                   backgroundColor: "rgba(10, 10, 10, 0.95)",
                   boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
                 }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">
@@ -621,7 +641,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm text-gray-300">
                     <span>Progress to Poker Night Qualification</span>
-                    <span className="font-bold text-teal-500">
+                    <span className="font-bold text-[#3C7BFF]">
                       {isLoadingMonthlyWager
                         ? "..."
                         : `${formatCurrency(monthlyWager)} / ${formatCurrency(POKER_REQUIREMENT)}`}
@@ -640,19 +660,19 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                     <p className="text-sm text-gray-400 mb-2">Next Poker Night:</p>
                     <div className="flex justify-center gap-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.days}</div>
+                        <div className="text-2xl font-bold text-[#3C7BFF]">{pokerCountdown.days}</div>
                         <div className="text-xs text-gray-400">DAYS</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.hours}</div>
+                        <div className="text-2xl font-bold text-[#3C7BFF]">{pokerCountdown.hours}</div>
                         <div className="text-xs text-gray-400">HRS</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.minutes}</div>
+                        <div className="text-2xl font-bold text-[#3C7BFF]">{pokerCountdown.minutes}</div>
                         <div className="text-xs text-gray-400">MIN</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.seconds}</div>
+                        <div className="text-2xl font-bold text-[#3C7BFF]">{pokerCountdown.seconds}</div>
                         <div className="text-xs text-gray-400">SEC</div>
                       </div>
                     </div>
@@ -669,7 +689,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 style={{
                   backgroundColor: "rgba(10, 10, 10, 0.95)",
                   boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
                 }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">Wager Stats</h3>
@@ -683,7 +703,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                   </div>
                   <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
                     <p className="text-gray-400 text-sm uppercase mb-2">7 Day Wager (USD)</p>
-                    <p className="text-3xl font-bold text-teal-500">
+                    <p className="text-3xl font-bold text-[#3C7BFF]">
                       {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last7Days) : "$0"}
                     </p>
                   </div>
@@ -720,12 +740,12 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                   style={{
                     backgroundColor: "rgba(10, 10, 10, 0.95)",
                     boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
                   }}
                 >
                   <div className="text-center">
                     <p className="text-gray-400 text-sm uppercase mb-2">Current Leaderboard Rank</p>
-                    <p className="text-3xl font-bold text-teal-500">
+                    <p className="text-3xl font-bold text-[#3C7BFF]">
                       {isLoadingStats ? "..." : userStats ? `#${userStats.rank}` : "N/A"}
                     </p>
                   </div>
@@ -736,12 +756,12 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                   style={{
                     backgroundColor: "rgba(10, 10, 10, 0.95)",
                     boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
                   }}
                 >
                   <div className="text-center">
                     <p className="text-gray-400 text-sm uppercase mb-2">Total Prizes</p>
-                    <p className="text-3xl font-bold text-teal-500">
+                    <p className="text-3xl font-bold text-[#3C7BFF]">
                       {isLoadingStats ? "..." : userStats ? formatCurrency(userStats.prize) : "N/A"}
                     </p>
                   </div>
@@ -754,7 +774,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               style={{
                 backgroundColor: "rgba(10, 10, 10, 0.95)",
                 boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
               }}
             >
               <p className="text-gray-300 text-lg mb-4">
@@ -762,7 +782,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               </p>
               <Button
                 onClick={() => setIsEditing(true)}
-                className="bg-teal-500 text-black hover:bg-teal-400 font-bold rounded-xl"
+                className="bg-[#3C7BFF] text-black hover:bg-[#5A93FF] font-bold rounded-xl"
               >
                 Add Thrill Username
               </Button>
@@ -775,7 +795,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               style={{
                 backgroundColor: "rgba(10, 10, 10, 0.95)",
                 boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
               }}
             >
               <h3 className="text-xl font-bold text-white mb-2 uppercase">View Top 10</h3>
@@ -792,7 +812,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               style={{
                 backgroundColor: "rgba(10, 10, 10, 0.95)",
                 boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
               }}
             >
               <h3 className="text-xl font-bold text-white mb-2 uppercase">Rewards</h3>
@@ -811,11 +831,11 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
             </Card>
 
             <Card
-              className="p-6 rounded-xl border border-teal-500/50 hover:scale-105 transition-all duration-300 relative overflow-hidden"
+              className="p-6 rounded-xl border border-[#3C7BFF]/50 hover:scale-105 transition-all duration-300 relative overflow-hidden"
               style={{
                 backgroundColor: "rgba(10, 10, 10, 0.95)",
                 boxShadow:
-                  "0 8px 32px rgba(20, 184, 166, 0.3), 0 0 40px rgba(20, 184, 166, 0.2), 0 0 60px rgba(20, 184, 166, 0.1)",
+                  "0 8px 32px rgba(60, 123, 255, 0.3), 0 0 40px rgba(60, 123, 255, 0.2), 0 0 60px rgba(60, 123, 255, 0.1)",
               }}
             >
               {/* Metallic gradient overlay */}
@@ -823,7 +843,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 className="absolute inset-0 opacity-20"
                 style={{
                   background:
-                    "linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(20, 184, 166, 0.4) 50%, rgba(20, 184, 166, 0.4) 100%)",
+                    "linear-gradient(135deg, rgba(60, 123, 255, 0.4) 0%, rgba(60, 123, 255, 0.4) 50%, rgba(60, 123, 255, 0.4) 100%)",
                   backgroundSize: "200% 200%",
                   animation: "shimmer 3s ease-in-out infinite",
                 }}
@@ -833,12 +853,12 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               <div className="absolute inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-10">
                 <div className="text-center">
                   <p
-                    className="text-6xl font-black text-teal-500 mb-2"
-                    style={{ textShadow: "0 0 20px rgba(20, 184, 166, 0.8)" }}
+                    className="text-6xl font-black text-[#3C7BFF] mb-2"
+                    style={{ textShadow: "0 0 20px rgba(60, 123, 255, 0.8)" }}
                   >
                     wen?
                   </p>
-                  <p className="text-sm text-teal-500/80 uppercase tracking-wider">Something awesome is coming</p>
+                  <p className="text-sm text-[#3C7BFF]/80 uppercase tracking-wider">Something awesome is coming</p>
                 </div>
               </div>
 
@@ -846,7 +866,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               <p className="text-gray-400 mb-4">Stay tuned for something special...</p>
               <Button
                 disabled
-                className="w-full bg-teal-500/20 text-teal-500 font-bold rounded-xl uppercase cursor-not-allowed"
+                className="w-full bg-[#3C7BFF]/20 text-[#3C7BFF] font-bold rounded-xl uppercase cursor-not-allowed"
               >
                 Locked
               </Button>
@@ -857,14 +877,14 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         {/* Raffle Tickets Section */}
         <div className="px-4 mt-6 md:mt-8">
           <Card
-            className="max-w-6xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/20 transition-all duration-500 hover:border-[#CCFF00]/40"
+            className="max-w-6xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/20 transition-all duration-500 hover:border-[#3C7BFF]/40"
             style={{
               backgroundColor: "rgba(0, 0, 0, 0.95)",
               boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
             }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <Ticket className="w-6 h-6 text-[#CCFF00]" />
+              <Ticket className="w-6 h-6 text-[#3C7BFF]" />
               <h3 className="text-xl font-bold text-white uppercase">Daily Raffle Tickets</h3>
             </div>
             <p
@@ -899,7 +919,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       <span className="text-xs text-gray-400 uppercase" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
                         {date}
                       </span>
-                      <span className="text-xs text-[#CCFF00] font-bold" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
+                      <span className="text-xs text-[#3C7BFF] font-bold" style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}>
                         {tickets.length} ticket{tickets.length !== 1 ? "s" : ""}
                       </span>
                     </div>
@@ -907,7 +927,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       {tickets.map((ticket) => (
                         <span
                           key={ticket.id}
-                          className="px-2 py-1 rounded text-xs font-bold bg-[#CCFF00]/10 text-[#CCFF00] border border-[#CCFF00]/20"
+                          className="px-2 py-1 rounded text-xs font-bold bg-[#3C7BFF]/10 text-[#3C7BFF] border border-[#3C7BFF]/20"
                           style={{ fontFamily: "var(--font-jetbrains-mono), monospace" }}
                         >
                           #{ticket.ticket_number}
@@ -935,7 +955,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
             style={{
               backgroundColor: "rgba(10, 10, 10, 0.95)",
               boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
+                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60, 123, 255, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
             }}
           >
             <div className="text-center">
@@ -973,7 +993,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
             </div>
           </Card>
         </footer>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
