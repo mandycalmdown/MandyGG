@@ -980,6 +980,50 @@
 }
 
 /* ================================================================
+   RESPONSIVE — MOBILE ONLY (compact feature cards)
+================================================================ */
+@media (max-width: 640px) {
+  /* Reduce stage height for shorter cards */
+  .fc-stage {
+    height: 320px;
+  }
+
+  /* Smaller image, same relative position (50% above card) */
+  .fc-img-wrap {
+    top: -70px;   /* reduced from -100px */
+  }
+
+  .fc-img {
+    width: 150px !important;
+    height: 150px !important;
+  }
+
+  /* Compact card: less top padding (image overlaps less), tighter spacing */
+  .feature-card {
+    padding: 85px 1rem 1rem;  /* reduced from 120px top padding */
+  }
+
+  /* Tighter text spacing */
+  .feature-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .feature-desc {
+    margin: 0.4rem 0 0.8rem;
+    font-size: 0.6rem;
+    max-width: 20ch;
+  }
+
+  /* Slightly smaller button */
+  .card-btn {
+    font-size: 0.55rem !important;
+    padding: 0.4rem 0.9rem !important;
+    min-width: 100px !important;
+  }
+}
+
+/* ================================================================
    RESPONSIVE — TABLET (≤960px)
 ================================================================ */
 @media (max-width: 960px) {
