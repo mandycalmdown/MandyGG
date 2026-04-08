@@ -123,6 +123,9 @@
   box-shadow: none;
   /* Clip video precisely to rounded corners */
   isolation: isolate;
+  /* Ensure no blur filter is inherited or applied */
+  filter: none;
+  -webkit-filter: none;
 }
 
 .holo-button:hover {
@@ -332,6 +335,8 @@
   padding: 0.5rem 1.1rem !important;
   min-width: 110px !important;
   letter-spacing: 0.1em !important;
+  filter: none !important;
+  -webkit-filter: none !important;
 }
 
 /* ================================================================
