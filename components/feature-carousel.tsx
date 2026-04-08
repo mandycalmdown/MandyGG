@@ -104,7 +104,8 @@ function getSlotStyle(
     zIndex,
     transition: dragging
       ? "opacity 0.15s ease"                                           // no position transition while dragging
-      : "transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.42s ease",
+      : "transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease",
+    willChange: dragging ? "transform" : "auto",
   };
 }
 
@@ -196,6 +197,10 @@ export function FeatureCarousel() {
         onPointerCancel={onPointerUp}
         role="region"
         aria-label="Feature cards carousel"
+        style={{ 
+          cursor: dragging ? 'grabbing' : 'grab',
+          touchAction: 'pan-y pinch-zoom',
+        }}
       >
         {visibleOffsets.map((offset) => {
           const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
@@ -208,18 +213,10 @@ export function FeatureCarousel() {
               style={getSlotStyle(offset, dragging ? drag : 0, dragging)}
               aria-hidden={offset !== 0}
             >
-              <article
-                className="fc-card feature-card mandy-card"
-                style={{ width: `${CARD_W}px`, height: `${CARD_H}px` }}
-              >
+              <article className="fc-card feature-card mandy-card">
                 <span className="card-gloss" aria-hidden="true" />
                 <div className="fc-img-wrap" aria-hidden="true">
-                  <img
-                    src={c.img}
-                    alt=""
-                    className="fc-img"
-                    style={{ width: `${IMG_H}px`, height: `${IMG_H}px` }}
-                  />
+                  <img src={c.img} alt="" className="fc-img" />
                 </div>
                 <h2 className="feature-title">{c.title}</h2>
                 <p className="feature-desc">{c.desc}</p>
