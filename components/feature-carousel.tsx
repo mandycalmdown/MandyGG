@@ -208,7 +208,7 @@ export function FeatureCarousel() {
 
           return (
             <div
-              key={`${idx}-${offset}`}
+              key={idx}
               className="fc-slot"
               style={getSlotStyle(offset, dragging ? drag : 0, dragging)}
               aria-hidden={offset !== 0}
