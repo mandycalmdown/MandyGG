@@ -359,15 +359,7 @@
   z-index: 0;
 }
 
-/* Dark overlay so cards read clearly */
-.updates-bg-wrap::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.32);
-  z-index: 1;
-  pointer-events: none;
-}
+/* Removed dark overlay — cards now sit directly over holo video */
 
 .updates-section {
   position: relative;
