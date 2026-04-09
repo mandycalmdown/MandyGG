@@ -122,7 +122,7 @@ function getSlotStyle(
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent]     = useState(1);   // default: $3500 WEEKLY RACE
+  const [current, setCurrent]     = useState(0);   // default: $3500 WEEKLY RACE (index 0)
   const [drag, setDrag]           = useState(0);
   const [dragging, setDragging]   = useState(false);
 
