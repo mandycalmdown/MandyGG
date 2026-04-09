@@ -18,6 +18,12 @@ const FLICK_VELOCITY = 0.35;
 
 const CARDS = [
   {
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
+    title: "$3500 WEEKLY RACE",
+    desc: "JOIN THE RACE. USE CODE MANDY AND COMPETE FOR $3500 EVERY SINGLE WEEK.",
+    btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+  },
+  {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_ACE_ELEMENT-6NYnjlUBlCmacbsg5OMtZQenj3ztWY.webp",
     title: "THRILL",
     desc: "PLAY AT THRILL WITH CODE MANDY. TRUSTWORTHY, INSTANT PAYOUTS, NO KYC, NO BULLSHIT.",
@@ -30,15 +36,9 @@ const CARDS = [
     btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false },
   },
   {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
-    title: "$3500 WEEKLY RACE",
-    desc: "JOIN THE WEEKLY WAGER RACE. CODE MANDY PLAYERS COMPETE FOR $3500 EVERY WEEK.",
-    btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
-  },
-  {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_MEGAPHONE_ELEMENT-lMEgz2xUs9EzL3ahx3hxQAM03Dy3N9.webp",
-    title: "GOSSIP",
-    desc: "GAMBLING NEWS, CASINO DRAMA, BLOGS, AND THE STUFF PEOPLE ARE ACTUALLY TALKING ABOUT.",
+    title: "GAMBLING GOSSIP",
+    desc: "NEWS, DRAMA, CASINO REVIEWS, BLOGS AND THE STUFF ONLY DEGENS ARE TALKING ABOUT.",
     btn: { label: "READ MORE", href: "/blog", ext: false },
   },
   {
