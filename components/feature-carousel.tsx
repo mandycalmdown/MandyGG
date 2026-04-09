@@ -18,40 +18,52 @@ const FLICK_VELOCITY = 0.35;
 
 const CARDS = [
   {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DICE_FLOATING_ELEMENT-fgALe6PAlQzuWKZm0dVQuq22ma8BCW.webp",
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_ACE_ELEMENT-6NYnjlUBlCmacbsg5OMtZQenj3ztWY.webp",
     title: "THRILL",
-    desc: "IT'S LIKE STEAK BUT WITH LESS DRAMA. AND BETTER REWARDS.",
-    btn: { label: "TELL ME MORE", href: "https://thrill.com/?r=MANDY", ext: true },
+    desc: "PLAY AT THRILL WITH CODE MANDY. TRUSTWORTHY, INSTANT PAYOUTS, NO KYC, NO BULLSHIT.",
+    btn: { label: "PLAY AT THRILL", href: "https://thrill.com/?r=MANDY", ext: true },
+  },
+  {
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-lX6r2sI10WNpKSZ9wP94qoofPTmo2X.webp",
+    title: "WEEKLY RAFFLE",
+    desc: "WAGER TO EARN TICKETS AND ENTER THE WEEKLY $250 PRIZE DRAW.",
+    btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
     title: "$3500 WEEKLY RACE",
-    desc: "FORGET MONTHLY LEADERBOARDS, GET CODE MANDY FOR CASH WAGER TO WIN EVERY WEEK!",
+    desc: "JOIN THE WEEKLY WAGER RACE. CODE MANDY PLAYERS COMPETE FOR $3500 EVERY WEEK.",
     btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+  },
+  {
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_MEGAPHONE_ELEMENT-lMEgz2xUs9EzL3ahx3hxQAM03Dy3N9.webp",
+    title: "GOSSIP",
+    desc: "GAMBLING NEWS, CASINO DRAMA, BLOGS, AND THE STUFF PEOPLE ARE ACTUALLY TALKING ABOUT.",
+    btn: { label: "READ MORE", href: "/blog", ext: false },
+  },
+  {
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_GIFTBOX_ELEMENT-WOlVpXW7THckXd3pgRCKF05UvepZtu.webp",
+    title: "REWARDS",
+    desc: "SEE WHY PLAYING UNDER CODE MANDY PAYS BETTER. REWARDS, PERKS, CASHBACK, AND MORE.",
+    btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
     title: "DEGEN DASHBOARD",
-    desc: "TRACK YOUR STATS, MONITOR YOUR PROGRESS, AND LEVEL UP YOUR GAME.",
-    btn: { label: "VIEW DASHBOARD", href: "/auth/login", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/GIFT_FLOATING_ELEMENT-0kSS0Tl60Pg4YLQgNErd978xuRkLro.webp",
-    title: "REWARDS",
-    desc: "UNLOCK EXCLUSIVE PERKS, BONUSES, AND CASHBACK — LOYALTY PAYS BETTER HERE.",
-    btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
+    desc: "TRACK YOUR STATS, RAFFLE TICKETS, POKER ELIGIBILITY, AND WEEKLY PROGRESS IN ONE PLACE.",
+    btn: { label: "OPEN DASHBOARD", href: "/dashboard", ext: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKER_CHIP_MANDYGG-fIvqIhEVsgRxMiDWG7fM6VkuB83oMD.webp",
     title: "POKER NIGHT",
-    desc: "CHECK YOUR PROGRESS TO SEE IF YOU QUALIFY.",
-    btn: { label: "OPEN DASHBOARD", href: "/auth/login", ext: false },
+    desc: "MONTHLY VIP POKER GAME. $1000 PRIZE POOL. WAGER $50K MONTHLY TO QUALIFY.",
+    btn: { label: "VIEW POKER NIGHT", href: "/poker", ext: false },
   },
   {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-2riBeZGxolnq3wp0udz3lpqmAgcL6L.webp",
-    title: "WEEKLY RAFFLE",
-    desc: "WAGER TO EARN TICKETS. $250 WINNER DRAWN EVERY FRIDAY.",
-    btn: { label: "VIEW RAFFLE", href: "/leaderboard#raffle", ext: false },
+    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/CHAT_BUBBLES-t5H6Ld4RrKgt95PbclU1Dq7o3AaquO.webp",
+    title: "CONNECT",
+    desc: "JOIN THE TELEGRAM. UPDATES, GIVEAWAYS, SUPPORT, GOSSIP, AND GENERAL CHAOS.",
+    btn: { label: "JOIN TELEGRAM", href: "https://t.me/mandygg", ext: true },
   },
 ] as const;
 
