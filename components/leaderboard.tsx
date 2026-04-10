@@ -15,15 +15,18 @@ const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
 const HEADER_IMG    = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDY_THRILL_LOGO_BLUE-Lz0ZbCXRoUM1B34hDApWmfjyR9PLal.webp"
 
-/* Cool-toned blacks — never warm */
-const PAGE_BG  = "#00020a"   // very dark cool blue-black
-const CARD_BG  = "#080c14"   // off-black card, cool-toned
-const CARD_BG2 = "#0c1018"   // slightly lighter cool card
+/* Solid black background with holographic accents */
+const PAGE_BG  = "#000000"   // solid black
+const CARD_BG  = "#0a0a0a"   // almost black cards
+const CARD_BG2 = "#0f0f0f"   // slightly lighter
 
-const LIME   = "#3C7BFF"
-const PINK   = "#ff94b4"
-const PURPLE = "#6859d5"
-const BLUE   = "#5ac3ff"
+// Holographic accent colors from video overlay
+const HOLO_BLUE    = "#3C7BFF"
+const HOLO_CYAN    = "#5ac3ff"
+const HOLO_PURPLE  = "#a855f7"
+const HOLO_PINK    = "#ff94b4"
+const HOLO_GREEN   = "#4ade80"
+const HOLO_YELLOW  = "#fbbf24"
 
 function HoloButton({ href, external, onClick, children, small }: {
   href?: string; external?: boolean; onClick?: () => void;

@@ -3,17 +3,21 @@
 import { useState, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 
-/* ── Theme — cool-toned blacks only ── */
+/* ── Theme — solid black with holographic accents ── */
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 const RAFFLE_ICON   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-2R1zyKNqx7bHHMtC4xyKlIOZmVZ63c.webp"
 
-const PAGE_BG  = "#00020a"
-const CARD_BG  = "#080c14"
-const CARD_BG2 = "#0c1018"
-const LIME     = "#3C7BFF"  // Main accent - blue
-const PINK     = "#ff94b4"
-const BLUE     = "#5ac3ff"
+const PAGE_BG  = "#000000"  // Solid black
+const CARD_BG  = "#0a0a0a"  // Almost black
+const CARD_BG2 = "#0f0f0f"  // Slightly lighter black
+// Holographic accent colors from video overlay
+const HOLO_BLUE    = "#3C7BFF"
+const HOLO_CYAN    = "#5ac3ff"
+const HOLO_PURPLE  = "#a855f7"
+const HOLO_PINK    = "#ff94b4"
+const HOLO_GREEN   = "#4ade80"
+const HOLO_YELLOW  = "#fbbf24"
 
 /* ── Countdown to next Friday midnight UTC ── */
 function getTimeToFridayUTC() {
@@ -196,10 +200,10 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
         {/* ── Live stats in compact bento grid ── */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.5rem", marginBottom: "1.5rem" }}>
           {[
-            { label: "Total Tickets", value: totalTickets || "—",  accent: LIME },
-            { label: "Players",       value: totalPlayers || "—",  accent: LIME },
-            { label: "Prize Pool",    value: `$${prizeAmount}`,    accent: LIME },
-            ...(userTickets !== null ? [{ label: "Your Tickets", value: userTickets, accent: LIME }] : []),
+            { label: "Total Tickets", value: totalTickets || "—",  accent: HOLO_CYAN },
+            { label: "Players",       value: totalPlayers || "—",  accent: HOLO_PURPLE },
+            { label: "Prize Pool",    value: `$${prizeAmount}`,    accent: HOLO_PINK },
+            ...(userTickets !== null ? [{ label: "Your Tickets", value: userTickets, accent: HOLO_BLUE }] : []),
           ].map((stat) => (
             <div key={stat.label} style={{ background: CARD_BG2, border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", padding: "0.75rem 0.85rem", textAlign: "center", transition: "border-color 0.3s ease" }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = "rgba(60,123,255,0.25)"}

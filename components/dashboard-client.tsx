@@ -22,7 +22,15 @@ const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 const RAFFLE_IMAGE = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-5nXhltypJsyT8gSS71VtOLkfrz07HQ.webp"
-const ACCENT = "#3C7BFF"
+
+// Holographic accent colors from video overlay
+const HOLO_BLUE    = "#3C7BFF"
+const HOLO_CYAN    = "#5ac3ff"
+const HOLO_PURPLE  = "#a855f7"
+const HOLO_PINK    = "#ff94b4"
+const HOLO_GREEN   = "#4ade80"
+const HOLO_YELLOW  = "#fbbf24"
+const ACCENT = HOLO_BLUE  // Primary accent
 
 interface Profile {
   id: string

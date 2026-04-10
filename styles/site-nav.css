@@ -62,13 +62,11 @@ body > main:first-of-type,
   to   { transform: translateX(-50%); }
 }
 
-/* ── Nav bar — same cool-black card style ── */
+/* ── Nav bar — almost black throughout site ── */
 .site-nav {
-  background: rgba(8,11,16,0.96);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 4px 32px rgba(0,0,0,0.75);
+  background: rgba(10,10,10,0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  box-shadow: none;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
