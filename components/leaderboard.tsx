@@ -27,6 +27,11 @@ const HOLO_PURPLE  = "#a855f7"
 const HOLO_PINK    = "#ff94b4"
 const HOLO_GREEN   = "#4ade80"
 const HOLO_YELLOW  = "#fbbf24"
+// Aliases used throughout component
+const LIME   = HOLO_BLUE
+const BLUE   = HOLO_CYAN
+const PURPLE = HOLO_PURPLE
+const PINK   = HOLO_PINK
 
 function HoloButton({ href, external, onClick, children, small }: {
   href?: string; external?: boolean; onClick?: () => void;
