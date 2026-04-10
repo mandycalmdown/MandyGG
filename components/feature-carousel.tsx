@@ -21,55 +21,55 @@ const CARDS = [
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
     title: "$3500 WEEKLY RACE",
     desc: "JOIN THE RACE. USE CODE MANDY AND COMPETE FOR $3500 EVERY SINGLE WEEK.",
-    btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false },
+    btn: { label: "VIEW LEADERBOARD", href: "/leaderboard", ext: false, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_ACE_ELEMENT-6NYnjlUBlCmacbsg5OMtZQenj3ztWY.webp",
     title: "THRILL",
     desc: "PLAY AT THRILL WITH CODE MANDY. TRUSTWORTHY, INSTANT PAYOUTS, NO KYC, NO BULLSHIT.",
-    btn: { label: "PLAY AT THRILL", href: "https://thrill.com/?r=MANDY", ext: true },
+    btn: { label: "PLAY AT THRILL", href: "https://thrill.com/?r=MANDY", ext: true, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-lX6r2sI10WNpKSZ9wP94qoofPTmo2X.webp",
     title: "WEEKLY RAFFLE",
     desc: "WAGER TO EARN TICKETS AND ENTER THE WEEKLY $250 PRIZE DRAW.",
-    btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false },
+    btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_MEGAPHONE_ELEMENT-lMEgz2xUs9EzL3ahx3hxQAM03Dy3N9.webp",
     title: "GAMBLING GOSSIP",
     desc: "NEWS, DRAMA, CASINO REVIEWS, BLOGS AND THE STUFF ONLY DEGENS ARE TALKING ABOUT.",
-    btn: { label: "READ MORE", href: "/blog", ext: false },
+    btn: { label: "READ MORE", href: "/blog", ext: false, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_GIFTBOX_ELEMENT-WOlVpXW7THckXd3pgRCKF05UvepZtu.webp",
     title: "REWARDS",
     desc: "SEE WHY PLAYING UNDER CODE MANDY PAYS BETTER. REWARDS, PERKS, CASHBACK, AND MORE.",
-    btn: { label: "VIEW REWARDS", href: "/rewards", ext: false },
+    btn: { label: "VIEW REWARDS", href: "/rewards", ext: false, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TOOLS_ICON-NePfAoiUJsdObxpNYghwB6YkR9rz3I.webp",
     title: "DEGEN DASHBOARD",
     desc: "TRACK YOUR STATS, RAFFLE TICKETS, POKER ELIGIBILITY, AND WEEKLY PROGRESS IN ONE PLACE.",
-    btn: { label: "OPEN DASHBOARD", href: "/dashboard", ext: false },
+    btn: { label: "OPEN DASHBOARD", href: "/dashboard", ext: false, modal: false },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/POKER_CHIP_MANDYGG-fIvqIhEVsgRxMiDWG7fM6VkuB83oMD.webp",
     title: "POKER NIGHT",
     desc: "MONTHLY VIP POKER GAME. $1000 PRIZE POOL. WAGER $50K MONTHLY TO QUALIFY.",
-    btn: { label: "VIEW POKER NIGHT", href: "/poker", ext: false },
+    btn: { label: "DETAILS", href: "#", ext: false, modal: true },
   },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/CHAT_BUBBLES-t5H6Ld4RrKgt95PbclU1Dq7o3AaquO.webp",
     title: "CONNECT",
     desc: "JOIN THE TELEGRAM. UPDATES, GIVEAWAYS, SUPPORT, GOSSIP, AND GENERAL CHAOS.",
-    btn: { label: "JOIN TELEGRAM", href: "https://t.me/mandygg", ext: true },
+    btn: { label: "JOIN TELEGRAM", href: "https://t.me/mandyggchat", ext: true, modal: false },
   },
 ] as const;
 
 const TOTAL = CARDS.length;
 
-function HoloButton({ href, ext, children }: { href: string; ext: boolean; children: React.ReactNode }) {
+function HoloButton({ href, ext, modal, onClick, children }: { href: string; ext: boolean; modal?: boolean; onClick?: () => void; children: React.ReactNode }) {
   const inner = (
     <>
       <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
@@ -79,8 +79,28 @@ function HoloButton({ href, ext, children }: { href: string; ext: boolean; child
       <span className="holo-btn__label">{children}</span>
     </>
   );
-  if (ext) return <a href={href} target="_blank" rel="noopener noreferrer" className="holo-button card-btn">{inner}</a>;
-  return <Link href={href} className="holo-button card-btn">{inner}</Link>;
+
+  if (modal) {
+    return (
+      <button type="button" onClick={onClick} className="holo-button card-btn">
+        {inner}
+      </button>
+    );
+  }
+
+  if (ext) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="holo-button card-btn">
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className="holo-button card-btn">
+      {inner}
+    </Link>
+  );
 }
 
 // Derive the visual translateX for a card at `offset` slots from center,
@@ -125,6 +145,7 @@ export function FeatureCarousel() {
   const [current, setCurrent]     = useState(0);   // default: $3500 WEEKLY RACE (index 0)
   const [drag, setDrag]           = useState(0);
   const [dragging, setDragging]   = useState(false);
+  const [pokerModalOpen, setPokerModalOpen] = useState(false);
 
   // Refs for velocity calculation
   const pointerStartX  = useRef(0);
@@ -232,7 +253,12 @@ export function FeatureCarousel() {
                 </div>
                 <h2 className="feature-title">{c.title}</h2>
                 <p className="feature-desc">{c.desc}</p>
-                <HoloButton href={c.btn.href} ext={c.btn.ext}>
+                <HoloButton 
+                  href={c.btn.href} 
+                  ext={c.btn.ext}
+                  modal={c.btn.modal}
+                  onClick={c.btn.modal ? () => setPokerModalOpen(true) : undefined}
+                >
                   {c.btn.label}
                 </HoloButton>
               </article>
@@ -253,6 +279,80 @@ export function FeatureCarousel() {
           </svg>
         </button>
       </div>
+
+      {/* Poker Night Details Modal */}
+      {pokerModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+          onClick={() => setPokerModalOpen(false)}
+        >
+          <div 
+            style={{
+              background: '#080c14',
+              border: '1.5px solid rgba(60,123,255,0.3)',
+              borderRadius: '16px',
+              padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+              maxWidth: '500px',
+              width: '100%',
+              position: 'relative',
+              boxShadow: '0 8px 32px rgba(60,123,255,0.2)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setPokerModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                padding: '0.5rem',
+                lineHeight: 1,
+              }}
+              aria-label="Close modal"
+            >
+              ×
+            </button>
+            <h2 style={{
+              fontFamily: 'var(--font-poppins), sans-serif',
+              fontWeight: 900,
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+              color: '#3C7BFF',
+              marginBottom: '1rem',
+              letterSpacing: '0.02em',
+            }}>
+              POKER NIGHT
+            </h2>
+            <p style={{
+              fontFamily: 'var(--font-poppins), sans-serif',
+              fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+              color: 'rgba(255,255,255,0.8)',
+              lineHeight: 1.6,
+              textAlign: 'center',
+              padding: '2rem 0',
+            }}>
+              Coming Soon
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
