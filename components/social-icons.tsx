@@ -53,7 +53,7 @@ export function TwitchIcon({ className }: { className?: string }) {
 
 export const socialLinks = [
   { Icon: DiscordIcon, href: "https://discord.gg/mandygg", label: "Discord" },
-  { Icon: TelegramIcon, href: "https://t.me/MandyggChat", label: "Telegram" },
+  { Icon: TelegramIcon, href: "https://t.me/mandyggchat", label: "Telegram" },
   { Icon: KickIcon, href: "https://kick.com/mandycalmdown", label: "Kick" },
   { Icon: XIcon, href: "https://x.com/mandycalmdown", label: "X" },
   { Icon: TwitchIcon, href: "https://twitch.tv/mandycalmdown", label: "Twitch" },

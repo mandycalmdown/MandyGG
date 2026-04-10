@@ -23,7 +23,7 @@ export const faqItems = [
     answer: (
       <span>
         Join the{" "}
-        <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">official Telegram group</a>
+        <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">official Telegram group</a>
         {" "}first. If you can{"'"}t find your answer in the group, message the{" "}
         <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">MandySupport bot</a>.
         {" "}Please do not DM me personally: personal messages go straight to the archive so I will not see them.
@@ -41,7 +41,7 @@ export const faqItems = [
           <li><strong>Lossback</strong>: You can request lossback from day one. To request, message the <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Support Bot on Telegram</a>.</li>
           <li><strong>Custom High Roller Benefits</strong>: If you are a high volume player, message the <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">MandySupportBot</a> and let{"'"}s put together your perfect VIP package.</li>
           <li><strong>Wager Targets</strong>: We can set personal targets with cash bonuses after completion.</li>
-          <li><strong>Events</strong>: Join the <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a> and get notified for different events with awesome cash prizes.</li>
+          <li><strong>Events</strong>: Join the <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a> and get notified for different events with awesome cash prizes.</li>
         </ul>
         <p className="text-sm italic bg-[#1a1a1a] p-3 rounded text-[#888]">
           <strong>Reminder:</strong> Think of bonuses and rewards as a small rebate for play you{"'"}re already planning to do, not a way to profit.

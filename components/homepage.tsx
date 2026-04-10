@@ -336,7 +336,7 @@ export function Homepage() {
             <Link href="/leaderboard">WEEKLY RACE</Link>
             <Link href="/tools">TOOLS</Link>
             <Link href="/blog">GOSSIP</Link>
-            <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+            <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
             <a href="https://discord.gg/mandygg" target="_blank" rel="noopener noreferrer">DISCORD</a>
           </nav>
         </div>

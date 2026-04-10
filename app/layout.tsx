@@ -45,10 +45,10 @@ export const metadata = {
     siteName: "Mandy.gg",
     type: "website",
     images: {
-      url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+      url: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandygg_sitepreview-B8vVqJHUkR7Bysk6KRJEKJPsfDV5Ri.png",
       width: 1200,
       height: 630,
-      alt: "Mandy.gg - More Perks, Less Regret",
+      alt: "Mandy.gg — Yeah I'm a Girl and I Gamble",
     },
     locale: "en_US",
   },
@@ -56,7 +56,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Mandy.gg | Crypto Casino Bonuses with Code MANDY",
     description: "Exclusive crypto casino perks, $3500 weekly wager race, and lossback rewards. Use code MANDY on Thrill.",
-    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandygg_sitepreview-B8vVqJHUkR7Bysk6KRJEKJPsfDV5Ri.png",
     creator: "@mandygg",
   },
   icons: {
