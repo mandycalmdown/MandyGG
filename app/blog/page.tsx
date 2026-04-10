@@ -11,42 +11,48 @@ export const metadata: Metadata = {
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
 const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 
+const PLACEHOLDER_IMG = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/blogheader_placeholder-uB5MnjFpMp744NAGPoPiz9bVmUlMsa.webp"
+
 const POSTS = [
   {
-    slug: "why-thrill-is-different",
-    tag: "PLATFORM REVIEW",
-    title: "Why Thrill Is Actually Different (And I Mean It This Time)",
-    excerpt: "I've tried every casino that's slid into my DMs. Most of them are the same repackaged garbage. Thrill is not. Here's what changed my mind.",
-    date: "April 3, 2026",
+    slug: "post-one",
+    tag: "CASINO REVIEW",
+    title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+    excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.",
+    date: "April 2026",
     readTime: "4 min",
     accent: "#3C7BFF",
+    img: PLACEHOLDER_IMG,
   },
   {
-    slug: "casino-red-flags",
-    tag: "ADVICE",
-    title: "7 Red Flags That Tell You to Leave a Casino Immediately",
-    excerpt: "Slow withdrawals. Confusing bonus terms. Sketchy support. I've been burned so you don't have to be. Know these signs before you deposit.",
-    date: "March 28, 2026",
-    readTime: "5 min",
-    accent: "#ff94b4",
-  },
-  {
-    slug: "leaderboard-strategy",
+    slug: "post-two",
     tag: "STRATEGY",
-    title: "How to Actually Compete in the Weekly Leaderboard",
-    excerpt: "Spoiler: it's not about betting big. It's about betting smart. Here's how I think about wager races and why most people approach them wrong.",
-    date: "March 21, 2026",
-    readTime: "6 min",
-    accent: "#3C7BFF",
+    title: "Ut enim ad minim veniam quis nostrud exercitation ullamco",
+    excerpt: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.",
+    date: "April 2026",
+    readTime: "5 min",
+    accent: "#a855f7",
+    img: PLACEHOLDER_IMG,
   },
   {
-    slug: "girl-who-gambles",
-    tag: "PERSONAL",
-    title: "Yeah, I'm a Girl and I Gamble. Get Over It.",
-    excerpt: "The comments, the DMs, the \"does your boyfriend know?\" messages. I'm tired of explaining myself. Here's the last time I will.",
-    date: "March 14, 2026",
-    readTime: "3 min",
+    slug: "post-three",
+    tag: "ADVICE",
+    title: "Duis aute irure dolor in reprehenderit in voluptate velit",
+    excerpt: "Sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+    date: "March 2026",
+    readTime: "6 min",
     accent: "#ff94b4",
+    img: PLACEHOLDER_IMG,
+  },
+  {
+    slug: "post-four",
+    tag: "PERSONAL",
+    title: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur",
+    excerpt: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias.",
+    date: "March 2026",
+    readTime: "3 min",
+    accent: "#4ade80",
+    img: PLACEHOLDER_IMG,
   },
 ]
 
@@ -86,46 +92,68 @@ export default function BlogPage() {
                 href={`/blog/${post.slug}`}
                 style={{ textDecoration: "none", display: "block" }}
               >
-                <article style={{
-                  background: "#080c14",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  borderRadius: "16px",
-                  padding: "1.75rem",
-                  transition: "border-color 0.2s ease, transform 0.2s ease",
-                  cursor: "pointer",
-                  height: "100%",
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.85rem" }}>
-                    <span style={{
-                      fontSize: "0.55rem", fontWeight: 900, letterSpacing: "0.18em",
-                      color: post.accent, textTransform: "uppercase",
-                      border: `1px solid ${post.accent}`, borderRadius: "4px",
-                      padding: "0.2rem 0.5rem",
-                    }}>
-                      {post.tag}
-                    </span>
-                    <span style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.35)", fontWeight: 600 }}>
-                      {post.date} · {post.readTime} read
-                    </span>
+                <article
+                  style={{
+                    background: "#0a0a0a",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                    cursor: "pointer",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = `${post.accent}55`
+                    e.currentTarget.style.boxShadow = `0 8px 32px ${post.accent}18`
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"
+                    e.currentTarget.style.boxShadow = "none"
+                  }}
+                >
+                  <div style={{ height: "160px", overflow: "hidden", flexShrink: 0 }}>
+                    <img
+                      src={post.img}
+                      alt=""
+                      aria-hidden="true"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
                   </div>
-                  <h2 style={{
-                    fontWeight: 800, fontSize: "clamp(1rem,2.5vw,1.2rem)",
-                    color: "#fff", lineHeight: 1.3, marginBottom: "0.65rem",
-                    letterSpacing: "0.01em",
-                  }}>
-                    {post.title}
-                  </h2>
-                  <p style={{
-                    fontSize: "0.78rem", color: "rgba(255,255,255,0.6)",
-                    lineHeight: 1.65, margin: 0,
-                  }}>
-                    {post.excerpt}
-                  </p>
-                  <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <span style={{ fontSize: "0.65rem", fontWeight: 800, color: post.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                      READ MORE
-                    </span>
-                    <span style={{ color: post.accent, fontSize: "0.75rem" }}>→</span>
+                  <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.85rem" }}>
+                      <span style={{
+                        fontSize: "0.55rem", fontWeight: 900, letterSpacing: "0.18em",
+                        color: post.accent, textTransform: "uppercase",
+                        border: `1px solid ${post.accent}`, borderRadius: "4px",
+                        padding: "0.2rem 0.5rem",
+                      }}>
+                        {post.tag}
+                      </span>
+                      <span style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.35)", fontWeight: 600 }}>
+                        {post.date} · {post.readTime} read
+                      </span>
+                    </div>
+                    <h2 style={{
+                      fontWeight: 800, fontSize: "clamp(1rem,2.5vw,1.15rem)",
+                      color: "#fff", lineHeight: 1.3, marginBottom: "0.65rem",
+                      letterSpacing: "0.01em",
+                    }}>
+                      {post.title}
+                    </h2>
+                    <p style={{
+                      fontSize: "0.78rem", color: "rgba(255,255,255,0.55)",
+                      lineHeight: 1.65, margin: 0, flex: 1,
+                    }}>
+                      {post.excerpt}
+                    </p>
+                    <div style={{ marginTop: "1.25rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                      <span style={{ fontSize: "0.65rem", fontWeight: 800, color: post.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                        READ MORE
+                      </span>
+                      <span style={{ color: post.accent, fontSize: "0.75rem" }}>→</span>
+                    </div>
                   </div>
                 </article>
               </Link>
@@ -153,7 +181,7 @@ export default function BlogPage() {
               ))}
             </nav>
             <div style={{ marginTop: "2rem", borderTop: "2px solid rgba(0,0,0,0.45)", paddingTop: "1.25rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
-              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", letterSpacing: "0.06em" }}>© 2025 MANDY.GG. ALL RIGHTS RESERVED.</p>
+              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", letterSpacing: "0.06em" }}>© 2026 MANDY.GG. ALL RIGHTS RESERVED.</p>
               <div style={{ display: "flex", gap: "1.25rem" }}>
                 {[{ label: "PRIVACY", href: "/privacy" }, { label: "TERMS", href: "/terms" }, { label: "SUPPORT", href: "https://t.me/mandysupport_bot" }].map((l) => (
                   <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", textDecoration: "none", letterSpacing: "0.06em" }}>{l.label}</a>

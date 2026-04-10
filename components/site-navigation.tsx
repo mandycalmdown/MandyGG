@@ -18,6 +18,7 @@ const TICKER_TEXT = "| CODE: MANDY ON THRILL.COM ";
 const NAV_LINKS = [
   { href: "/",             label: "HOME" },
   { href: "/how-to-join",  label: "HOW TO" },
+  { href: "/casinos",      label: "CASINOS" },
   { href: "/rewards",      label: "REWARDS" },
   { href: "/dashboard",    label: "DEGEN DASHBOARD" },
   { href: "/leaderboard",  label: "LEADERBOARD" },

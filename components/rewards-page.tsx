@@ -115,7 +115,7 @@ export function RewardsPage() {
             letterSpacing: "0.06em",
             lineHeight: 1.6,
           }}>
-            {"© 2025 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE."}
+            {"© 2026 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE."}
           </p>
         </div>
       </footer>

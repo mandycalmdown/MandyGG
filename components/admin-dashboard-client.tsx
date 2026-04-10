@@ -111,6 +111,17 @@ interface UpdatePost {
   updated_at: string
 }
 
+interface Casino {
+  id: string
+  name: string
+  description: string | null
+  referral_url: string
+  logo_url: string | null
+  sort_order: number
+  is_active: boolean
+  created_at: string
+}
+
 interface AdminDashboardClientProps {
   user: User
   profiles: Profile[]
@@ -118,7 +129,7 @@ interface AdminDashboardClientProps {
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<
-    "users" | "daily" | "custom" | "announcements" | "poker" | "raffle" | "blog" | "updates" | "settings"
+    "users" | "daily" | "custom" | "announcements" | "poker" | "raffle" | "blog" | "updates" | "casinos" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -201,8 +212,121 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [updateActive, setUpdateActive] = useState(true)
   const [uploadingUpdateIcon, setUploadingUpdateIcon] = useState(false)
 
+  // Casinos state
+  const [casinos, setCasinos] = useState<Casino[]>([])
+  const [isLoadingCasinos, setIsLoadingCasinos] = useState(false)
+  const [editingCasino, setEditingCasino] = useState<Casino | null>(null)
+  const [casinoName, setCasinoName] = useState("")
+  const [casinoDescription, setCasinoDescription] = useState("")
+  const [casinoReferralUrl, setCasinoReferralUrl] = useState("")
+  const [casinoLogoUrl, setCasinoLogoUrl] = useState("")
+  const [casinoSortOrder, setCasinoSortOrder] = useState(0)
+  const [casinoActive, setCasinoActive] = useState(true)
+  const [uploadingCasinoLogo, setUploadingCasinoLogo] = useState(false)
+  const [casinoStatus, setCasinoStatus] = useState<string | null>(null)
+
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (activeTab === "casinos") fetchCasinos()
+  }, [activeTab])
+
+  async function fetchCasinos() {
+    setIsLoadingCasinos(true)
+    try {
+      const res = await fetch("/api/admin/casinos")
+      const data = await res.json()
+      if (data.casinos) setCasinos(data.casinos)
+    } catch (err) {
+      console.error("[v0] Error fetching casinos:", err)
+    } finally {
+      setIsLoadingCasinos(false)
+    }
+  }
+
+  async function handleCasinoLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingCasinoLogo(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      const data = await res.json()
+      if (data.url) setCasinoLogoUrl(data.url)
+    } catch (err) {
+      console.error("[v0] Casino logo upload error:", err)
+    } finally {
+      setUploadingCasinoLogo(false)
+    }
+  }
+
+  function resetCasinoForm() {
+    setEditingCasino(null)
+    setCasinoName("")
+    setCasinoDescription("")
+    setCasinoReferralUrl("")
+    setCasinoLogoUrl("")
+    setCasinoSortOrder(0)
+    setCasinoActive(true)
+    setCasinoStatus(null)
+  }
+
+  function handleEditCasino(casino: Casino) {
+    setEditingCasino(casino)
+    setCasinoName(casino.name)
+    setCasinoDescription(casino.description || "")
+    setCasinoReferralUrl(casino.referral_url)
+    setCasinoLogoUrl(casino.logo_url || "")
+    setCasinoSortOrder(casino.sort_order)
+    setCasinoActive(casino.is_active)
+  }
+
+  async function handleSaveCasino() {
+    if (!casinoName.trim() || !casinoReferralUrl.trim()) {
+      setCasinoStatus("Name and referral URL are required.")
+      return
+    }
+    const body = {
+      id: editingCasino?.id,
+      name: casinoName,
+      description: casinoDescription,
+      referral_url: casinoReferralUrl,
+      logo_url: casinoLogoUrl,
+      sort_order: casinoSortOrder,
+      is_active: casinoActive,
+    }
+    try {
+      const res = await fetch("/api/admin/casinos", {
+        method: editingCasino ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setCasinoStatus(editingCasino ? "Casino updated!" : "Casino created!")
+        resetCasinoForm()
+        fetchCasinos()
+      } else {
+        setCasinoStatus(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setCasinoStatus("Save failed.")
+    }
+  }
+
+  async function handleDeleteCasino(id: string) {
+    if (!confirm("Delete this casino?")) return
+    try {
+      const res = await fetch(`/api/admin/casinos?id=${id}`, { method: "DELETE" })
+      const data = await res.json()
+      if (data.success) fetchCasinos()
+      else setCasinoStatus(`Error: ${data.error}`)
+    } catch (err) {
+      setCasinoStatus("Delete failed.")
+    }
+  }
 
   // (rest of the existing useEffects and functions like fetch stats, poker qualifiers, etc.)
 
@@ -963,8 +1087,15 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
             Updates
           </Button>
           <Button
-            variant={activeTab === "settings" ? "default" : "ghost"}
-            onClick={() => setActiveTab("settings")}
+              variant={activeTab === "casinos" ? "default" : "ghost"}
+              onClick={() => setActiveTab("casinos")}
+              className="gap-2"
+            >
+              <span>🎰</span> Casinos
+            </Button>
+            <Button
+              variant={activeTab === "settings" ? "default" : "ghost"}
+              onClick={() => setActiveTab("settings")}
             className="gap-2"
           >
             <Settings className="h-4 w-4" />
@@ -1644,6 +1775,102 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
                         <Button variant="destructive" size="sm" onClick={() => handleDeleteUpdate(update.id)}>
                           Delete
                         </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Casinos Tab */}
+        {activeTab === "casinos" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Casino Cards</h2>
+
+            {casinoStatus && (
+              <div className="mb-4 p-3 bg-accent rounded-md text-accent-foreground text-sm">{casinoStatus}</div>
+            )}
+
+            {/* Casino Form */}
+            <div className="mb-8 p-6 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-4">
+                {editingCasino ? "Edit Casino" : "Add New Casino"}
+              </h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-muted-foreground">Casino Name *</Label>
+                    <Input value={casinoName} onChange={(e) => setCasinoName(e.target.value)} placeholder="e.g. Thrill" className="bg-background border-border text-foreground" />
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Referral URL *</Label>
+                    <Input value={casinoReferralUrl} onChange={(e) => setCasinoReferralUrl(e.target.value)} placeholder="https://casino.com/?r=MANDY" className="bg-background border-border text-foreground" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Short Description</Label>
+                  <Textarea value={casinoDescription} onChange={(e) => setCasinoDescription(e.target.value)} placeholder="One-liner about this casino" className="bg-background border-border text-foreground" rows={2} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-muted-foreground">Logo Image</Label>
+                    <div className="flex gap-2 items-end mt-2">
+                      <Input type="file" accept="image/*" onChange={handleCasinoLogoUpload} disabled={uploadingCasinoLogo} className="bg-background border-border text-foreground" />
+                      {uploadingCasinoLogo && <span className="text-sm text-muted-foreground">Uploading...</span>}
+                    </div>
+                    {casinoLogoUrl && <img src={casinoLogoUrl} alt="Logo" className="w-16 h-16 object-contain rounded-md mt-2 bg-white p-1" />}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Sort Order</Label>
+                    <Input type="number" value={casinoSortOrder} onChange={(e) => setCasinoSortOrder(parseInt(e.target.value))} className="bg-background border-border text-foreground" />
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 text-card-foreground cursor-pointer">
+                  <input type="checkbox" checked={casinoActive} onChange={(e) => setCasinoActive(e.target.checked)} className="w-4 h-4" />
+                  <span>Active (show on casinos page)</span>
+                </label>
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveCasino} className="gap-2">
+                    <Save className="h-4 w-4" />
+                    {editingCasino ? "Update Casino" : "Add Casino"}
+                  </Button>
+                  {editingCasino && (
+                    <Button onClick={resetCasinoForm} variant="outline" className="gap-2">
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Casino List */}
+            <div>
+              <h3 className="font-semibold text-card-foreground mb-4">Existing Casinos</h3>
+              {isLoadingCasinos ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : casinos.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">No casinos yet</div>
+              ) : (
+                <div className="space-y-3">
+                  {casinos.map((casino) => (
+                    <div key={casino.id} className="flex items-center justify-between p-4 bg-accent/30 rounded-lg border border-border">
+                      <div className="flex items-center gap-4 flex-1">
+                        {casino.logo_url && <img src={casino.logo_url} alt={casino.name} className="w-12 h-12 object-contain rounded bg-white p-1" />}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-card-foreground">{casino.name}</h4>
+                          <a href={casino.referral_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline">{casino.referral_url}</a>
+                          {casino.description && <p className="text-sm text-muted-foreground mt-0.5">{casino.description}</p>}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Order: {casino.sort_order} · {casino.is_active ? "Active" : "Hidden"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleEditCasino(casino)}>Edit</Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteCasino(casino.id)}>Delete</Button>
                       </div>
                     </div>
                   ))}

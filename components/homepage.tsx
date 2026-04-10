@@ -9,28 +9,28 @@ import "@/styles/mandy-home.css";
 
 const BLOG_POSTS = [
   {
-    slug: "thrill-deposit-bonus",
-    tag: "THRILL",
-    date: "MAR 8, 2026",
-    title: "THRILL DEPOSIT BONUS: WHAT'S ACTUALLY WORTH IT",
+    slug: "",
+    tag: "CASINO REVIEW",
+    date: "APR 2026",
+    title: "LOREM IPSUM DOLOR SIT AMET CONSECTETUR ADIPISCING ELIT",
     excerpt:
-      "EVERYONE SAYS 'USE CODE MANDY' BUT NOBODY EXPLAINS WHY. HERE'S THE ACTUAL MATH ON THE BONUS STRUCTURE SO YOU CAN STOP LEAVING MONEY ON THE TABLE.",
+      "LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT. SED DO EIUSMOD TEMPOR INCIDIDUNT UT LABORE ET DOLORE MAGNA ALIQUA.",
   },
   {
-    slug: "bankroll-management",
+    slug: "",
     tag: "STRATEGY",
-    date: "MAR 5, 2026",
-    title: "BANKROLL MANAGEMENT FOR PEOPLE WHO HATE BANKROLL MANAGEMENT",
+    date: "APR 2026",
+    title: "UT ENIM AD MINIM VENIAM QUIS NOSTRUD EXERCITATION ULLAMCO",
     excerpt:
-      "YOU ALREADY KNOW YOU SHOULD HAVE A BANKROLL STRATEGY. YOU JUST DON'T HAVE ONE. LET ME MAKE IT SO SIMPLE YOU HAVE NO EXCUSE.",
+      "DUIS AUTE IRURE DOLOR IN REPREHENDERIT IN VOLUPTATE VELIT ESSE CILLUM DOLORE EU FUGIAT NULLA PARIATUR EXCEPTEUR SINT.",
   },
   {
-    slug: "how-to-place-in-race",
-    tag: "WEEKLY RACE",
-    date: "MAR 1, 2026",
-    title: "HOW TO ACTUALLY PLACE IN THE $3500 WEEKLY RACE",
+    slug: "",
+    tag: "ADVICE",
+    date: "MAR 2026",
+    title: "EXCEPTEUR SINT OCCAECAT CUPIDATAT NON PROIDENT SUNT IN CULPA",
     excerpt:
-      "THE LEADERBOARD RACE ISN'T JUST 'BET MORE.' THERE'S A REAL STRATEGY TO PLACING AND I'M GOING TO TELL YOU WHAT IT IS BECAUSE I WANT COMPETITION.",
+      "SUNT IN CULPA QUI OFFICIA DESERUNT MOLLIT ANIM ID EST LABORUM. SED UT PERSPICIATIS UNDE OMNIS ISTE NATUS ERROR SIT VOLUPTATEM.",
   },
 ];
 
@@ -152,11 +152,11 @@ export function Homepage() {
   };
 
   const announcements = [
-    { tag: "NEW",    variant: "new",    date: "MAR 8, 2026",  title: "$3500 WEEKLY RACE IS LIVE",         body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week." },
-    { tag: "UPDATE", variant: "update", date: "MAR 5, 2026",  title: "NEW GAMING TOOLS DROPPING SOON",    body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access." },
-    { tag: "ALERT",  variant: "alert",  date: "MAR 1, 2026",  title: "THRILL BONUS CODE: MANDY",          body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it." },
-    { tag: "INFO",   variant: "info",   date: "FEB 22, 2026", title: "MANDY.GG IS NOW LIVE",              body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next." },
-    { tag: "HOT",    variant: "new",    date: "FEB 16, 2026", title: "THRILL VIP LEVEL NOTES ADDED",      body: "VIP notes for wagering pace, reload timing, and perk optimization are now in progress for the next tool drop." },
+    { tag: "NEW",    variant: "new",    date: "APR 2026", title: "LOREM IPSUM DOLOR SIT AMET",         body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
+    { tag: "UPDATE", variant: "update", date: "APR 2026", title: "UT ENIM AD MINIM VENIAM",            body: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure." },
+    { tag: "ALERT",  variant: "alert",  date: "MAR 2026", title: "DUIS AUTE IRURE DOLOR",              body: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint." },
+    { tag: "INFO",   variant: "info",   date: "MAR 2026", title: "EXCEPTEUR SINT OCCAECAT",            body: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." },
+    { tag: "HOT",    variant: "new",    date: "MAR 2026", title: "NEMO ENIM IPSAM VOLUPTATEM",         body: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos." },
   ];
 
   return (
@@ -255,16 +255,16 @@ export function Homepage() {
           </div>
         </div>
         <div className="blog-grid">
-          {BLOG_POSTS.map((post) => (
+          {BLOG_POSTS.map((post, i) => (
             <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
+              key={i}
+              href="/blog"
               className="blog-card mandy-card"
               onMouseMove={card.onMove}
               onMouseLeave={card.onLeave}
             >
               <span className="card-gloss" aria-hidden="true" />
-              <div className="blog-image-placeholder" aria-hidden="true" />
+              <div className="blog-image-placeholder" aria-hidden="true" style={{ backgroundImage: "url(https://hebbkx1anhila5yf.public.blob.vercel-storage.com/blogheader_placeholder-uB5MnjFpMp744NAGPoPiz9bVmUlMsa.webp)", backgroundSize: "cover", backgroundPosition: "center" }} />
               <div className="blog-meta">
                 <span className="tag tag--blue">{post.tag}</span>
                 <span className="blog-date">{post.date}</span>
