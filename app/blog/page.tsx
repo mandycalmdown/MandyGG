@@ -1,12 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
-import type { Metadata } from "next"
 import "@/styles/mandy-home.css"
-
-export const metadata: Metadata = {
-  title: "Gambling Gossip | Mandy.gg",
-  description: "Casino drama, gambling takes, Thrill news, and the unfiltered truth — straight from Mandy.",
-}
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
 const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"

@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server"
 import { kv } from "@/lib/kv"
 import { fetchThrillData, convertAtomicValue } from "@/lib/thrill-api"
 
+export const dynamic = 'force-dynamic'
+
 // Updated:hi me again
 
 interface LeaderboardEntry {

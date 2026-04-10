@@ -2,6 +2,8 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
+export const dynamic = 'force-dynamic'
+
 /** Returns the ISO date string (YYYY-MM-DD) of the upcoming/current Friday. */
 function getFridayOfCurrentWeek(): string {
   const now = new Date()
