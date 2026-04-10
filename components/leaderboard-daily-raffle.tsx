@@ -6,12 +6,12 @@ import { ChevronDown } from "lucide-react"
 /* ── Theme — cool-toned blacks only ── */
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
-const RAFFLE_ICON   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/RAFFLE_ICON-wEJ9OoZlJBMcU6kfx1FskugZgAaH53.webp"
+const RAFFLE_ICON   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-2R1zyKNqx7bHHMtC4xyKlIOZmVZ63c.webp"
 
 const PAGE_BG  = "#00020a"
 const CARD_BG  = "#080c14"
 const CARD_BG2 = "#0c1018"
-const LIME     = "#3C7BFF"
+const LIME     = "#3C7BFF"  // Main accent - blue
 const PINK     = "#ff94b4"
 const BLUE     = "#5ac3ff"
 
@@ -146,11 +146,11 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
   const previousWinners = recentWinners.slice(1)
 
   const infoBox: React.CSSProperties = {
-    background:    "rgba(255,255,255,0.03)",
-    border:        "1px solid rgba(255,255,255,0.07)",
-    borderRadius:  "12px",
-    padding:       "1.25rem 1.5rem",
-    marginBottom:  "1.25rem",
+    background:    "rgba(255,255,255,0.02)",
+    border:        "1px solid rgba(255,255,255,0.06)",
+    borderRadius:  "10px",
+    padding:       "1rem 1.25rem",
+    marginBottom:  "1rem",
   }
 
   return (
@@ -159,11 +159,11 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
       style={{ background: PAGE_BG, maxWidth: "860px", margin: "0 auto", padding: "3rem 1rem 5rem" }}
     >
       {/* ── Raffle icon floats above card ── */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "-3.5rem", position: "relative", zIndex: 2 }}>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "-3rem", position: "relative", zIndex: 2 }}>
         <img
           src={RAFFLE_ICON}
-          alt="Mandy Raffle Ticket"
-          style={{ width: "min(190px, 48vw)", height: "auto", filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.8))" }}
+          alt="Mandy Raffle Tickets"
+          style={{ width: "min(220px, 55vw)", height: "auto", filter: "drop-shadow(0 6px 24px rgba(0,0,0,0.6))" }}
         />
       </div>
 
@@ -171,15 +171,19 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
       <div style={{
         background:    CARD_BG,
         border:        "1.5px solid rgba(255,255,255,0.07)",
-        borderRadius:  "20px",
-        boxShadow:     "0 4px 60px rgba(0,2,10,0.9)",
+        borderRadius:  "16px",
+        boxShadow:     "none",
         paddingTop:    "5rem",
-        paddingLeft:   "clamp(1.25rem, 4vw, 2.5rem)",
-        paddingRight:  "clamp(1.25rem, 4vw, 2.5rem)",
-        paddingBottom: "2.5rem",
+        paddingLeft:   "clamp(1.25rem, 4vw, 2rem)",
+        paddingRight:  "clamp(1.25rem, 4vw, 2rem)",
+        paddingBottom: "2rem",
         position:      "relative",
         zIndex:        1,
-      }}>
+        transition:    "box-shadow 0.3s ease",
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60,123,255,0.15)"}
+      onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
+      >
 
         {/* Title */}
         <h2 style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 900, fontSize: "clamp(1.5rem,4.5vw,2.4rem)", color: "#fff", textTransform: "uppercase", textAlign: "center", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>
@@ -189,36 +193,39 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
           EVERY FRIDAY AT MIDNIGHT UTC · 1 TICKET PER ${ticketsPerWager} WAGERED
         </p>
 
-        {/* ── Live stats row ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem", marginBottom: "1.75rem" }}>
+        {/* ── Live stats in compact bento grid ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "0.5rem", marginBottom: "1.5rem" }}>
           {[
             { label: "Total Tickets", value: totalTickets || "—",  accent: LIME },
-            { label: "Players",       value: totalPlayers || "—",  accent: BLUE },
-            { label: "Prize Pool",    value: `$${prizeAmount}`,    accent: PINK },
+            { label: "Players",       value: totalPlayers || "—",  accent: LIME },
+            { label: "Prize Pool",    value: `$${prizeAmount}`,    accent: LIME },
             ...(userTickets !== null ? [{ label: "Your Tickets", value: userTickets, accent: LIME }] : []),
           ].map((stat) => (
-            <div key={stat.label} style={{ background: CARD_BG2, border: "1px solid rgba(255,255,255,0.06)", borderRadius: "10px", padding: "0.85rem 1rem", textAlign: "center" }}>
-              <div style={{ fontSize: "clamp(1.4rem,4vw,1.9rem)", fontWeight: 900, color: stat.accent, lineHeight: 1 }}>{stat.value}</div>
-              <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.4)", marginTop: "4px", textTransform: "uppercase" }}>{stat.label}</div>
+            <div key={stat.label} style={{ background: CARD_BG2, border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", padding: "0.75rem 0.85rem", textAlign: "center", transition: "border-color 0.3s ease" }}
+              onMouseEnter={(e) => e.currentTarget.style.borderColor = "rgba(60,123,255,0.25)"}
+              onMouseLeave={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"}
+            >
+              <div style={{ fontSize: "clamp(1.2rem,3.5vw,1.6rem)", fontWeight: 900, color: stat.accent, lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", marginTop: "3px", textTransform: "uppercase" }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Countdown ── */}
-        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <p style={{ fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: "0.6rem" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <p style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
             NEXT DRAW IN
           </p>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
             {([["DAYS", countdown.days], ["HRS", countdown.hours], ["MIN", countdown.minutes], ["SEC", countdown.seconds]] as [string, number][]).map(([label, val], idx) => (
               <div key={label} style={{ display: "flex", alignItems: "center" }}>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "clamp(1.6rem,5vw,2.8rem)", fontWeight: 900, color: "#fff", lineHeight: 1, letterSpacing: "-0.02em", background: CARD_BG2, borderRadius: "8px", padding: "0.25rem 0.6rem", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ fontSize: "clamp(1.4rem,4.5vw,2.4rem)", fontWeight: 900, color: "#fff", lineHeight: 1, letterSpacing: "-0.02em", background: CARD_BG2, borderRadius: "6px", padding: "0.2rem 0.5rem", border: "1px solid rgba(255,255,255,0.06)" }}>
                     {pad(val)}
                   </div>
-                  <div style={{ fontSize: "0.52rem", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(255,255,255,0.35)", marginTop: "4px" }}>{label}</div>
+                  <div style={{ fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.35)", marginTop: "3px" }}>{label}</div>
                 </div>
-                {idx < 3 && <span style={{ fontSize: "clamp(1.2rem,4vw,2rem)", color: "rgba(255,255,255,0.18)", margin: "0 4px", marginBottom: "1.2rem" }}>:</span>}
+                {idx < 3 && <span style={{ fontSize: "clamp(1rem,3.5vw,1.6rem)", color: "rgba(255,255,255,0.18)", margin: "0 3px", marginBottom: "1rem" }}>:</span>}
               </div>
             ))}
           </div>
