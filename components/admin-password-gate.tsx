@@ -53,11 +53,11 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <Card
-          className="w-full max-w-md p-8 rounded-2xl border border-[#14b8a6]/50"
+          className="w-full max-w-md p-8 rounded-2xl"
           style={{
-            backgroundColor: "rgba(10, 10, 10, 0.95)",
-            boxShadow:
-              "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25), 0 0 40px rgba(20, 184, 166, 0.15)",
+            backgroundColor: "#010101",
+            border: "0.5px solid rgba(255,255,255,0.5)",
+            boxShadow: "none",
           }}
         >
           <div className="text-center mb-8">
@@ -65,7 +65,7 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
               <Lock className="h-8 w-8 text-[#14b8a6]" />
             </div>
             <h1 className="text-3xl font-bold text-[#14b8a6] uppercase mb-2">Admin Access</h1>
-            <p className="text-gray-400">Enter the admin password to continue</p>
+            <p className="text-white/60">Enter the admin password to continue</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,7 +75,7 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
                 placeholder="Admin Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-[#1a1a1a] border-[#333] text-white text-lg py-6"
+                className="bg-[#010101] border-white/30 text-white text-lg py-6"
                 autoFocus
               />
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -89,7 +89,7 @@ export function AdminPasswordGate({ children }: AdminPasswordGateProps) {
             </Button>
           </form>
 
-          <p className="text-gray-500 text-xs text-center mt-6">
+          <p className="text-white/40 text-xs text-center mt-6">
             Default password: admin123 (can be changed via NEXT_PUBLIC_ADMIN_PASSWORD env variable)
           </p>
         </Card>

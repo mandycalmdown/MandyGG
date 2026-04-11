@@ -49,14 +49,14 @@ export function MailingListForm() {
       <h3 className="text-lg md:text-xl font-bold text-white mb-3 uppercase text-center">Join Our Mailing List</h3>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="flex-1 relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/50" />
           <Input
             type="email"
             placeholder="your@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="bg-[#1a1a1a] border-[#333] text-white pl-10 placeholder:text-gray-500"
+            className="bg-[#010101] border-white/30 text-white pl-10 placeholder:text-white/40"
           />
         </div>
         <Button

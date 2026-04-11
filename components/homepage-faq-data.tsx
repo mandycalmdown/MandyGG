@@ -43,7 +43,7 @@ export const faqItems = [
           <li><strong>Wager Targets</strong>: We can set personal targets with cash bonuses after completion.</li>
           <li><strong>Events</strong>: Join the <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a> and get notified for different events with awesome cash prizes.</li>
         </ul>
-        <p className="text-sm italic bg-[#1a1a1a] p-3 rounded text-[#888]">
+        <p className="text-sm italic p-3 rounded text-white/55" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.2)" }}>
           <strong>Reminder:</strong> Think of bonuses and rewards as a small rebate for play you{"'"}re already planning to do, not a way to profit.
         </p>
       </div>

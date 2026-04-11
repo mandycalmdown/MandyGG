@@ -86,7 +86,7 @@
 .lb-toggle-btn--active {
   border-color: #c1ff00;
   background: #c1ff00;
-  color: #0c1118;
+  color: #000000;
   font-weight: 700;
 }
 
@@ -349,7 +349,7 @@
 /* ── loading skeleton ── */
 .lb-skeleton-row {
   height: 48px;
-  background: linear-gradient(90deg, #141a24 25%, #222 50%, #141a24 75%);
+  background: linear-gradient(90deg, #010101 25%, #1a1a1a 50%, #010101 75%);
   background-size: 200% 100%;
   border-radius: 8px;
   animation: lb-shimmer 1.4s ease infinite;

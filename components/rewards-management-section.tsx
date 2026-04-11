@@ -194,12 +194,8 @@ export function RewardsManagementSection() {
     <div className="space-y-6">
       {/* Create New Reward */}
       <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
+        className="p-6 rounded-xl"
+        style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-purple-400 uppercase">Create Rewards</h2>
@@ -222,7 +218,7 @@ export function RewardsManagementSection() {
         </div>
 
         {isCreating && (
-          <div className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30">
+          <div className="p-4 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
             <Label htmlFor="new-reward" className="text-white mb-2 block">
               Reward Description
             </Label>
@@ -231,7 +227,7 @@ export function RewardsManagementSection() {
               value={newRewardText}
               onChange={(e) => setNewRewardText(e.target.value)}
               placeholder="Enter reward description (e.g., 'Free entry to next tournament')"
-              className="bg-[#0a0a0a] border-[#333] text-white mb-4"
+              className="bg-[#010101] border-white/30 text-white mb-4"
               rows={3}
             />
             <Button
@@ -247,7 +243,7 @@ export function RewardsManagementSection() {
         {/* Available Rewards List */}
         {isLoading ? (
           <div className="text-center py-8">
-            <p className="text-gray-400">Loading rewards...</p>
+            <p className="text-white/55">Loading rewards...</p>
           </div>
         ) : rewards.length > 0 ? (
           <div className="space-y-3 mt-6">
@@ -255,13 +251,14 @@ export function RewardsManagementSection() {
             {rewards.map((reward) => (
               <div
                 key={reward.id}
-                className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30 flex items-center justify-between"
+                className="p-4 rounded-lg flex items-center justify-between"
+                style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}
               >
                 <div className="flex items-center gap-3 flex-1">
                   <Trophy className="h-6 w-6 text-purple-400" />
                   <div>
                     <p className="text-white font-semibold">{reward.name}</p>
-                    <p className="text-gray-400 text-sm">{reward.description}</p>
+                    <p className="text-white/55 text-sm">{reward.description}</p>
                   </div>
                 </div>
                 <Button
@@ -275,21 +272,17 @@ export function RewardsManagementSection() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg mt-6">
-            <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No rewards yet</p>
+          <div className="text-center py-8 rounded-lg mt-6" style={{ border: "1.5px dashed rgba(255,255,255,0.2)" }}>
+            <Trophy className="h-12 w-12 text-white/30 mx-auto mb-3" />
+            <p className="text-white/55">No rewards yet</p>
           </div>
         )}
       </Card>
 
       {/* Add Reward to User */}
       <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
+        className="p-6 rounded-xl"
+        style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
       >
         <h2 className="text-2xl font-bold text-purple-400 uppercase mb-6">Add Reward to User</h2>
 
@@ -297,12 +290,12 @@ export function RewardsManagementSection() {
           <div>
             <Label className="text-white mb-2 block">Select User</Label>
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="bg-[#1a1a1a] border-[#333] text-white">
+              <SelectTrigger className="bg-[#010101] border-white/30 text-white">
                 <SelectValue placeholder="Choose a user..." />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1a1a] border-[#333]">
+              <SelectContent className="bg-[#010101] border-white/30">
                 {profiles.map((profile) => (
-                  <SelectItem key={profile.id} value={profile.id} className="text-white hover:bg-[#333]">
+                  <SelectItem key={profile.id} value={profile.id} className="text-white">
                     {profile.display_name || profile.thrill_username || "Unknown User"}
                   </SelectItem>
                 ))}
@@ -313,12 +306,12 @@ export function RewardsManagementSection() {
           <div>
             <Label className="text-white mb-2 block">Select Reward</Label>
             <Select value={selectedRewardId} onValueChange={setSelectedRewardId}>
-              <SelectTrigger className="bg-[#1a1a1a] border-[#333] text-white">
+              <SelectTrigger className="bg-[#010101] border-white/30 text-white">
                 <SelectValue placeholder="Choose a reward..." />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a1a1a] border-[#333]">
+              <SelectContent className="bg-[#010101] border-white/30">
                 {rewards.map((reward) => (
-                  <SelectItem key={reward.id} value={reward.id} className="text-white hover:bg-[#333]">
+                  <SelectItem key={reward.id} value={reward.id} className="text-white">
                     {reward.name}
                   </SelectItem>
                 ))}
@@ -339,12 +332,8 @@ export function RewardsManagementSection() {
 
       {/* User Rewards List */}
       <Card
-        className="p-6 rounded-xl border border-purple-400/50"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25), 0 0 40px rgba(168, 85, 247, 0.15)",
-        }}
+        className="p-6 rounded-xl"
+        style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
       >
         <h2 className="text-2xl font-bold text-purple-400 uppercase mb-6">Assigned Rewards</h2>
 
@@ -353,14 +342,15 @@ export function RewardsManagementSection() {
             {userRewards.map((userReward) => (
               <div
                 key={userReward.id}
-                className="p-4 bg-[#1a1a1a] rounded-lg border border-purple-400/30 flex items-center justify-between"
+                className="p-4 rounded-lg flex items-center justify-between"
+                style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}
               >
                 <div className="flex-1">
                   <p className="text-white font-semibold">
                     {userReward.profile?.display_name || userReward.profile?.thrill_username || "Unknown User"}
                   </p>
                   <p className="text-purple-400 text-sm">{userReward.reward?.description}</p>
-                  <p className="text-gray-500 text-xs mt-1">
+                  <p className="text-white/40 text-xs mt-1">
                     Granted: {new Date(userReward.date_granted).toLocaleDateString()}
                   </p>
                 </div>
@@ -375,9 +365,9 @@ export function RewardsManagementSection() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-            <Gift className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No rewards assigned yet</p>
+          <div className="text-center py-8 rounded-lg" style={{ border: "1.5px dashed rgba(255,255,255,0.2)" }}>
+            <Gift className="h-12 w-12 text-white/30 mx-auto mb-3" />
+            <p className="text-white/55">No rewards assigned yet</p>
           </div>
         )}
       </Card>

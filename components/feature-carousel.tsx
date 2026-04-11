@@ -300,14 +300,14 @@ export function FeatureCarousel() {
         >
           <div 
             style={{
-              background: '#080c14',
-              border: '1.5px solid rgba(60,123,255,0.3)',
+              background: '#010101',
+              border: '0.5px solid rgba(255,255,255,0.5)',
               borderRadius: '16px',
               padding: 'clamp(1.5rem, 4vw, 2.5rem)',
               maxWidth: '500px',
               width: '100%',
               position: 'relative',
-              boxShadow: '0 8px 32px rgba(60,123,255,0.2)',
+              boxShadow: 'none',
             }}
             onClick={(e) => e.stopPropagation()}
           >

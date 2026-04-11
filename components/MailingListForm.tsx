@@ -46,13 +46,13 @@ export default function MailingListForm() {
   return (
     <div className="max-w-md mx-auto">
       <h3 className="text-lg md:text-xl font-bold text-white mb-3 uppercase text-center">Stay Updated</h3>
-      <p className="text-sm text-gray-300 mb-4 text-center">
+      <p className="text-sm text-white/70 mb-4 text-center">
         Subscribe to get the latest news, promotions, and updates
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
           <Input
             type="email"
             placeholder="Enter your email"
@@ -60,7 +60,7 @@ export default function MailingListForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={status === "loading"}
-            className="pl-10 bg-[#1a1a1a] border-[#333] text-white placeholder:text-gray-500"
+            className="pl-10 bg-[#010101] border-white/30 text-white placeholder:text-white/40"
           />
         </div>
         <Button

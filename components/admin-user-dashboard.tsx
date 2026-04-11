@@ -247,17 +247,13 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
 
           {/* Profile Section */}
           <Card
-            className="p-6 md:p-8 mb-6 rounded-xl border border-indigo-400/50"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-            }}
+            className="p-6 md:p-8 mb-6 rounded-xl"
+            style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
           >
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <Avatar className="h-24 w-24 border-2 border-indigo-400">
                 <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                <AvatarFallback className="bg-[#1a1a1a] text-indigo-400 text-2xl font-bold">
+                <AvatarFallback className="bg-[#010101] text-indigo-400 text-2xl font-bold">
                   {profile?.display_name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -280,17 +276,17 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
                 )}
                 <div className="flex flex-wrap gap-x-3 gap-y-1 mb-2">
                   {profile.pokernow_username && (
-                    <p className="text-sm text-gray-400">
-                      <span className="text-gray-500">PokerNow:</span> {profile.pokernow_username}
+                    <p className="text-sm text-white/60">
+                      <span className="text-white/40">PokerNow:</span> {profile.pokernow_username}
                     </p>
                   )}
                   {profile.telegram_username && (
-                    <p className="text-sm text-gray-400">
-                      <span className="text-gray-500">Telegram:</span> @{profile.telegram_username}
+                    <p className="text-sm text-white/60">
+                      <span className="text-white/40">Telegram:</span> @{profile.telegram_username}
                     </p>
                   )}
                 </div>
-                <p className="text-sm text-gray-500">Joined {formatDate(profile.created_at)}</p>
+                <p className="text-sm text-white/40">Joined {formatDate(profile.created_at)}</p>
               </div>
             </div>
           </Card>
@@ -299,18 +295,14 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
             <>
               {/* Monthly Poker Night Progress */}
               <Card
-                className="p-6 rounded-xl border border-indigo-400/50 mb-6"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-                }}
+                className="p-6 rounded-xl mb-6"
+                style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">
                   Monthly Poker Night Progress
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between text-sm text-gray-300">
+                  <div className="flex justify-between text-sm text-white/70">
                     <span>Progress to Poker Night Qualification</span>
                     <span className="font-bold text-indigo-400">
                       {isLoadingMonthlyWager
@@ -320,31 +312,32 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
                   </div>
                   <Progress
                     value={Math.min((monthlyWager / POKER_REQUIREMENT) * 100, 100)}
-                    className="h-4 bg-gray-800"
+                    className="h-4"
+                    style={{ background: "#1a1a1a" }}
                   />
-                  <p className="text-xs text-gray-400 text-center">
+                  <p className="text-xs text-white/50 text-center">
                     {monthlyWager >= POKER_REQUIREMENT
-                      ? "🎉 Qualified for this month's poker tournament!"
+                      ? "Qualified for this month's poker tournament!"
                       : `Wager ${formatCurrency(POKER_REQUIREMENT - monthlyWager)} more to qualify`}
                   </p>
                   <div className="text-center mt-4">
-                    <p className="text-sm text-gray-400 mb-2">Next Poker Night:</p>
+                    <p className="text-sm text-white/50 mb-2">Next Poker Night:</p>
                     <div className="flex justify-center gap-4">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-indigo-400">{pokerCountdown.days}</div>
-                        <div className="text-xs text-gray-400">DAYS</div>
+                        <div className="text-xs text-white/50">DAYS</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-indigo-400">{pokerCountdown.hours}</div>
-                        <div className="text-xs text-gray-400">HRS</div>
+                        <div className="text-xs text-white/50">HRS</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-indigo-400">{pokerCountdown.minutes}</div>
-                        <div className="text-xs text-gray-400">MIN</div>
+                        <div className="text-xs text-white/50">MIN</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-indigo-400">{pokerCountdown.seconds}</div>
-                        <div className="text-xs text-gray-400">SEC</div>
+                        <div className="text-xs text-white/50">SEC</div>
                       </div>
                     </div>
                   </div>
@@ -353,23 +346,19 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
 
               {/* Wager Stats */}
               <Card
-                className="p-6 rounded-xl border border-indigo-400/50 mb-6"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-                }}
+                className="p-6 rounded-xl mb-6"
+                style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
               >
                 <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">Wager Stats</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-sm uppercase mb-2">7 Day Wager (USD)</p>
+                  <div className="text-center p-4 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
+                    <p className="text-white/55 text-sm uppercase mb-2">7 Day Wager (USD)</p>
                     <p className="text-3xl font-bold text-indigo-400">
                       {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last7Days) : "$0"}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-sm uppercase mb-2">30 Day Wager (USD)</p>
+                  <div className="text-center p-4 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
+                    <p className="text-white/55 text-sm uppercase mb-2">30 Day Wager (USD)</p>
                     <p className="text-3xl font-bold text-indigo-400">
                       {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last30Days) : "$0"}
                     </p>
@@ -380,11 +369,8 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
               {/* Stats Error */}
               {statsError && (
                 <Card
-                  className="p-6 rounded-xl border border-[#3C7BFF]/30 mb-6"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60,123,255,0.12)",
-                  }}
+                  className="p-6 rounded-xl mb-6"
+                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(60,123,255,0.4)", boxShadow: "none" }}
                 >
                   <p className="text-[#3C7BFF] text-center">{statsError}</p>
                 </Card>
@@ -393,15 +379,11 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
               {/* Leaderboard Stats */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <Card
-                  className="p-6 rounded-xl border border-indigo-400/50"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-                  }}
+                  className="p-6 rounded-xl"
+                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
                 >
                   <div className="text-center">
-                    <p className="text-gray-400 text-sm uppercase mb-2">Current Leaderboard Rank</p>
+                    <p className="text-white/55 text-sm uppercase mb-2">Current Leaderboard Rank</p>
                     <p className="text-3xl font-bold text-indigo-400">
                       {isLoadingStats ? "..." : userStats ? `#${userStats.rank}` : "N/A"}
                     </p>
@@ -409,15 +391,11 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
                 </Card>
 
                 <Card
-                  className="p-6 rounded-xl border border-indigo-400/50"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-                  }}
+                  className="p-6 rounded-xl"
+                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
                 >
                   <div className="text-center">
-                    <p className="text-gray-400 text-sm uppercase mb-2">Total Prizes</p>
+                    <p className="text-white/55 text-sm uppercase mb-2">Total Prizes</p>
                     <p className="text-3xl font-bold text-indigo-400">
                       {isLoadingStats ? "..." : userStats ? formatCurrency(userStats.prize) : "N/A"}
                     </p>
@@ -427,14 +405,10 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
             </>
           ) : (
             <Card
-              className="p-8 rounded-xl border border-indigo-400/50 mb-6 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
-              }}
+              className="p-8 rounded-xl mb-6 text-center"
+              style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
             >
-              <p className="text-gray-300 text-lg">This user has not linked their Thrill username yet.</p>
+              <p className="text-white/80 text-lg">This user has not linked their Thrill username yet.</p>
             </Card>
           )}
         </div>

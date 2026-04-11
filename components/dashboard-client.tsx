@@ -495,9 +495,10 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
             {/* Profile Section */}
             <Card
-              className="p-5 mb-5 rounded-xl border border-white/10 transition-all duration-300"
+              className="p-5 mb-5 rounded-xl transition-all duration-300"
               style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                backgroundColor: "#010101",
+                border: "0.5px solid rgba(255,255,255,0.5)",
                 boxShadow: "none",
               }}
               onMouseEnter={(e) => {
@@ -511,7 +512,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 <div className="relative group">
                   <Avatar className="h-20 w-20 border-2 border-[#3C7BFF]">
                     <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                    <AvatarFallback className="bg-[#1a1a1a] text-[#3C7BFF] text-xl font-bold">
+                    <AvatarFallback className="bg-[#010101] text-[#3C7BFF] text-xl font-bold">
                       {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -576,7 +577,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Your display name"
-                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                      className="bg-[#010101] border-white/30 text-white text-sm"
                     />
                   </div>
 
@@ -589,7 +590,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={thrillUsername}
                       onChange={(e) => setThrillUsername(e.target.value)}
                       placeholder="Your Thrill username (without @)"
-                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                      className="bg-[#010101] border-white/30 text-white text-sm"
                       disabled={profile?.thrill_username_locked}
                     />
                   </div>
@@ -603,7 +604,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={telegramUsername}
                       onChange={(e) => setTelegramUsername(e.target.value)}
                       placeholder="Your Telegram username (without @)"
-                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                      className="bg-[#010101] border-white/30 text-white text-sm"
                     />
                     <p className="text-xs text-white/50">Add your Telegram for support and community access</p>
                   </div>
@@ -880,8 +881,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               </div>
             ) : (
               <Card
-                className="p-6 rounded-xl border border-white/10 mb-5 text-center"
-                style={{ backgroundColor: "rgba(10, 10, 10, 0.95)" }}
+                className="p-6 rounded-xl mb-5 text-center"
+                style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)" }}
               >
                   <p className="text-white/80 text-base mb-3">
                   Add your Thrill username to see your stats and leaderboard position!
