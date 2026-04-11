@@ -1,34 +1,35 @@
 import { createClient } from "@/lib/supabase/server"
 
-// Types
+// Types matching actual database schema
 export interface SiteSetting {
   id: string
-  setting_key: string
-  setting_value: string
-  setting_group: string
-  label: string
-  field_type: string
+  key: string
+  value: Record<string, any>
+  created_at: string
+  updated_at: string
 }
 
 export interface NavItem {
   id: string
-  nav_location: string
   label: string
-  url: string
-  order_index: number
+  href: string
+  location: string  // 'header' | 'footer' | 'both'
+  sort_order: number
+  is_external: boolean
   is_visible: boolean
-  open_in_new_tab: boolean
-  icon_name: string | null
-  parent_id: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface PageContent {
   id: string
   page_slug: string
   section_key: string
-  content_data: Record<string, any>
-  order_index: number
+  content: Record<string, any>
+  sort_order: number
   is_visible: boolean
+  created_at: string
+  updated_at: string
 }
 
 export interface FeatureCard {
@@ -39,19 +40,23 @@ export interface FeatureCard {
   icon_name: string
   cta_text: string
   cta_url: string
-  order_index: number
+  sort_order: number
   is_visible: boolean
   glow_color: string
   modal_content: Record<string, any> | null
+  created_at: string
+  updated_at: string
 }
 
 export interface FaqItem {
   id: string
   question: string
   answer: string
-  order_index: number
+  sort_order: number
   is_visible: boolean
   page_slug: string
+  created_at: string
+  updated_at: string
 }
 
 export interface HowToJoinStep {
@@ -63,15 +68,17 @@ export interface HowToJoinStep {
   cta_text: string | null
   cta_url: string | null
   is_visible: boolean
+  created_at: string
+  updated_at: string
 }
 
-// Fetch all site settings as a key-value object
-export async function getSiteSettings(): Promise<Record<string, string>> {
+// Fetch all site settings as a key-value map
+export async function getSiteSettings(): Promise<Record<string, any>> {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
       .from("site_settings")
-      .select("setting_key, setting_value")
+      .select("key, value")
 
     if (error) {
       console.error("[v0] Error fetching site settings:", error)
@@ -79,9 +86,9 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     }
 
     return (data || []).reduce((acc, setting) => {
-      acc[setting.setting_key] = setting.setting_value
+      acc[setting.key] = setting.value
       return acc
-    }, {} as Record<string, string>)
+    }, {} as Record<string, any>)
   } catch (err) {
     console.error("[v0] Error in getSiteSettings:", err)
     return {}
@@ -95,9 +102,9 @@ export async function getNavItems(location: string): Promise<NavItem[]> {
     const { data, error } = await supabase
       .from("nav_items")
       .select("*")
-      .eq("nav_location", location)
+      .or(`location.eq.${location},location.eq.both`)
       .eq("is_visible", true)
-      .order("order_index")
+      .order("sort_order")
 
     if (error) {
       console.error("[v0] Error fetching nav items:", error)
@@ -120,7 +127,7 @@ export async function getPageContent(pageSlug: string): Promise<Record<string, P
       .select("*")
       .eq("page_slug", pageSlug)
       .eq("is_visible", true)
-      .order("order_index")
+      .order("sort_order")
 
     if (error) {
       console.error("[v0] Error fetching page content:", error)
@@ -145,7 +152,7 @@ export async function getFeatureCards(): Promise<FeatureCard[]> {
       .from("feature_cards")
       .select("*")
       .eq("is_visible", true)
-      .order("order_index")
+      .order("sort_order")
 
     if (error) {
       console.error("[v0] Error fetching feature cards:", error)
@@ -168,7 +175,7 @@ export async function getFaqItems(pageSlug: string): Promise<FaqItem[]> {
       .select("*")
       .eq("page_slug", pageSlug)
       .eq("is_visible", true)
-      .order("order_index")
+      .order("sort_order")
 
     if (error) {
       console.error("[v0] Error fetching FAQ items:", error)
@@ -204,8 +211,8 @@ export async function getHowToJoinSteps(): Promise<HowToJoinStep[]> {
   }
 }
 
-// Get a single setting with fallback
-export async function getSetting(key: string, fallback: string = ""): Promise<string> {
+// Get a single setting by key with fallback
+export async function getSetting(key: string, fallback: any = {}): Promise<any> {
   const settings = await getSiteSettings()
   return settings[key] || fallback
 }
@@ -221,7 +228,10 @@ export async function getHomepageContent() {
 
   return {
     settings,
-    hero: pageContent.hero?.content_data || {},
+    hero: pageContent.hero?.content || {},
+    updatesSection: pageContent.updates_section?.content || {},
+    blogSection: pageContent.blog_section?.content || {},
+    faqSection: pageContent.faq_section?.content || {},
     featureCards,
     faqItems,
   }
@@ -229,22 +239,26 @@ export async function getHomepageContent() {
 
 // Default/fallback content for when database is empty
 export const DEFAULT_CONTENT = {
-  hero: {
-    title: "MANDY.GG",
-    tagline: "The Ultimate Gaming Community",
-    cta_text: "JOIN NOW",
-    cta_url: "https://www.thrill.com/?r=mandygg",
+  brand: {
+    site_name: "MANDY.GG",
+    tagline: "YEAH, I'M A GIRL AND I GAMBLE.",
+    referral_code: "MANDY",
+    referral_url: "https://thrill.com/?r=MANDY",
   },
-  settings: {
-    site_name: "Mandy.GG",
-    referral_url: "https://www.thrill.com/?r=mandygg",
-    referral_code: "mandygg",
-    support_email: "support@mandy.gg",
-    discord_url: "https://discord.gg/mandygg",
-    twitter_url: "https://twitter.com/mandygg",
-    telegram_url: "https://t.me/mandygg",
-    instagram_url: "https://instagram.com/mandygg",
-    footer_copyright: "2025 Mandy.GG. All rights reserved.",
-    footer_disclaimer: "Gambling involves risk. Please gamble responsibly.",
+  social_links: {
+    telegram_chat: "https://t.me/mandyggchat",
+    telegram_channel: "https://t.me/mandygg",
+    discord: "https://discord.gg/mandygg",
+    kick: "https://kick.com/mandycalmdown",
+    twitter: "https://twitter.com/mandycalmdown",
+    support_bot: "https://t.me/mandysupport_bot",
+  },
+  effect_settings: {
+    holo_text_src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4",
+    holo_btn_webm: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm",
+    holo_btn_mp4: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4",
+    primary_accent: "#5cfec0",
+    secondary_accent: "#3C7BFF",
+    glow_intensity: 1.0,
   },
 }

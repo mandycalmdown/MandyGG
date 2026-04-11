@@ -37,14 +37,16 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
   const supabase = createClient();
 
   useEffect(() => {
+    if (!supabase) return;
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) =>
       setUser(s?.user ?? null)
     );
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase]);
 
   const handleSignOut = async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();

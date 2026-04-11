@@ -106,6 +106,16 @@ export function AdminSiteContentEditor() {
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState<string | null>(null)
+  
+  // Check if Supabase is available
+  if (!supabase) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-white/60 mb-4">Site Content Editor requires Supabase to be configured.</p>
+        <p className="text-white/40 text-sm">Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your environment variables.</p>
+      </div>
+    )
+  }
 
   // Data states
   const [siteSettings, setSiteSettings] = useState<SiteSetting[]>([])
@@ -246,7 +256,7 @@ export function AdminSiteContentEditor() {
           icon_name: card.icon_name,
           cta_text: card.cta_text,
           cta_url: card.cta_url,
-          order_index: card.order_index,
+          sort_order: card.sort_order,
           is_visible: card.is_visible,
           glow_color: card.glow_color,
           modal_content: card.modal_content,
@@ -276,7 +286,7 @@ export function AdminSiteContentEditor() {
         .update({
           question: item.question,
           answer: item.answer,
-          order_index: item.order_index,
+          sort_order: item.sort_order,
           is_visible: item.is_visible,
         })
         .eq("id", item.id)
@@ -297,7 +307,7 @@ export function AdminSiteContentEditor() {
       page_slug: pageSlug,
       question: "New Question",
       answer: "Answer goes here",
-      order_index: maxOrder,
+      sort_order: maxOrder,
       is_visible: true,
     }
 
@@ -332,8 +342,8 @@ export function AdminSiteContentEditor() {
       const { error } = await supabase
         .from("page_content")
         .update({
-          content_data: content.content_data,
-          order_index: content.order_index,
+          content: content.content,
+          sort_order: content.sort_order,
           is_visible: content.is_visible,
           updated_at: new Date().toISOString(),
         })
@@ -402,29 +412,24 @@ export function AdminSiteContentEditor() {
     newItems[idx] = newItems[newIdx]
     newItems[newIdx] = temp
 
-    // Update order_index
+    // Update sort_order
     newItems.forEach((item, i) => {
-      item.order_index = i
+      item.sort_order = i
     })
     setItems(newItems)
 
     // Persist to DB
     for (const item of newItems) {
-      await supabase.from(table).update({ order_index: item.order_index }).eq("id", item.id)
+      await supabase.from(table).update({ sort_order: item.sort_order }).eq("id", item.id)
     }
   }
 
-  // Group settings by group
-  const settingsByGroup = siteSettings.reduce((acc, setting) => {
-    if (!acc[setting.setting_group]) acc[setting.setting_group] = []
-    acc[setting.setting_group].push(setting)
-    return acc
-  }, {} as Record<string, SiteSetting[]>)
+  // Settings are organized by key (brand, social_links, effect_settings)
+  // Each setting has a JSONB value with multiple properties
 
   // Group nav items by location
-  const headerNav = navItems.filter((n) => n.nav_location === "header")
-  const footerNav = navItems.filter((n) => n.nav_location === "footer")
-  const footerSocial = navItems.filter((n) => n.nav_location === "footer_social")
+  const headerNav = navItems.filter((n) => n.location === "header" || n.location === "both")
+  const footerNav = navItems.filter((n) => n.location === "footer" || n.location === "both")
 
   // Group page content by page
   const contentByPage = pageContent.reduce((acc, content) => {
@@ -505,53 +510,64 @@ export function AdminSiteContentEditor() {
       {activeSection === "global" && (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-card-foreground">Global Site Settings</h2>
+          <p className="text-muted-foreground">
+            Manage brand settings, social links, and site-wide configuration.
+          </p>
 
-          {Object.entries(settingsByGroup).map(([group, settings]) => (
-            <Card key={group} className="p-6 bg-card border-border">
-              <h3 className="text-lg font-semibold text-card-foreground mb-4 capitalize">
-                {group.replace(/_/g, " ")}
-              </h3>
-              <div className="space-y-4">
-                {settings.map((setting) => (
-                  <div key={setting.id} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div className="md:col-span-2">
-                      <Label className="text-muted-foreground">{setting.label}</Label>
-                      {setting.field_type === "textarea" ? (
-                        <Textarea
-                          value={setting.setting_value}
-                          onChange={(e) => updateSettingValue(setting.id, e.target.value)}
-                          className="bg-background border-border text-foreground mt-1"
-                          rows={3}
-                        />
-                      ) : setting.field_type === "color" ? (
+          {siteSettings.map((setting) => (
+            <Card key={setting.id} className="p-6 bg-card border-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-card-foreground capitalize">
+                  {setting.key.replace(/_/g, " ")}
+                </h3>
+                <Button onClick={() => handleSaveSetting(setting)} disabled={isSaving} className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Save All
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(setting.value || {}).map(([propKey, propValue]) => {
+                  const isColor = propKey.includes("color") || propKey.includes("accent")
+                  const isUrl = propKey.includes("url") || propKey.includes("src") || propKey.includes("href")
+                  const stringValue = typeof propValue === "string" ? propValue : String(propValue)
+                  
+                  return (
+                    <div key={propKey}>
+                      <Label className="text-muted-foreground capitalize">
+                        {propKey.replace(/_/g, " ")}
+                      </Label>
+                      {isColor ? (
                         <div className="flex gap-2 mt-1">
                           <Input
                             type="color"
-                            value={setting.setting_value}
-                            onChange={(e) => updateSettingValue(setting.id, e.target.value)}
+                            value={stringValue}
+                            onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
                             className="w-16 h-10 p-1 bg-background border-border"
                           />
                           <Input
-                            value={setting.setting_value}
-                            onChange={(e) => updateSettingValue(setting.id, e.target.value)}
-                            className="bg-background border-border text-foreground"
+                            value={stringValue}
+                            onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                            className="bg-background border-border text-foreground flex-1"
                           />
                         </div>
+                      ) : isUrl && stringValue.length > 60 ? (
+                        <Textarea
+                          value={stringValue}
+                          onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                          className="bg-background border-border text-foreground mt-1 font-mono text-xs"
+                          rows={2}
+                        />
                       ) : (
                         <Input
-                          value={setting.setting_value}
-                          onChange={(e) => updateSettingValue(setting.id, e.target.value)}
+                          value={stringValue}
+                          onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
                           className="bg-background border-border text-foreground mt-1"
-                          type={setting.field_type === "url" ? "url" : "text"}
+                          type={isUrl ? "url" : "text"}
                         />
                       )}
                     </div>
-                    <Button onClick={() => handleSaveSetting(setting)} disabled={isSaving} className="gap-2">
-                      <Save className="h-4 w-4" />
-                      Save
-                    </Button>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </Card>
           ))}
@@ -580,7 +596,7 @@ export function AdminSiteContentEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() => moveItem("nav_items", headerNav, (items) => {
-                        setNavItems(prev => prev.filter(n => n.nav_location !== "header").concat(items))
+                        setNavItems(prev => prev.filter(n => n.location !== "header" && n.location !== "both").concat(items))
                       }, item.id, "up")}
                       disabled={idx === 0}
                       className="h-6 w-6 p-0"
@@ -591,7 +607,7 @@ export function AdminSiteContentEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() => moveItem("nav_items", headerNav, (items) => {
-                        setNavItems(prev => prev.filter(n => n.nav_location !== "header").concat(items))
+                        setNavItems(prev => prev.filter(n => n.location !== "header" && n.location !== "both").concat(items))
                       }, item.id, "down")}
                       disabled={idx === headerNav.length - 1}
                       className="h-6 w-6 p-0"
@@ -754,10 +770,10 @@ export function AdminSiteContentEditor() {
                 <div>
                   <Label className="text-muted-foreground">Main Title (Video Text)</Label>
                   <Input
-                    value={content.content_data.title || ""}
+                    value={content.content.title || ""}
                     onChange={(e) =>
                       updatePageContent(content.id, {
-                        content_data: { ...content.content_data, title: e.target.value },
+                        content: { ...content.content, title: e.target.value },
                       })
                     }
                     className="bg-background border-border text-foreground mt-1"
@@ -770,10 +786,10 @@ export function AdminSiteContentEditor() {
                 <div>
                   <Label className="text-muted-foreground">Tagline</Label>
                   <Input
-                    value={content.content_data.tagline || ""}
+                    value={content.content.tagline || ""}
                     onChange={(e) =>
                       updatePageContent(content.id, {
-                        content_data: { ...content.content_data, tagline: e.target.value },
+                        content: { ...content.content, tagline: e.target.value },
                       })
                     }
                     className="bg-background border-border text-foreground mt-1"
@@ -782,10 +798,10 @@ export function AdminSiteContentEditor() {
                 <div>
                   <Label className="text-muted-foreground">CTA Button Text</Label>
                   <Input
-                    value={content.content_data.cta_text || ""}
+                    value={content.content.cta_text || ""}
                     onChange={(e) =>
                       updatePageContent(content.id, {
-                        content_data: { ...content.content_data, cta_text: e.target.value },
+                        content: { ...content.content, cta_text: e.target.value },
                       })
                     }
                     className="bg-background border-border text-foreground mt-1"
@@ -794,10 +810,10 @@ export function AdminSiteContentEditor() {
                 <div>
                   <Label className="text-muted-foreground">CTA Button URL</Label>
                   <Input
-                    value={content.content_data.cta_url || ""}
+                    value={content.content.cta_url || ""}
                     onChange={(e) =>
                       updatePageContent(content.id, {
-                        content_data: { ...content.content_data, cta_url: e.target.value },
+                        content: { ...content.content, cta_url: e.target.value },
                       })
                     }
                     className="bg-background border-border text-foreground mt-1"
@@ -1117,10 +1133,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Title (Video Text)</Label>
                       <Input
-                        value={content.content_data.title || ""}
+                        value={content.content.title || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, title: e.target.value },
+                            content: { ...content.content, title: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1129,10 +1145,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Subtitle</Label>
                       <Input
-                        value={content.content_data.subtitle || ""}
+                        value={content.content.subtitle || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, subtitle: e.target.value },
+                            content: { ...content.content, subtitle: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1158,10 +1174,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Title</Label>
                       <Input
-                        value={content.content_data.title || ""}
+                        value={content.content.title || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, title: e.target.value },
+                            content: { ...content.content, title: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1170,10 +1186,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Description</Label>
                       <Textarea
-                        value={content.content_data.description || ""}
+                        value={content.content.description || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, description: e.target.value },
+                            content: { ...content.content, description: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1200,25 +1216,25 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Title</Label>
                       <Input
-                        value={content.content_data.title || ""}
+                        value={content.content.title || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, title: e.target.value },
+                            content: { ...content.content, title: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
                       />
                     </div>
-                    {content.content_data.prizes && (
+                    {content.content.prizes && (
                       <div>
                         <Label className="text-muted-foreground">Prize Amounts (JSON)</Label>
                         <Textarea
-                          value={JSON.stringify(content.content_data.prizes, null, 2)}
+                          value={JSON.stringify(content.content.prizes, null, 2)}
                           onChange={(e) => {
                             try {
                               const prizes = JSON.parse(e.target.value)
                               updatePageContent(content.id, {
-                                content_data: { ...content.content_data, prizes },
+                                content: { ...content.content, prizes },
                               })
                             } catch {}
                           }}
@@ -1244,7 +1260,7 @@ export function AdminSiteContentEditor() {
                     {content.section_key.replace(/_/g, " ")} Section
                   </h3>
                   <div className="space-y-4">
-                    {Object.entries(content.content_data).map(([key, value]) => (
+                    {Object.entries(content.content).map(([key, value]) => (
                       <div key={key}>
                         <Label className="text-muted-foreground capitalize">{key.replace(/_/g, " ")}</Label>
                         {typeof value === "string" && value.length > 100 ? (
@@ -1252,7 +1268,7 @@ export function AdminSiteContentEditor() {
                             value={value}
                             onChange={(e) =>
                               updatePageContent(content.id, {
-                                content_data: { ...content.content_data, [key]: e.target.value },
+                                content: { ...content.content, [key]: e.target.value },
                               })
                             }
                             className="bg-background border-border text-foreground mt-1"
@@ -1263,7 +1279,7 @@ export function AdminSiteContentEditor() {
                             value={typeof value === "string" ? value : JSON.stringify(value)}
                             onChange={(e) =>
                               updatePageContent(content.id, {
-                                content_data: { ...content.content_data, [key]: e.target.value },
+                                content: { ...content.content, [key]: e.target.value },
                               })
                             }
                             className="bg-background border-border text-foreground mt-1"
@@ -1291,10 +1307,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Title (Video Text)</Label>
                       <Input
-                        value={content.content_data.title || ""}
+                        value={content.content.title || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, title: e.target.value },
+                            content: { ...content.content, title: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1303,10 +1319,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Subtitle</Label>
                       <Input
-                        value={content.content_data.subtitle || ""}
+                        value={content.content.subtitle || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, subtitle: e.target.value },
+                            content: { ...content.content, subtitle: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1332,10 +1348,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Title</Label>
                       <Input
-                        value={content.content_data.title || ""}
+                        value={content.content.title || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, title: e.target.value },
+                            content: { ...content.content, title: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1344,10 +1360,10 @@ export function AdminSiteContentEditor() {
                     <div>
                       <Label className="text-muted-foreground">Subtitle</Label>
                       <Input
-                        value={content.content_data.subtitle || ""}
+                        value={content.content.subtitle || ""}
                         onChange={(e) =>
                           updatePageContent(content.id, {
-                            content_data: { ...content.content_data, subtitle: e.target.value },
+                            content: { ...content.content, subtitle: e.target.value },
                           })
                         }
                         className="bg-background border-border text-foreground mt-1"
@@ -1373,48 +1389,61 @@ export function AdminSiteContentEditor() {
             Control glow colors, video textures, and interactive effect settings used throughout the site.
           </p>
 
-          {/* Effect Settings from site_settings */}
-          {settingsByGroup["effects"] && (
-            <Card className="p-6 bg-card border-border">
-              <h3 className="text-lg font-semibold text-card-foreground mb-4">Global Effect Settings</h3>
+          {/* Effect Settings from site_settings (effect_settings key) */}
+          {siteSettings.filter(s => s.key === "effect_settings").map((setting) => (
+            <Card key={setting.id} className="p-6 bg-card border-border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-card-foreground">Global Effect Settings</h3>
+                <Button onClick={() => handleSaveSetting(setting)} disabled={isSaving} className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Save All
+                </Button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {settingsByGroup["effects"].map((setting) => (
-                  <div key={setting.id}>
-                    <Label className="text-muted-foreground">{setting.label}</Label>
-                    {setting.field_type === "color" ? (
-                      <div className="flex gap-2 mt-1">
-                        <Input
-                          type="color"
-                          value={setting.setting_value}
-                          onChange={(e) => updateSettingValue(setting.id, e.target.value)}
-                          className="w-16 h-10 p-1 bg-background border-border"
+                {Object.entries(setting.value || {}).map(([propKey, propValue]) => {
+                  const isColor = propKey.includes("color") || propKey.includes("accent")
+                  const isUrl = propKey.includes("url") || propKey.includes("src")
+                  const stringValue = typeof propValue === "string" ? propValue : String(propValue)
+                  
+                  return (
+                    <div key={propKey}>
+                      <Label className="text-muted-foreground capitalize">
+                        {propKey.replace(/_/g, " ")}
+                      </Label>
+                      {isColor ? (
+                        <div className="flex gap-2 mt-1">
+                          <Input
+                            type="color"
+                            value={stringValue.startsWith("#") ? stringValue : "#5cfec0"}
+                            onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                            className="w-16 h-10 p-1 bg-background border-border"
+                          />
+                          <Input
+                            value={stringValue}
+                            onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                            className="bg-background border-border text-foreground flex-1"
+                          />
+                        </div>
+                      ) : isUrl ? (
+                        <Textarea
+                          value={stringValue}
+                          onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                          className="bg-background border-border text-foreground mt-1 font-mono text-xs"
+                          rows={2}
                         />
+                      ) : (
                         <Input
-                          value={setting.setting_value}
-                          onChange={(e) => updateSettingValue(setting.id, e.target.value)}
-                          className="bg-background border-border text-foreground flex-1"
+                          value={stringValue}
+                          onChange={(e) => updateSettingValue(setting.id, propKey, e.target.value)}
+                          className="bg-background border-border text-foreground mt-1"
                         />
-                        <Button onClick={() => handleSaveSetting(setting)} size="sm" className="gap-1">
-                          <Save className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-2 mt-1">
-                        <Input
-                          value={setting.setting_value}
-                          onChange={(e) => updateSettingValue(setting.id, e.target.value)}
-                          className="bg-background border-border text-foreground flex-1"
-                        />
-                        <Button onClick={() => handleSaveSetting(setting)} size="sm" className="gap-1">
-                          <Save className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </Card>
-          )}
+          ))}
 
           {/* Per-Card Glow Settings */}
           <Card className="p-6 bg-card border-border">
