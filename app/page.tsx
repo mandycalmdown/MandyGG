@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Mandy.gg - More perks, less regret | Weekly $3500 Wager Race",
   description:
-    "Bad decisions, great rewards! Mandy.gg gives you exclusive bonuses at the best online crypto casinos . If you're going to Plinko your crypto away, get the most out of it!",
+    "Bad decisions, great rewards! Mandy.gg gives you cashback and exclusive bonuses at the best online crypto casinos . If you're going to Plinko your crypto away, get the most out of it!",
   keywords:
     "crypto casino, bitcoin gambling, weekly wager battle, thrill casino, code MANDY, crypto bonuses, lossback, VIP perks, cryptocurrency betting, mandy.gg, bitcoin casino, crypto gaming, blockchain casino, cryptocurrency betting, crypto slots, bitcoin slots, live casino battles, crypto leaderboard, exclusive casino bonuses, crypto rewards, gambling influencer, casino streamer",
   creator: "Mandy.gg",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mandy.gg - More perks, less regret",
+    title: "Mandy.gg - Crypto rewards for degens",
     description: "Weekly $3500 wager battles and exclusive crypto casino bonuses with code MANDY.",
     image: "/images/linkpreview.png",
     creator: "@mandygg",

@@ -3,8 +3,6 @@ import { createClient } from "@/lib/supabase/server"
 import { kv } from "@/lib/kv"
 import { fetchThrillData, convertAtomicValue } from "@/lib/thrill-api"
 
-export const dynamic = 'force-dynamic'
-
 interface ThrillApiResponse {
   items: Array<{
     username: string

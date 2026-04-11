@@ -9,8 +9,8 @@ const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/H
 const RAFFLE_ICON   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-2R1zyKNqx7bHHMtC4xyKlIOZmVZ63c.webp"
 
 const PAGE_BG  = "#000000"  // Solid black
-const CARD_BG  = "#010101"
-const CARD_BG2 = "#010101"
+const CARD_BG  = "#0a0a0a"  // Almost black
+const CARD_BG2 = "#0f0f0f"  // Slightly lighter black
 // Holographic accent colors from video overlay
 const HOLO_BLUE    = "#3C7BFF"
 const HOLO_CYAN    = "#5ac3ff"
@@ -150,8 +150,8 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
   const previousWinners = recentWinners.slice(1)
 
   const infoBox: React.CSSProperties = {
-    background:    "#010101",
-    border:        "0.5px solid rgba(255,255,255,0.5)",
+    background:    "rgba(255,255,255,0.02)",
+    border:        "1px solid rgba(255,255,255,0.06)",
     borderRadius:  "10px",
     padding:       "1rem 1.25rem",
     marginBottom:  "1rem",
@@ -174,7 +174,7 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
       {/* ── Card ── */}
       <div style={{
         background:    CARD_BG,
-        border:        "0.5px solid rgba(255,255,255,0.5)",
+        border:        "1.5px solid rgba(255,255,255,0.07)",
         borderRadius:  "16px",
         boxShadow:     "none",
         paddingTop:    "5rem",

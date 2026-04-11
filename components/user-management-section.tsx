@@ -186,11 +186,11 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
 
   return (
     <Card
-      className="p-6 mb-8 rounded-xl"
+      className="p-6 mb-8 rounded-xl border border-indigo-400/50"
       style={{
-        backgroundColor: "#010101",
-        border: "0.5px solid rgba(255,255,255,0.5)",
-        boxShadow: "none",
+        backgroundColor: "rgba(10, 10, 10, 0.95)",
+        boxShadow:
+          "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.25), 0 0 40px rgba(99, 102, 241, 0.15)",
       }}
     >
       <h2 className="text-2xl font-bold text-indigo-400 uppercase mb-6">User Management</h2>
@@ -199,14 +199,14 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
         {profiles.map((profile) => (
           <div
             key={profile.id}
-            className="p-4 rounded-lg border transition-all" style={{ background: "#010101", borderColor: "rgba(255,255,255,0.5)" }}
+            className="p-4 bg-[#1a1a1a] rounded-lg border border-white/20 hover:border-indigo-400/50 transition-all"
           >
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
               {/* User Info */}
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <Avatar className="h-12 w-12 border-2 border-indigo-400">
                   <AvatarImage src={profile.avatar_url || undefined} alt={profile.display_name || "User"} />
-                  <AvatarFallback className="bg-[#010101] text-indigo-400 font-bold">
+                  <AvatarFallback className="bg-[#0a0a0a] text-indigo-400 font-bold">
                     {profile.display_name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -226,21 +226,21 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                       {profile.thrill_username_locked && <Lock className="h-4 w-4 text-[#3C7BFF]" />}
                     </div>
                   ) : (
-                    <p className="text-white/55 text-sm">No username linked</p>
+                    <p className="text-gray-400 text-sm">No username linked</p>
                   )}
                   <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
                     {profile.pokernow_username && (
-                      <p className="text-xs text-white/60">
-                        <span className="text-white/40">PokerNow:</span> {profile.pokernow_username}
+                      <p className="text-xs text-gray-400">
+                        <span className="text-gray-500">PokerNow:</span> {profile.pokernow_username}
                       </p>
                     )}
                     {profile.telegram_username && (
-                      <p className="text-xs text-white/60">
-                        <span className="text-white/40">Telegram:</span> @{profile.telegram_username}
+                      <p className="text-xs text-gray-400">
+                        <span className="text-gray-500">Telegram:</span> @{profile.telegram_username}
                       </p>
                     )}
                   </div>
-                  <p className="text-xs text-white/40">Joined {formatDate(profile.created_at)}</p>
+                  <p className="text-xs text-gray-500">Joined {formatDate(profile.created_at)}</p>
                 </div>
               </div>
 

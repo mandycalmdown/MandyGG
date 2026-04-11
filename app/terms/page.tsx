@@ -27,8 +27,9 @@ export default function TermsOfService() {
           <Card
             className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/30 shadow-lg backdrop-blur-sm"
             style={{
-              backgroundColor: "#010101",
-              boxShadow: "none",
+              backgroundColor: "rgba(10, 10, 10, 0.95)",
+              boxShadow:
+                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
             }}
           >
             <div className="flex justify-between items-center">
@@ -55,15 +56,15 @@ export default function TermsOfService() {
           <Card
             className="p-6 md:p-8 rounded-xl border border-white/30"
             style={{
-              backgroundColor: "#010101",
-              border: "0.5px solid rgba(255,255,255,0.5)",
-              boxShadow: "none",
+              backgroundColor: "rgba(10, 10, 10, 0.95)",
+              boxShadow:
+                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
             }}
           >
             <h1 className="text-3xl md:text-4xl font-bold text-[#5cfec0] mb-6 uppercase">Terms of Service</h1>
-            <p className="text-white/55 mb-6">Last Updated: January 2025</p>
+            <p className="text-gray-400 mb-6">Last Updated: January 2025</p>
 
-            <div className="space-y-6 text-white/80">
+            <div className="space-y-6 text-gray-300">
               <section>
                 <h2 className="text-2xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
                 <p>

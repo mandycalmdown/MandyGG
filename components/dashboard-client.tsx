@@ -13,23 +13,23 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
-import { Camera, AlertCircle, CheckCircle, Lock } from "lucide-react"
+import { Camera, AlertCircle, CheckCircle, Lock, Ticket } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { SiteNavigation } from "@/components/site-navigation"
 import "@/styles/mandy-home.css"
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
-const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
+const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 const RAFFLE_IMAGE = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-5nXhltypJsyT8gSS71VtOLkfrz07HQ.webp"
 
 // Holographic accent colors from video overlay
-const HOLO_BLUE    = "#3C7BFF"
-const HOLO_CYAN    = "#5ac3ff"
-const HOLO_PURPLE  = "#a855f7"
-const HOLO_PINK    = "#ff94b4"
-const HOLO_GREEN   = "#4ade80"
-const HOLO_YELLOW  = "#fbbf24"
+const HOLO_BLUE = "#3C7BFF"
+const HOLO_CYAN = "#5ac3ff"
+const HOLO_PURPLE = "#a855f7"
+const HOLO_PINK = "#ff94b4"
+const HOLO_GREEN = "#4ade80"
+const HOLO_YELLOW = "#fbbf24"
 const ACCENT = HOLO_BLUE  // Primary accent
 
 interface Profile {
@@ -129,32 +129,32 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
       const now = new Date()
       const currentDay = now.getDay()
       const currentHour = now.getHours()
-      
+
       // Find next Friday at midnight UTC
       let daysUntilFriday = (5 - currentDay + 7) % 7
       if (daysUntilFriday === 0 && currentHour >= 0) {
         // It's Friday and past midnight, so next Friday
         daysUntilFriday = 7
       }
-      
+
       const nextFriday = new Date(now)
       nextFriday.setDate(now.getDate() + daysUntilFriday)
       nextFriday.setUTCHours(0, 0, 0, 0)
-      
+
       const timeDiff = nextFriday.getTime() - now.getTime()
-      
+
       if (timeDiff > 0) {
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000)
-        
+
         setRaffleCountdown({ days, hours, minutes, seconds })
       } else {
         setRaffleCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       }
     }
-    
+
     calculateRaffleCountdown()
     const timer = setInterval(calculateRaffleCountdown, 1000)
     return () => clearInterval(timer)
@@ -495,10 +495,9 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
             {/* Profile Section */}
             <Card
-              className="p-5 mb-5 rounded-xl transition-all duration-300"
+              className="p-5 mb-5 rounded-xl border border-white/10 transition-all duration-300"
               style={{
-                backgroundColor: "#010101",
-                border: "0.5px solid rgba(255,255,255,0.5)",
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
                 boxShadow: "none",
               }}
               onMouseEnter={(e) => {
@@ -512,7 +511,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                 <div className="relative group">
                   <Avatar className="h-20 w-20 border-2 border-[#3C7BFF]">
                     <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                    <AvatarFallback className="bg-[#010101] text-[#3C7BFF] text-xl font-bold">
+                    <AvatarFallback className="bg-[#1a1a1a] text-[#3C7BFF] text-xl font-bold">
                       {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -538,7 +537,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                   <h2 className="text-xl font-bold text-white mb-1">
                     {profile?.display_name || "Set your display name"}
                   </h2>
-                  <p className="text-white/60 text-sm mb-1">{user.email}</p>
+                  <p className="text-gray-400 text-sm mb-1">{user.email}</p>
                   {profile?.thrill_username && (
                     <div className="flex items-center gap-2 justify-center md:justify-start mb-1">
                       <p className="text-[#3C7BFF] font-semibold text-sm">Thrill: @{profile.thrill_username}</p>
@@ -551,9 +550,9 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                     </div>
                   )}
                   {profile?.telegram_username && (
-                    <p className="text-white/60 text-sm">Telegram: @{profile.telegram_username}</p>
+                    <p className="text-gray-400 text-sm">Telegram: @{profile.telegram_username}</p>
                   )}
-                  {isUploadingPhoto && <p className="text-xs text-white/60 mt-1">Uploading...</p>}
+                  {isUploadingPhoto && <p className="text-xs text-gray-400 mt-1">Uploading...</p>}
                 </div>
 
                 {!profile?.thrill_username_locked && (
@@ -569,7 +568,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               {isEditing && !profile?.thrill_username_locked && (
                 <div className="mt-4 pt-4 border-t border-white/20 space-y-3">
                   <div className="space-y-1.5">
-                    <Label htmlFor="displayName" className="text-white/80 text-sm">
+                    <Label htmlFor="displayName" className="text-gray-300 text-sm">
                       Display Name
                     </Label>
                     <Input
@@ -577,12 +576,12 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Your display name"
-                      className="bg-[#010101] border-white/30 text-white text-sm"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="thrillUsername" className="text-white/80 text-sm">
+                    <Label htmlFor="thrillUsername" className="text-gray-300 text-sm">
                       Thrill Username
                     </Label>
                     <Input
@@ -590,13 +589,13 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={thrillUsername}
                       onChange={(e) => setThrillUsername(e.target.value)}
                       placeholder="Your Thrill username (without @)"
-                      className="bg-[#010101] border-white/30 text-white text-sm"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
                       disabled={profile?.thrill_username_locked}
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="telegramUsername" className="text-white/80 text-sm">
+                    <Label htmlFor="telegramUsername" className="text-gray-300 text-sm">
                       Telegram Username (optional)
                     </Label>
                     <Input
@@ -604,9 +603,9 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       value={telegramUsername}
                       onChange={(e) => setTelegramUsername(e.target.value)}
                       placeholder="Your Telegram username (without @)"
-                      className="bg-[#010101] border-white/30 text-white text-sm"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
                     />
-                    <p className="text-xs text-white/50">Add your Telegram for support and community access</p>
+                    <p className="text-xs text-gray-500">Add your Telegram for support and community access</p>
                   </div>
 
                   {error && (
@@ -635,31 +634,30 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
             {/* Main Bento Grid */}
             {profile?.thrill_username ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
-
-                {/* Wager Stats - spans 2 columns */}
+                {/* Wager Stats - spans 2 columns on large screens */}
                 <Card
-                  className="lg:col-span-2 p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <h3 className="text-lg font-bold text-white mb-3 uppercase">Wager Stats</h3>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
-                      <p className="text-white/60 text-xs uppercase mb-1">24H</p>
-                      <p className="text-xl font-bold" style={{ color: HOLO_CYAN }}>
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">24H</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
                         {isLoadingDailyWager ? "..." : formatCurrency(dailyWager)}
                       </p>
                     </div>
-                    <div className="text-center p-3 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
-                      <p className="text-white/60 text-xs uppercase mb-1">7 Days</p>
-                      <p className="text-xl font-bold" style={{ color: HOLO_PINK }}>
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">7 Days</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
                         {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last7Days) : "$0"}
                       </p>
                     </div>
-                    <div className="text-center p-3 rounded-lg" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
-                      <p className="text-white/60 text-xs uppercase mb-1">30 Days</p>
-                      <p className="text-xl font-bold" style={{ color: HOLO_GREEN }}>
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">30 Days</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
                         {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last30Days) : "$0"}
                       </p>
                     </div>
@@ -668,139 +666,107 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
                 {/* Leaderboard Stats */}
                 <Card
-                  className="p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <h3 className="text-lg font-bold text-white mb-3 uppercase">Leaderboard</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-white/60 text-sm">Your Rank:</span>
-                      <span className="font-bold text-lg" style={{ color: HOLO_BLUE }}>
+                      <span className="text-gray-400 text-sm">Your Rank:</span>
+                      <span className="text-[#3C7BFF] font-bold text-lg">
                         {isLoadingStats ? "..." : userStats ? `#${userStats.rank}` : "N/A"}
                       </span>
                     </div>
                     {userStats && userStats.rank > 1 && (
-                      <div className="text-xs text-white/50">Keep wagering to move up!</div>
+                      <div className="text-xs text-gray-500">
+                        Keep wagering to move up!
+                      </div>
                     )}
                     {userStats && userStats.rank === 1 && (
-                      <div className="text-xs font-bold" style={{ color: HOLO_YELLOW }}>You&apos;re #1!</div>
+                      <div className="text-xs text-[#3C7BFF] font-bold">
+                        🏆 You're #1!
+                      </div>
                     )}
                   </div>
                 </Card>
 
-                {/* Poker Night - spans 1 column */}
+                {/* Poker Night - spans 2 columns */}
                 <Card
-                  className="p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
-                  <h3 className="text-lg font-bold text-white mb-2 uppercase">Poker Night</h3>
-                  <p className="text-xs text-white/55 mb-3">Wager ${POKER_REQUIREMENT.toLocaleString()} monthly to qualify for the $1,000 tournament</p>
+                  <h3 className="text-lg font-bold text-white mb-2 uppercase">Poker Night Qualifier</h3>
+                  <p className="text-xs text-gray-400 mb-3">Wager ${POKER_REQUIREMENT.toLocaleString()} monthly to qualify for the $1,000 tournament</p>
                   <Progress
                     value={Math.min((monthlyWager / POKER_REQUIREMENT) * 100, 100)}
-                    className="h-3 mb-2"
-                    style={{ background: "#1a1a1a" }}
+                    className="h-3 bg-gray-800 mb-2"
                   />
                   <div className="flex justify-between text-xs">
-                    <span className="text-white/55">
+                    <span className="text-gray-400">
                       {formatCurrency(monthlyWager)} / {formatCurrency(POKER_REQUIREMENT)}
                     </span>
-                    <span className="font-bold" style={{ color: HOLO_PURPLE }}>
+                    <span className="text-[#3C7BFF] font-bold">
                       {Math.min(Math.floor((monthlyWager / POKER_REQUIREMENT) * 100), 100)}%
                     </span>
                   </div>
                   {monthlyWager >= POKER_REQUIREMENT && (
-                    <div className="mt-2 p-2 rounded text-xs text-center font-bold" style={{ background: `${HOLO_GREEN}15`, border: `1px solid ${HOLO_GREEN}40`, color: HOLO_GREEN }}>
-                      QUALIFIED FOR THIS MONTH
+                    <div className="mt-2 p-2 bg-[#3C7BFF]/10 border border-[#3C7BFF]/30 rounded text-[#3C7BFF] text-xs text-center font-bold">
+                      ✓ QUALIFIED FOR THIS MONTH
                     </div>
                   )}
                   <div className="flex justify-center gap-3 mt-3">
                     {[
                       { label: "DAYS", value: pokerCountdown.days },
-                      { label: "HRS",  value: pokerCountdown.hours },
-                      { label: "MIN",  value: pokerCountdown.minutes },
-                      { label: "SEC",  value: pokerCountdown.seconds },
+                      { label: "HRS", value: pokerCountdown.hours },
+                      { label: "MIN", value: pokerCountdown.minutes },
+                      { label: "SEC", value: pokerCountdown.seconds },
                     ].map((item) => (
                       <div key={item.label} className="text-center">
-                        <div className="text-lg font-bold" style={{ color: HOLO_CYAN }}>{String(item.value).padStart(2, "0")}</div>
-                        <div className="text-xs text-white/50">{item.label}</div>
+                        <div className="text-lg font-bold text-[#3C7BFF]">{String(item.value).padStart(2, "0")}</div>
+                        <div className="text-xs text-gray-400">{item.label}</div>
                       </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Social Links Card - next to Poker card */}
-                <Card
-                  className="lg:col-span-2 p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
-                >
-                  <h3 className="text-lg font-bold text-white mb-4 uppercase">Find Mandy</h3>
-                  <div className="grid grid-cols-1 gap-2">
-                    {[
-                      { label: "Telegram Channel",    href: "https://t.me/mandygg",             color: HOLO_CYAN,   desc: "Announcements & updates" },
-                      { label: "Telegram Group",       href: "https://t.me/mandyggchat",          color: HOLO_BLUE,   desc: "Community chat" },
-                      { label: "Discord",              href: "https://discord.gg/mandygg",        color: HOLO_PURPLE, desc: "Gaming & hangouts" },
-                      { label: "Kick",                 href: "https://kick.com/mandycalmdown",    color: HOLO_GREEN,  desc: "Live streams" },
-                      { label: "Twitter / X",          href: "https://twitter.com/mandycalmdown", color: HOLO_PINK,   desc: "Hot takes & degen content" },
-                    ].map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200 no-underline"
-                        style={{ background: "#010101", border: `0.5px solid ${link.color}40` }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = link.color; e.currentTarget.style.boxShadow = `0 0 8px ${link.color}25` }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${link.color}40`; e.currentTarget.style.boxShadow = "none" }}
-                      >
-                        <div>
-                          <span className="text-sm font-bold text-white block">{link.label}</span>
-                          <span className="text-xs text-white/50">{link.desc}</span>
-                        </div>
-                        <span className="text-xs font-bold ml-2" style={{ color: link.color }}>→</span>
-                      </a>
                     ))}
                   </div>
                 </Card>
 
                 {/* Raffle Section - full width */}
                 <Card
-                  className="lg:col-span-3 p-4 rounded-xl transition-all duration-300 relative overflow-hidden"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="lg:col-span-3 p-4 rounded-xl border border-white/10 transition-all duration-300 relative overflow-hidden"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <div className="grid md:grid-cols-2 gap-4">
                     {/* Left side - Info and Stats */}
                     <div>
-                      <h3 className="text-lg font-bold text-white mb-2 uppercase">
+                      <h3 className="text-lg font-bold text-white mb-2 uppercase flex items-center gap-2">
+                        <Ticket className="w-5 h-5 text-[#3C7BFF]" />
                         Weekly $250 Raffle
                       </h3>
-                      <p className="text-xs text-white/55 mb-3">Wager $500 = 1 ticket. Drawing every Friday at midnight UTC.</p>
+                      <p className="text-xs text-gray-400 mb-3">Wager $500 = 1 ticket. Drawing every Friday at midnight UTC.</p>
 
                       <div className="space-y-2 mb-3">
                         <div className="flex justify-between text-sm">
-                          <span className="text-white/55">Your Tickets:</span>
-                          <span className="font-bold" style={{ color: HOLO_PINK }}>{raffleTickets.length}</span>
+                          <span className="text-gray-400">Your Tickets:</span>
+                          <span className="text-[#3C7BFF] font-bold">{raffleTickets.length}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-white/55">Progress to Next:</span>
-                          <span className="font-bold" style={{ color: HOLO_CYAN }}>
+                          <span className="text-gray-400">Progress to Next:</span>
+                          <span className="text-[#3C7BFF] font-bold">
                             {formatCurrency(wagerTowardNext)} / {formatCurrency(TICKET_INTERVAL)}
                           </span>
                         </div>
                       </div>
 
-                      <Progress value={progressPercent} className="h-2 mb-3" style={{ background: "#1a1a1a" }} />
+                      <Progress value={progressPercent} className="h-2 bg-gray-800 mb-3" />
 
                       {/* Countdown */}
                       <div className="mb-3">
-                        <p className="text-xs text-white/50 mb-2 text-center">Next Drawing:</p>
+                        <p className="text-xs text-gray-400 mb-2 text-center">Next Drawing:</p>
                         <div className="flex justify-center gap-3">
                           {[
                             { label: "D", value: raffleCountdown.days },
@@ -808,15 +774,15 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                             { label: "M", value: raffleCountdown.minutes },
                             { label: "S", value: raffleCountdown.seconds },
                           ].map((item) => (
-                            <div key={item.label} className="text-center rounded px-2 py-1" style={{ background: "#010101", border: "0.5px solid rgba(255,255,255,0.3)" }}>
-                              <div className="text-base font-bold" style={{ color: HOLO_PURPLE }}>{String(item.value).padStart(2, "0")}</div>
-                              <div className="text-xs text-white/50">{item.label}</div>
+                            <div key={item.label} className="text-center bg-[#1a1a1a] rounded px-2 py-1">
+                              <div className="text-base font-bold text-[#3C7BFF]">{String(item.value).padStart(2, "0")}</div>
+                              <div className="text-xs text-gray-400">{item.label}</div>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      {/* Holo Button */}
+                      {/* Holo Button to Raffle Page */}
                       <Link href="/raffle" className="block">
                         <button className="holo-button w-full">
                           <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
@@ -828,12 +794,13 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                       </Link>
                     </div>
 
-                    {/* Right side - Raffle Tickets Image (no glow) */}
+                    {/* Right side - Raffle Tickets Image */}
                     <div className="flex items-center justify-center">
                       <img
                         src={RAFFLE_IMAGE}
                         alt="Raffle Tickets"
                         className="w-full max-w-xs h-auto"
+                        style={{ filter: "drop-shadow(0 4px 20px rgba(60, 123, 255, 0.3))" }}
                       />
                     </div>
                   </div>
@@ -841,13 +808,13 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
                 {/* Need Help Box */}
                 <Card
-                  className="p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <h3 className="text-lg font-bold text-white mb-2 uppercase">Need Help?</h3>
-                  <p className="text-sm text-white/55 mb-3">Get instant support from our Telegram bot</p>
+                  <p className="text-sm text-gray-400 mb-3">Open a ticket with our Telegram bot</p>
                   <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="block">
                     <button className="holo-button w-full">
                       <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
@@ -861,13 +828,13 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
                 {/* Chat with Community */}
                 <Card
-                  className="lg:col-span-2 p-4 rounded-xl transition-all duration-300"
-                  style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)", boxShadow: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite" }}
-                  onMouseLeave={(e) => { e.currentTarget.style.animation = "none"; e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)" }}
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <h3 className="text-lg font-bold text-white mb-2 uppercase">Join the Community</h3>
-                  <p className="text-sm text-white/55 mb-3">Come chat with likeminded weirdos in the MandyGG Telegram</p>
+                  <p className="text-sm text-gray-400 mb-3">Come chat with likeminded weirdos in the MandyGG Telegram</p>
                   <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer" className="block">
                     <button className="holo-button w-full">
                       <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
@@ -881,10 +848,10 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
               </div>
             ) : (
               <Card
-                className="p-6 rounded-xl mb-5 text-center"
-                style={{ backgroundColor: "#010101", border: "0.5px solid rgba(255,255,255,0.5)" }}
+                className="p-6 rounded-xl border border-white/10 mb-5 text-center"
+                style={{ backgroundColor: "rgba(10, 10, 10, 0.95)" }}
               >
-                  <p className="text-white/80 text-base mb-3">
+                <p className="text-gray-300 text-base mb-3">
                   Add your Thrill username to see your stats and leaderboard position!
                 </p>
                 <Button

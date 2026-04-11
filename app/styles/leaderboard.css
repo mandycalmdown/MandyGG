@@ -6,7 +6,7 @@
 
 /* ── page wrapper ── */
 .lb-page {
-  background: #000000;
+  background: #0c1118;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -86,7 +86,7 @@
 .lb-toggle-btn--active {
   border-color: #c1ff00;
   background: #c1ff00;
-  color: #000000;
+  color: #0c1118;
   font-weight: 700;
 }
 
@@ -123,8 +123,8 @@
 }
 
 .lb-podium-card {
-  background: #010101;
-  border: 0.5px solid rgba(255, 255, 255, 0.5);
+  background: #141a24;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 1.4rem 1rem 1.25rem;
   display: flex;
@@ -226,8 +226,8 @@
 .lb-row {
   display: flex;
   align-items: center;
-  background: #010101;
-  border: 0.5px solid rgba(255, 255, 255, 0.5);
+  background: #141a24;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 0.82rem 1.1rem;
   transition: border-color 0.18s ease;
@@ -321,8 +321,8 @@
 }
 
 .lb-livefeed-bubble {
-  background: #010101;
-  border: 0.5px solid rgba(255, 255, 255, 0.5);
+  background: #141a24;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 50px;
   padding: 0.55rem 1rem;
   font-family: "poppins", monospace;
@@ -349,7 +349,7 @@
 /* ── loading skeleton ── */
 .lb-skeleton-row {
   height: 48px;
-  background: linear-gradient(90deg, #010101 25%, #1a1a1a 50%, #010101 75%);
+  background: linear-gradient(90deg, #141a24 25%, #222 50%, #141a24 75%);
   background-size: 200% 100%;
   border-radius: 8px;
   animation: lb-shimmer 1.4s ease infinite;

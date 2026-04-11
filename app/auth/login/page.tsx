@@ -99,7 +99,7 @@ export default function LoginPage() {
 
         {/* Card */}
         <div style={{
-          background: "#010101",
+          background: "#080b10",
           border: "1px solid rgba(255,255,255,0.1)",
           borderRadius: "16px",
           padding: "2.5rem 2rem",

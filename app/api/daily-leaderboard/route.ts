@@ -2,8 +2,6 @@ import { type NextRequest, NextResponse } from "next/server"
 import { kv } from "@/lib/kv"
 import { fetchThrillData, convertAtomicValue, get24HourDateRange } from "@/lib/thrill-api"
 
-export const dynamic = 'force-dynamic'
-
 interface LeaderboardEntry {
   id: number
   username: string

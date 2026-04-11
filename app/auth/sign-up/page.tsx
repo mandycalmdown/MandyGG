@@ -147,11 +147,11 @@ export default function SignUpPage() {
 
         {/* Card */}
         <div style={{
-          background: "#010101",
-          border: "0.5px solid rgba(255,255,255,0.5)",
+          background: "#080b10",
+          border: "1px solid rgba(255,255,255,0.1)",
           borderRadius: "16px",
           padding: "2.5rem 2rem",
-          boxShadow: "none",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(60,123,255,0.12)",
         }}>
           <h1 style={{
             fontFamily: "var(--font-poppins), Poppins, sans-serif",
