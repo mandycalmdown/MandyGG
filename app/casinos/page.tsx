@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { SiteNavigation } from "@/components/site-navigation"
-import Link from "next/link"
+import { SiteFooter } from "@/components/site-footer"
 import "@/styles/mandy-home.css"
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
-const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 
-const CARD = "#0a0a0a"
-const BORDER = "rgba(255,255,255,0.07)"
+const CARD = "#010101"
+const BORDER = "rgba(255,255,255,0.5)"
 
 interface Casino {
   id: string
@@ -99,12 +98,12 @@ export default function CasinosPage() {
                     transition: "border-color 0.2s ease, box-shadow 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(60,123,255,0.35)"
-                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(60,123,255,0.12)"
+                    e.currentTarget.style.animation = "holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite"
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = BORDER
+                    e.currentTarget.style.animation = "none"
                     e.currentTarget.style.boxShadow = "none"
+                    e.currentTarget.style.borderColor = BORDER
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -139,24 +138,7 @@ export default function CasinosPage() {
           )}
         </section>
 
-        {/* Footer */}
-        <footer style={{ position: "relative", overflow: "hidden", paddingTop: "3rem", paddingBottom: "2rem" }}>
-          <video autoPlay loop muted playsInline aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}>
-            <source src={HOLO_BG_MP4} type="video/mp4" />
-          </video>
-          <div style={{ position: "relative", zIndex: 1, maxWidth: "900px", margin: "0 auto", padding: "0 1rem", textAlign: "center" }}>
-            <p style={{ fontWeight: 900, fontSize: "clamp(2.5rem,10vw,5rem)", color: "#000", letterSpacing: "-0.01em", marginBottom: "0.25rem" }}>MANDY.GG</p>
-            <p style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.15em", color: "#000", marginBottom: "1.5rem" }}>YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
-            <div style={{ marginTop: "2rem", borderTop: "2px solid rgba(0,0,0,0.45)", paddingTop: "1.25rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
-              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", letterSpacing: "0.06em" }}>© 2026 MANDY.GG. ALL RIGHTS RESERVED.</p>
-              <div style={{ display: "flex", gap: "1.25rem" }}>
-                {[{ label: "PRIVACY", href: "/privacy" }, { label: "TERMS", href: "/terms" }, { label: "SUPPORT", href: "https://t.me/mandysupport_bot" }].map((l) => (
-                  <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", textDecoration: "none", letterSpacing: "0.06em" }}>{l.label}</a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
     </>
   )

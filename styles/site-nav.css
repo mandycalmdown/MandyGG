@@ -69,10 +69,10 @@ body>main:first-of-type,
   }
 }
 
-/* ── Nav bar — almost black throughout site ── */
+/* ── Nav bar — pure black with 0.5px white stroke ── */
 .site-nav {
-  background: rgba(7, 7, 7, 0.98);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: #000000;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 1);
   box-shadow: none;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -301,8 +301,8 @@ body>main:first-of-type,
   flex-direction: column;
   gap: 0;
   padding: 0.5rem 1rem 1rem;
-  border-top: 1px solid rgb(255, 255, 255);
-  background: rgb(7, 7, 7);
+  border-top: 0.5px solid rgba(255, 255, 255, 1);
+  background: #000000;
 }
 
 .site-nav__mobile-link {

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { SiteNavigation } from "@/components/site-navigation"
+import { SiteFooter } from "@/components/site-footer"
 import type { Metadata } from "next"
 import "@/styles/mandy-home.css"
 
@@ -8,10 +9,9 @@ export const metadata: Metadata = {
   description: "I've tried every casino that's slid into my DMs. Thrill is genuinely different. Here's what changed my mind.",
 }
 
-const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const ACCENT = "#3C7BFF"
-const PAGE_BG = "#00020a"
-const CARD_BG = "#080c14"
+const PAGE_BG = "#000000"
+const CARD_BG = "#010101"
 
 export default function BlogPostPage() {
   return (
@@ -127,19 +127,7 @@ export default function BlogPostPage() {
           </div>
         </article>
 
-        {/* Footer */}
-        <footer style={{ position: "relative", overflow: "hidden", paddingTop: "3rem", paddingBottom: "2rem" }}>
-          <video autoPlay loop muted playsInline aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}>
-            <source src={HOLO_BG_MP4} type="video/mp4" />
-          </video>
-          <div style={{ position: "relative", zIndex: 1, maxWidth: "900px", margin: "0 auto", padding: "0 1rem", textAlign: "center" }}>
-            <p style={{ fontWeight: 900, fontSize: "clamp(2.5rem,10vw,5rem)", color: "#000", letterSpacing: "-0.01em", marginBottom: "0.25rem" }}>MANDY.GG</p>
-            <p style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.15em", color: "#000", marginBottom: "1.5rem" }}>YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
-            <div style={{ marginTop: "2rem", borderTop: "2px solid rgba(0,0,0,0.45)", paddingTop: "1.25rem" }}>
-              <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#000", letterSpacing: "0.06em" }}>© 2026 MANDY.GG. ALL RIGHTS RESERVED.</p>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
     </>
   )

@@ -1,13 +1,13 @@
 "use client"
 
 import { SiteNavigation } from "@/components/site-navigation"
+import { SiteFooter } from "@/components/site-footer"
 import { ExternalLink, CheckCircle2, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import "@/styles/mandy-home.css"
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
-const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
 const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 
@@ -223,28 +223,7 @@ export function HowToJoinPage() {
         </section>
 
         {/* ── Footer ── */}
-        <footer style={{ position: "relative", overflow: "hidden", paddingTop: "3rem", paddingBottom: "2rem" }}>
-          <video autoPlay loop muted playsInline aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}>
-            <source src={HOLO_BG_MP4} type="video/mp4" />
-          </video>
-          <div style={{ position: "relative", zIndex: 1, maxWidth: "900px", margin: "0 auto", padding: "0 1rem", textAlign: "center" }}>
-            <p style={{ fontWeight: 900, fontSize: "clamp(2rem,8vw,4rem)", color: "#000", letterSpacing: "-0.01em", marginBottom: "0.25rem" }}>MANDY.GG</p>
-            <p style={{ fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.15em", color: "#000", marginBottom: "1.5rem" }}>YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
-            <nav style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem 1.5rem", marginBottom: "1.5rem" }}>
-              {[
-                { label: "PRIVACY POLICY", href: "/privacy" },
-                { label: "TERMS OF SERVICE", href: "/terms" },
-              ].map((l) => (
-                <Link key={l.href} href={l.href} style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.1em", color: "#000", textDecoration: "none" }}>{l.label}</Link>
-              ))}
-              <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.75rem", fontWeight: 800, letterSpacing: "0.1em", color: "#000", textDecoration: "none" }}>SUPPORT</a>
-            </nav>
-
-            <p style={{ fontSize: "0.7rem", fontWeight: 700, color: "rgba(0,0,0,0.6)", letterSpacing: "0.06em", marginTop: "1.5rem" }}>
-              © 2026 MANDY.GG. ALL RIGHTS RESERVED. PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+.
-            </p>
-          </div>
-        </footer>
+        <SiteFooter />
 
         <style>{`
         @media (min-width: 700px) {

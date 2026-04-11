@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { SiteNavigation } from "@/components/site-navigation";
+import { SiteFooter } from "@/components/site-footer";
 import { faqItems } from "@/components/homepage-faq-data";
 import { FeatureCarousel } from "@/components/feature-carousel";
 import "@/styles/mandy-home.css";
@@ -320,35 +321,7 @@ export function Homepage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="site-footer" aria-label="Site footer">
-        <video autoPlay loop muted playsInline aria-hidden="true" className="footer-video">
-          <source src={HOLO_BG_MP4} type="video/mp4" />
-        </video>
-        <div className="footer-inner">
-          <div className="footer-brand">
-            <span className="footer-logo">MANDY.GG</span>
-            <span className="footer-sub">YEAH, I&apos;M A GIRL AND I GAMBLE.</span>
-            <span className="footer-code">USE CODE <strong>MANDY</strong> ON THRILL</span>
-          </div>
-          <nav className="footer-nav" aria-label="Footer nav">
-            <Link href="/how-to-join">HOW TO JOIN</Link>
-            <Link href="/rewards">REWARDS</Link>
-            <Link href="/leaderboard">WEEKLY RACE</Link>
-            <Link href="/tools">TOOLS</Link>
-            <Link href="/blog">GOSSIP</Link>
-            <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
-            <a href="https://discord.gg/mandygg" target="_blank" rel="noopener noreferrer">DISCORD</a>
-          </nav>
-        </div>
-        <div className="footer-bottom">
-          <span className="footer-copy">© 2026 MANDY.GG — ALL RIGHTS RESERVED</span>
-          <div className="footer-legal">
-            <Link href="/responsible-gambling">RESPONSIBLE GAMBLING</Link>
-            <Link href="/terms">TERMS</Link>
-            <Link href="/privacy">PRIVACY</Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

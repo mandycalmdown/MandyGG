@@ -318,3 +318,73 @@
   animation: float 6s ease-in-out infinite;
   animation-delay: 1s;
 }
+
+/* ================================================================
+   GLOBAL HOLO CARD SYSTEM
+   All cards: #010101 bg, 0.5px white stroke.
+   On hover: subtle cycling glow + border through all holo accents.
+   NEVER use gray text — all muted text is rgba white.
+================================================================ */
+
+@keyframes holoGlowCycle {
+  0%   { box-shadow: 0 0 6px 1px rgba(60,123,255,0.2),  0 4px 16px rgba(60,123,255,0.1); }
+  16%  { box-shadow: 0 0 6px 1px rgba(90,195,255,0.2),  0 4px 16px rgba(90,195,255,0.1); }
+  33%  { box-shadow: 0 0 6px 1px rgba(168,85,247,0.2),  0 4px 16px rgba(168,85,247,0.1); }
+  50%  { box-shadow: 0 0 6px 1px rgba(255,148,180,0.2), 0 4px 16px rgba(255,148,180,0.1); }
+  66%  { box-shadow: 0 0 6px 1px rgba(74,222,128,0.2),  0 4px 16px rgba(74,222,128,0.1); }
+  83%  { box-shadow: 0 0 6px 1px rgba(251,191,36,0.2),  0 4px 16px rgba(251,191,36,0.1); }
+  100% { box-shadow: 0 0 6px 1px rgba(60,123,255,0.2),  0 4px 16px rgba(60,123,255,0.1); }
+}
+
+@keyframes holoBorderCycle {
+  0%   { border-color: rgba(60,123,255,0.45); }
+  16%  { border-color: rgba(90,195,255,0.45); }
+  33%  { border-color: rgba(168,85,247,0.45); }
+  50%  { border-color: rgba(255,148,180,0.45); }
+  66%  { border-color: rgba(74,222,128,0.45); }
+  83%  { border-color: rgba(251,191,36,0.45); }
+  100% { border-color: rgba(60,123,255,0.45); }
+}
+
+/* Base holo-card style */
+.holo-card {
+  background: #010101 !important;
+  border: 0.5px solid rgba(255,255,255,0.5) !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+.holo-card:hover {
+  animation: holoGlowCycle 3s linear infinite, holoBorderCycle 3s linear infinite !important;
+}
+
+/* Button holo glow on hover */
+@keyframes holoButtonGlow {
+  0%   { box-shadow: 0 0 5px rgba(60,123,255,0.3); }
+  25%  { box-shadow: 0 0 5px rgba(168,85,247,0.3); }
+  50%  { box-shadow: 0 0 5px rgba(255,148,180,0.3); }
+  75%  { box-shadow: 0 0 5px rgba(74,222,128,0.3); }
+  100% { box-shadow: 0 0 5px rgba(60,123,255,0.3); }
+}
+
+.holo-btn-hover:hover {
+  animation: holoButtonGlow 2.5s linear infinite !important;
+  transform: translateY(-1px);
+}
+
+/* Enforce white text everywhere — override Tailwind gray utilities */
+.text-gray-300, .text-gray-400, .text-gray-500, .text-gray-600 {
+  color: rgba(255,255,255,0.65) !important;
+}
+.text-muted-foreground {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+/* Ensure page backgrounds are always black */
+.bg-background, [class*="bg-gray-"], [class*="bg-slate-"], [class*="bg-zinc-"] {
+  background-color: #000000 !important;
+}
+
+/* Dark inner cards (bg-[#1a1a1a] etc.) become #010101 */
+.bg-\[\#1a1a1a\], .bg-\[\#0a0a0a\], .bg-\[\#111\], .bg-\[\#111111\] {
+  background-color: #010101 !important;
+}
