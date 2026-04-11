@@ -28,6 +28,7 @@ const HOLO_PINK    = "#ff94b4"
 const HOLO_GREEN   = "#4ade80"
 const HOLO_YELLOW  = "#fbbf24"
 const LIME         = "#5cfec0"  // primary brand accent for podium
+const BLUE         = "#3C7BFF"  // alias for HOLO_BLUE
 
 function HoloButton({ href, external, onClick, children, small }: {
   href?: string; external?: boolean; onClick?: () => void;
