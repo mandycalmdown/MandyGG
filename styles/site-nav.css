@@ -71,7 +71,7 @@ body>main:first-of-type,
 
 /* ── Nav bar — almost black throughout site ── */
 .site-nav {
-  background: rgba(0, 0, 0, 0.98);
+  background: rgba(7, 7, 7, 0.98);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: none;
   backdrop-filter: blur(12px);
@@ -182,8 +182,8 @@ body>main:first-of-type,
 
 .site-nav__link:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgb(255, 255, 255);
 }
 
 /* Active link gets blue accent underline */
@@ -302,7 +302,7 @@ body>main:first-of-type,
   gap: 0;
   padding: 0.5rem 1rem 1rem;
   border-top: 1px solid rgb(255, 255, 255);
-  background: rgb(0, 0, 0);
+  background: rgb(7, 7, 7);
 }
 
 .site-nav__mobile-link {
