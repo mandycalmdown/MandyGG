@@ -6,11 +6,11 @@ import Link from "next/link"
 import "@/styles/mandy-home.css"
 
 const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
-const HOLO_BG_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
+const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
-const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
+const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
 
-const CARD   = "#0a0a0a"
+const CARD = "#0a0a0a"
 const BORDER = "rgba(255,255,255,0.07)"
 
 interface Casino {
@@ -35,7 +35,7 @@ function HoloButton({ href, children }: { href: string; children: React.ReactNod
     >
       <video autoPlay loop muted playsInline aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, borderRadius: "inherit" }}>
         <source src={HOLO_BTN_WEBM} type="video/webm" />
-        <source src={HOLO_BTN_MP4}  type="video/mp4" />
+        <source src={HOLO_BTN_MP4} type="video/mp4" />
       </video>
       <span style={{ position: "relative", zIndex: 1, color: "#000", fontWeight: 800, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "var(--font-poppins), sans-serif" }}>
         {children}
@@ -73,7 +73,7 @@ export default function CasinosPage() {
             <span className="holo-sheen" aria-hidden="true" />
           </div>
           <p style={{ fontSize: "clamp(0.75rem,2vw,0.9rem)", fontWeight: 600, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-            Mandy-approved. Use the links below to play with code MANDY.
+            True degenerates play on multiple platforms. Use the links below to play under my code.
           </p>
         </section>
 
