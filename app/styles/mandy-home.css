@@ -60,7 +60,7 @@ body {
   color: var(--mandy-white);
 }
 
-.site-nav a + a::before {
+.site-nav a+a::before {
   content: "|";
   color: #ffffff;
   margin: 0 0.62rem;
@@ -209,8 +209,8 @@ body {
 }
 
 .site-header {
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid rgba(20, 20, 20, 0.16);
+  border-bottom: 1px solid rgba(25, 25, 25, 0.16);
   margin-top: 3.5rem;
 }
 
@@ -258,7 +258,7 @@ body {
   color: var(--mandy-white);
 }
 
-.site-nav a + a::before {
+.site-nav a+a::before {
   content: "|";
   color: #ffffff;
   margin: 0 0.62rem;
@@ -304,7 +304,7 @@ body {
 
 .floating-card {
   border-radius: 23px;
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border: 1.5px solid rgba(76, 76, 76, 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 44%),
     var(--mandy-bg-secondary);
@@ -391,7 +391,7 @@ body {
 .primary-button:hover {
   background: var(--mandy-neon);
   color: var(--mandy-bg);
-  box-shadow: 0 0 16px rgba(193, 255, 0, 0.34);
+  box-shadow: 0 0 16px rgb(82, 255, 183);
 }
 
 .ticker {
@@ -411,7 +411,8 @@ body {
 
 .ticker-track {
   display: flex;
-  align-items: bottom;        /* was bottom */
+  align-items: bottom;
+  /* was bottom */
   width: max-content;
   white-space: nowrap;
   font-family: "poppins", "Arial Black", sans-serif;
@@ -419,9 +420,10 @@ body {
   line-height: 2;
   font-weight: 800;
   letter-spacing: 0.01em;
-  color: #060606;
+  color: #000000;
   animation: mandy-ticker-reverse 38s linear infinite;
-  padding: 0 0.1rem;          /* no vertical padding, only horizontal */
+  padding: 0 0.1rem;
+  /* no vertical padding, only horizontal */
 }
 
 .ticker-track span {
@@ -435,6 +437,7 @@ body {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
@@ -444,12 +447,14 @@ body {
   from {
     transform: translateX(-50%);
   }
+
   to {
     transform: translateX(0);
   }
 }
 
 @media (max-width: 1120px) {
+
   .header-inner,
   .hero,
   .features,
@@ -537,7 +542,7 @@ body {
     letter-spacing: 0.08em;
   }
 
-  .site-nav a + a::before {
+  .site-nav a+a::before {
     margin: 0 0.35rem;
   }
 
@@ -563,6 +568,7 @@ body {
     border-radius: 16px;
   }
 }
+
 .mandy-logo {
   margin: 0;
   font-family: "poppins", sans-serif;
@@ -580,17 +586,15 @@ body {
   position: relative;
   display: inline-block;
   color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    #c1ff00 0%,
-    #c1ff00 20%,
-    #f5ff6c 35%,
-    #c1ff00 50%,
-    #ffe608 65%,
-    #c1ff00 80%,
-    #ffffff 90%,
-    #c1ff00 100%
-  );
+  background-image: linear-gradient(90deg,
+      #c1ff00 0%,
+      #c1ff00 20%,
+      #f5ff6c 35%,
+      #c1ff00 50%,
+      #ffe608 65%,
+      #c1ff00 80%,
+      #ffffff 90%,
+      #c1ff00 100%);
   background-size: 180% 100%;
   background-position: 0% 50%;
   -webkit-background-clip: text;
@@ -604,6 +608,7 @@ body {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-50%);
   }
@@ -613,12 +618,14 @@ body {
   from {
     transform: translateX(-50%);
   }
+
   to {
     transform: translateX(0);
   }
 }
 
 @media (max-width: 1120px) {
+
   .header-inner,
   .hero,
   .features,
@@ -706,7 +713,7 @@ body {
     letter-spacing: 0.08em;
   }
 
-  .site-nav a + a::before {
+  .site-nav a+a::before {
     margin: 0 0.35rem;
   }
 
@@ -732,6 +739,7 @@ body {
     border-radius: 16px;
   }
 }
+
 .mandy-logo {
   margin: 0;
   font-family: "poppins", sans-serif;
@@ -749,17 +757,15 @@ body {
   position: relative;
   display: inline-block;
   color: transparent;
-  background-image: linear-gradient(
-    90deg,
-    #c1ff00 0%,
-    #c1ff00 20%,
-    #f5ff6c 35%,
-    #c1ff00 50%,
-    #ffe608 65%,
-    #c1ff00 80%,
-    #ffffff 90%,
-    #c1ff00 100%
-  );
+  background-image: linear-gradient(90deg,
+      #c1ff00 0%,
+      #c1ff00 20%,
+      #f5ff6c 35%,
+      #c1ff00 50%,
+      #ffe608 65%,
+      #c1ff00 80%,
+      #ffffff 90%,
+      #c1ff00 100%);
   background-size: 180% 100%;
   background-position: 0% 50%;
   -webkit-background-clip: text;
@@ -774,9 +780,11 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -784,8 +792,21 @@ body {
 
 /* ── parallax float ── */
 @keyframes float-icon {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
-.floating-card:nth-child(2) .feature-icon { animation-delay: -1.3s; }
-.floating-card:nth-child(3) .feature-icon { animation-delay: -2.6s; }
+
+.floating-card:nth-child(2) .feature-icon {
+  animation-delay: -1.3s;
+}
+
+.floating-card:nth-child(3) .feature-icon {
+  animation-delay: -2.6s;
+}

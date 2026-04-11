@@ -12,8 +12,8 @@
 }
 
 /* Offset page content below fixed navbar (ticker 32px + nav 58px = 90px) */
-.nav-sticky-wrapper + *,
-body > main:first-of-type,
+.nav-sticky-wrapper+*,
+body>main:first-of-type,
 .mandy-home {
   padding-top: 90px;
 }
@@ -55,17 +55,24 @@ body > main:first-of-type,
   padding: 0 0.4rem;
 }
 
-.nav-ticker__track span { display: inline-block; }
+.nav-ticker__track span {
+  display: inline-block;
+}
 
 @keyframes navTickerScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* ── Nav bar — almost black throughout site ── */
 .site-nav {
-  background: rgba(10,10,10,0.98);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0, 0, 0, 0.98);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: none;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -127,13 +134,24 @@ body > main:first-of-type,
 }
 
 /* Desktop: show full text, hide mobile */
-.nav-logo-holo__text--desktop { display: inline; }
-.nav-logo-holo__text--mobile  { display: none; }
+.nav-logo-holo__text--desktop {
+  display: inline;
+}
+
+.nav-logo-holo__text--mobile {
+  display: none;
+}
 
 /* Mobile: show "M", hide full text */
 @media (max-width: 640px) {
-  .nav-logo-holo__text--desktop { display: none; }
-  .nav-logo-holo__text--mobile  { display: inline; font-size: 1.4rem; }
+  .nav-logo-holo__text--desktop {
+    display: none;
+  }
+
+  .nav-logo-holo__text--mobile {
+    display: inline;
+    font-size: 1.4rem;
+  }
 }
 
 /* Desktop links */
@@ -153,7 +171,7 @@ body > main:first-of-type,
   text-transform: uppercase;
   text-decoration: none;
   /* white on dark nav */
-  color: rgba(255,255,255,0.65);
+  color: rgb(255, 255, 255);
   padding: 0.35rem 0.6rem;
   border-radius: 7px;
   border: 1px solid transparent;
@@ -164,8 +182,8 @@ body > main:first-of-type,
 
 .site-nav__link:hover {
   color: #ffffff;
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Active link gets blue accent underline */
@@ -217,7 +235,7 @@ body > main:first-of-type,
   transform: translateY(-1px);
   box-shadow:
     0 0 0 0.4px #3C7BFF,
-    0 5px 18px rgba(60,123,255,0.35);
+    0 5px 18px rgba(0, 0, 0, 0);
 }
 
 .nav-holo-btn__video {
@@ -265,9 +283,17 @@ body > main:first-of-type,
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
 
-.hbg-line--top-open { transform: rotate(45deg) translate(5px, 5px); }
-.hbg-line--mid-open { opacity: 0; }
-.hbg-line--bot-open { transform: rotate(-45deg) translate(5px, -5px); }
+.hbg-line--top-open {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hbg-line--mid-open {
+  opacity: 0;
+}
+
+.hbg-line--bot-open {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
 
 /* Mobile drawer */
 .site-nav__mobile-drawer {
@@ -275,8 +301,8 @@ body > main:first-of-type,
   flex-direction: column;
   gap: 0;
   padding: 0.5rem 1rem 1rem;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  background: rgba(8,11,16,0.98);
+  border-top: 1px solid rgb(255, 255, 255);
+  background: rgb(0, 0, 0);
 }
 
 .site-nav__mobile-link {
@@ -287,14 +313,16 @@ body > main:first-of-type,
   text-transform: uppercase;
   text-decoration: none;
   /* white on dark drawer */
-  color: rgba(255,255,255,0.75);
+  color: rgb(255, 255, 255);
   padding: 0.7rem 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgb(255, 255, 255);
   transition: color 0.15s ease;
 }
 
 .site-nav__mobile-link:hover,
-.site-nav__mobile-link--active { color: #3C7BFF; }
+.site-nav__mobile-link--active {
+  color: #3C7BFF;
+}
 
 .site-nav__mobile-auth {
   margin-top: 0.85rem;
@@ -302,6 +330,7 @@ body > main:first-of-type,
 
 /* ── Responsive ── */
 @media (max-width: 960px) {
+
   .site-nav__links,
   .site-nav__auth {
     display: none;
@@ -313,7 +342,15 @@ body > main:first-of-type,
 }
 
 @media (max-width: 600px) {
-  .site-nav__inner { height: 50px; }
-  .site-nav__logo-img { height: 32px; }
-  .nav-ticker { height: 1.8rem; }
+  .site-nav__inner {
+    height: 50px;
+  }
+
+  .site-nav__logo-img {
+    height: 32px;
+  }
+
+  .nav-ticker {
+    height: 1.8rem;
+  }
 }
