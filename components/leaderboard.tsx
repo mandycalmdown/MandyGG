@@ -17,8 +17,8 @@ const HEADER_IMG    = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/M
 
 /* Solid black background with holographic accents */
 const PAGE_BG  = "#000000"   // solid black
-const CARD_BG  = "#0a0a0a"   // almost black cards
-const CARD_BG2 = "#0f0f0f"   // slightly lighter
+const CARD_BG  = "#010101"   // almost black cards
+const CARD_BG2 = "#010101"   // same for consistency
 
 // Holographic accent colors from video overlay
 const HOLO_BLUE    = "#3C7BFF"
@@ -27,6 +27,7 @@ const HOLO_PURPLE  = "#a855f7"
 const HOLO_PINK    = "#ff94b4"
 const HOLO_GREEN   = "#4ade80"
 const HOLO_YELLOW  = "#fbbf24"
+const LIME         = "#5cfec0"  // primary brand accent for podium
 
 function HoloButton({ href, external, onClick, children, small }: {
   href?: string; external?: boolean; onClick?: () => void;
@@ -182,9 +183,9 @@ export function Leaderboard() {
 
   const cardBase: React.CSSProperties = {
     background: CARD_BG,
-    border: "1.5px solid rgba(255,255,255,0.07)",
+    border: "0.5px solid rgba(255,255,255,0.5)",
     borderRadius: "16px",
-    boxShadow: "0 4px 32px rgba(0,0,4,0.7)",
+    boxShadow: "none",
   }
 
   return (
