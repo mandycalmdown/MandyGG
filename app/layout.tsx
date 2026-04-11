@@ -32,7 +32,7 @@ export const metadata = {
     default: "Mandy.gg | Best Crypto Casino Bonuses & Weekly $3500 Wager Race | Code MANDY",
   },
   description:
-    "Use code MANDY on Thrill Casino for exclusive crypto casino bonuses, lossback rewards, and a $3500 weekly wager race leaderboard. The best Stake alternative.",
+    "Use code MANDY on Thrill Casino for exclusive crypto casino bonuses, rewards, and a $3500 weekly wager race leaderboard. The best Stake alternative.",
   keywords:
     "crypto casino bonus, Thrill casino code, best crypto casino, Stake alternative, casino lossback, wager race, MANDY code, crypto gambling bonus 2026",
   creator: "Mandy.gg",
@@ -55,7 +55,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Mandy.gg | Crypto Casino Bonuses with Code MANDY",
-    description: "Exclusive crypto casino perks, $3500 weekly wager race, and lossback rewards. Use code MANDY on Thrill.",
+    description: "Exclusive crypto casino perks, $3500 weekly wager race, get more rewards. Use code MANDY on Thrill.",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/mandygg_sitepreview-B8vVqJHUkR7Bysk6KRJEKJPsfDV5Ri.png",
     creator: "@mandygg",
   },

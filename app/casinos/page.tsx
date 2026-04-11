@@ -73,7 +73,7 @@ export default function CasinosPage() {
             <span className="holo-sheen" aria-hidden="true" />
           </div>
           <p style={{ fontSize: "clamp(0.75rem,2vw,0.9rem)", fontWeight: 600, letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-            True degenerates play on multiple platforms. Use the links below to play under my code.
+            True degenerates play on multiple platforms. <br /> Use the links below to play under my code.
           </p>
         </section>
 

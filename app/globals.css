@@ -6,37 +6,37 @@
 :root {
   --background: #000000;
   --foreground: #FFFFFF;
-  --card: #050505;
+  --card: #010101;
   --card-foreground: #FFFFFF;
-  --popover: #111111;
+  --popover: #010101;
   --popover-foreground: #FFFFFF;
   --primary: #ffffff;
   --primary-foreground: #000000;
   --secondary: #3C7BFF;
   --secondary-foreground: #FFFFFF;
-  --muted: #1a1a1a;
+  --muted: #010101;
   --muted-foreground: #ffffff;
   --accent: #9953d3;
   --accent-foreground: #FFFFFF;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: #FFFFFF;
   --border: #333333;
-  --input: #111111;
+  --input: #010101;
   --ring: #3C7BFF;
-  --chart-1: #3C7BFF;
-  --chart-2: #3C7BFF;
-  --chart-3: #A538FF;
+  --chart-1: #85dfef;
+  --chart-2: #d1e95a;
+  --chart-3: #c584fb;
   --chart-4: #e541b4;
   --chart-5: #FFFFFF;
   --radius: 0.25rem;
-  --sidebar: #050505;
+  --sidebar: #010101;
   --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #3C7BFF;
+  --sidebar-primary: #3cffbe;
   --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1a1a1a;
+  --sidebar-accent: #010101;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #333333;
-  --sidebar-ring: #3C7BFF;
+  --sidebar-border: #ffffff;
+  --sidebar-ring: #f764c1;
 
   --font-jetbrains-mono: "JetBrains Mono", monospace;
   --font-poppins: "Poppins", sans-serif;
@@ -45,36 +45,36 @@
 .dark {
   --background: #000000;
   --foreground: #FFFFFF;
-  --card: #050505;
+  --card: #010101;
   --card-foreground: #FFFFFF;
-  --popover: #111111;
+  --popover: #010101;
   --popover-foreground: #FFFFFF;
   --primary: #3C7BFF;
   --primary-foreground: #000000;
-  --secondary: #3C7BFF;
+  --secondary: #f38ab9;
   --secondary-foreground: #FFFFFF;
-  --muted: #1a1a1a;
-  --muted-foreground: #888888;
-  --accent: #c6467d;
+  --muted: #010101;
+  --muted-foreground: #010101;
+  --accent: #bdf372;
   --accent-foreground: #FFFFFF;
-  --destructive: oklch(0.396 0.141 25.723);
+  --destructive: oklch(53.948% 0.16533 0.839);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: #333333;
-  --input: #111111;
+  --border: #ffffff;
+  --input: #010101;
   --ring: #3C7BFF;
-  --chart-1: #3C7BFF;
-  --chart-2: #3C7BFF;
-  --chart-3: #A538FF;
-  --chart-4: #FF2FBF;
+  --chart-1: #3cffb1;
+  --chart-2: #f064c6;
+  --chart-3: #c384f6;
+  --chart-4: #d6ef36;
   --chart-5: #FFFFFF;
-  --sidebar: #050505;
+  --sidebar: #010101;
   --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #3C7BFF;
+  --sidebar-primary: #3ce8ff;
   --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #1a1a1a;
+  --sidebar-accent: #010101;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #333333;
-  --sidebar-ring: #3C7BFF;
+  --sidebar-border: #ffffff;
+  --sidebar-ring: #6c95ee;
 }
 
 @theme inline {
@@ -157,12 +157,12 @@
   }
 
   50% {
-    box-shadow: 0 0 20px rgba(196, 196, 195, 0.4);
+    box-shadow: 0 0 20px rgba(9, 9, 9, 0.4);
   }
 }
 
 .animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
+  animation: glow-pulse 1s ease-in-out infinite;
 }
 
 /* Shimmer effect for card borders on hover */
