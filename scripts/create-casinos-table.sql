@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS casinos (
 INSERT INTO casinos (name, description, referral_url, logo_url, sort_order, is_active)
 VALUES (
   'Thrill',
-  'Trustworthy, instant payouts, no KYC, no bullshit. The best crypto casino right now — use code MANDY for exclusive rewards, weekly race, and lossback.',
+  'Trustworthy, instant payouts, no KYC, no bullshit. The best crypto casino right now — use code MANDY for extra rewards, weekly race, and monthly poker.',
   'https://thrill.com/?r=MANDY',
   NULL,
   1,
