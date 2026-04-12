@@ -18,6 +18,7 @@ const HOLO_PURPLE  = "#a855f7"
 const HOLO_PINK    = "#ff94b4"
 const HOLO_GREEN   = "#4ade80"
 const HOLO_YELLOW  = "#fbbf24"
+const LIME         = "#5cfec0"
 
 /* ── Countdown to next Friday midnight UTC ── */
 function getTimeToFridayUTC() {
@@ -193,7 +194,7 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
         <h2 style={{ fontFamily: "var(--font-poppins), sans-serif", fontWeight: 900, fontSize: "clamp(1.5rem,4.5vw,2.4rem)", color: "#fff", textTransform: "uppercase", textAlign: "center", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>
           <span style={{ color: LIME }}>${prizeAmount}</span> WEEKLY RAFFLE
         </h2>
-        <p style={{ textAlign: "center", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", marginBottom: "2rem", textTransform: "uppercase" }}>
+        <p style={{ textAlign: "center", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.14em", color: "#ffffff", marginBottom: "2rem", textTransform: "uppercase" }}>
           EVERY FRIDAY AT MIDNIGHT UTC · 1 TICKET PER ${ticketsPerWager} WAGERED
         </p>
 
@@ -210,14 +211,14 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
               onMouseLeave={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"}
             >
               <div style={{ fontSize: "clamp(1.2rem,3.5vw,1.6rem)", fontWeight: 900, color: stat.accent, lineHeight: 1 }}>{stat.value}</div>
-              <div style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", marginTop: "3px", textTransform: "uppercase" }}>{stat.label}</div>
+              <div style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.1em", color: "#ffffff", marginTop: "3px", textTransform: "uppercase" }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Countdown ── */}
         <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          <p style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+          <p style={{ fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", color: "#ffffff", textTransform: "uppercase", marginBottom: "0.5rem" }}>
             NEXT DRAW IN
           </p>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.25rem", flexWrap: "wrap" }}>
@@ -344,7 +345,7 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
                 <div style={{ marginTop: "0.85rem" }}>
                   <button
                     onClick={() => setShowPreviousWinners(!showPreviousWinners)}
-                    style={{ display: "flex", alignItems: "center", gap: "0.35rem", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "0.7rem", fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em", textTransform: "uppercase" }}
+                    style={{ display: "flex", alignItems: "center", gap: "0.35rem", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "0.7rem", fontWeight: 700, color: "#ffffff", letterSpacing: "0.08em", textTransform: "uppercase" }}
                   >
                     Previous winners
                     <ChevronDown style={{ width: 13, height: 13, transition: "transform 0.25s", transform: showPreviousWinners ? "rotate(180deg)" : "rotate(0deg)" }} />
@@ -379,7 +380,7 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
               </div>
             </>
           ) : (
-            <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", lineHeight: 1.55 }}>
+            <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "#ffffff", lineHeight: 1.55 }}>
               No winners drawn yet. First draw happens every Friday at midnight UTC — sign up with code MANDY on Thrill.com to enter.
             </p>
           )}
