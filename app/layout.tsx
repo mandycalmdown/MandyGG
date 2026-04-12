@@ -44,19 +44,21 @@ export const metadata = {
     url: "https://www.mandy.gg",
     siteName: "Mandy.gg",
     type: "website",
-    images: {
-      url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
-      width: 1200,
-      height: 630,
-      alt: "Mandy.gg - More Perks, Less Regret",
-    },
+    images: [
+      {
+        url: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Mandy.gg - More Perks, Less Regret",
+      },
+    ],
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Mandy.gg | Crypto Casino Bonuses with Code MANDY",
     description: "Exclusive crypto casino perks, $3500 weekly wager race, and lossback rewards. Use code MANDY on Thrill.",
-    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
     creator: "@mandygg",
   },
   icons: {
