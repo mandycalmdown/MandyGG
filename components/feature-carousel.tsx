@@ -16,6 +16,18 @@ const STEP     = CARD_W + CARD_GAP;  // 304 px per slot
 // (px/ms) snap one card in the direction of motion, otherwise snap to nearest.
 const FLICK_VELOCITY = 0.35;
 
+// Per-card accent/glow colors using approved palette
+const CARD_GLOWS = [
+  "#5cfec0",  // $3500 race — lime/teal
+  "#3C7BFF",  // thrill — blue
+  "#ff94b4",  // raffle — pink
+  "#fbbf24",  // gossip — yellow/gold
+  "#5ac3ff",  // rewards — cyan
+  "#a855f7",  // dashboard — purple
+  "#3C7BFF",  // poker — blue
+  "#5cfec0",  // connect — lime
+] as const
+
 const CARDS = [
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/TROPHY_FLOATING_ELEMENT-w5rK7kUzPbLQI1Y57CPnQijedQdozJ.webp",
@@ -237,8 +249,9 @@ export function FeatureCarousel() {
         }}
       >
         {visibleOffsets.map((offset) => {
-          const idx = ((current + offset) % TOTAL + TOTAL) % TOTAL;
-          const c   = CARDS[idx];
+          const idx  = ((current + offset) % TOTAL + TOTAL) % TOTAL;
+          const c    = CARDS[idx];
+          const glow = CARD_GLOWS[idx];
 
           return (
             <div
@@ -247,7 +260,13 @@ export function FeatureCarousel() {
               style={getSlotStyle(offset, dragging ? drag : 0, dragging)}
               aria-hidden={offset !== 0}
             >
-              <article className="fc-card feature-card mandy-card">
+              <article
+                className="fc-card feature-card mandy-card"
+                style={{
+                  "--card-glow": glow,
+                  "--card-glow-subtle": `${glow}33`,
+                } as React.CSSProperties}
+              >
                 <span className="card-gloss" aria-hidden="true" />
                 <div className="fc-img-wrap" aria-hidden="true">
                   <img src={c.img} alt="" className="fc-img" />

@@ -253,13 +253,13 @@
   cursor: grabbing;
 }
 
-/* Enhanced hover for center card (parent has data-center attribute) */
+/* Enhanced hover for center card — uses per-card --card-glow CSS variable */
 .fc-slot[style*="z-index: 10"] .feature-card:hover {
-  border-color: rgba(60, 123, 255, 0.4);
-  background: rgba(60, 123, 255, 0.04);
+  border-color: color-mix(in srgb, var(--card-glow, #3C7BFF) 60%, transparent);
+  background: color-mix(in srgb, var(--card-glow, #3C7BFF) 6%, transparent);
   box-shadow: 
     0 16px 64px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(60, 123, 255, 0.15);
+    0 0 40px color-mix(in srgb, var(--card-glow, #3C7BFF) 25%, transparent);
   transform: translateY(-4px);
 }
 
@@ -388,7 +388,7 @@
 
 .fc-slot[style*="z-index: 10"] .feature-card:hover .feature-title {
   transform: translateY(-2px);
-  color: #5A93FF;
+  color: var(--card-glow, #5A93FF);
 }
 
 @keyframes limeShift {

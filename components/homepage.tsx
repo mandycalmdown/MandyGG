@@ -7,30 +7,33 @@ import { faqItems } from "@/components/homepage-faq-data";
 import { FeatureCarousel } from "@/components/feature-carousel";
 import "@/styles/mandy-home.css";
 
+const BLOG_IMG_1 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/49f95991-e49e-4868-a76e-c8b13c814fa3.jpeg"
+const BLOG_IMG_2 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/49f95991-e49e-4868-a76e-c8b13c814fa3.jpeg"
+
 const BLOG_POSTS = [
   {
-    slug: "thrill-deposit-bonus",
-    tag: "THRILL",
-    date: "MAR 8, 2026",
-    title: "THRILL DEPOSIT BONUS: WHAT'S ACTUALLY WORTH IT",
-    excerpt:
-      "EVERYONE SAYS 'USE CODE MANDY' BUT NOBODY EXPLAINS WHY. HERE'S THE ACTUAL MATH ON THE BONUS STRUCTURE SO YOU CAN STOP LEAVING MONEY ON THE TABLE.",
+    slug: "why-thrill-is-different",
+    tag: "PLATFORM REVIEW",
+    date: "APR 3, 2026",
+    title: "WHY THRILL IS ACTUALLY DIFFERENT (AND I MEAN IT THIS TIME)",
+    excerpt: "COMING SOON! I KNOW, I KNOW. CALM DOWN I'M TRYING. THERE'S ONLY ONE OF ME AND I HAVE A GAMBLING PROBLEM TO MAINTAIN.",
+    img: BLOG_IMG_1,
   },
   {
-    slug: "bankroll-management",
+    slug: "casino-red-flags",
+    tag: "ADVICE",
+    date: "MAR 28, 2026",
+    title: "7 RED FLAGS THAT TELL YOU TO LEAVE A CASINO IMMEDIATELY",
+    excerpt: "OKAY FINE, IT'S NOT WRITTEN YET. GIVE ME A SECOND. I'M LITERALLY AT THE TABLES RIGHT NOW. PRIORITIES.",
+    img: BLOG_IMG_2,
+  },
+  {
+    slug: "leaderboard-strategy",
     tag: "STRATEGY",
-    date: "MAR 5, 2026",
-    title: "BANKROLL MANAGEMENT FOR PEOPLE WHO HATE BANKROLL MANAGEMENT",
-    excerpt:
-      "YOU ALREADY KNOW YOU SHOULD HAVE A BANKROLL STRATEGY. YOU JUST DON'T HAVE ONE. LET ME MAKE IT SO SIMPLE YOU HAVE NO EXCUSE.",
-  },
-  {
-    slug: "how-to-place-in-race",
-    tag: "WEEKLY RACE",
-    date: "MAR 1, 2026",
-    title: "HOW TO ACTUALLY PLACE IN THE $3500 WEEKLY RACE",
-    excerpt:
-      "THE LEADERBOARD RACE ISN'T JUST 'BET MORE.' THERE'S A REAL STRATEGY TO PLACING AND I'M GOING TO TELL YOU WHAT IT IS BECAUSE I WANT COMPETITION.",
+    date: "MAR 21, 2026",
+    title: "HOW TO ACTUALLY COMPETE IN THE WEEKLY LEADERBOARD",
+    excerpt: "COMING SOON! (I'M MANIFESTING THIS ONE.) IT WILL BE GOOD. PROBABLY. CHECK BACK WHEN I'M NOT BUSY LOSING.",
+    img: BLOG_IMG_2,
   },
 ];
 
@@ -264,7 +267,9 @@ export function Homepage() {
               onMouseLeave={card.onLeave}
             >
               <span className="card-gloss" aria-hidden="true" />
-              <div className="blog-image-placeholder" aria-hidden="true" />
+              <div className="blog-image-wrap" aria-hidden="true" style={{ overflow: "hidden", borderRadius: "8px 8px 0 0", marginBottom: "1rem", aspectRatio: "16/9" }}>
+                <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
               <div className="blog-meta">
                 <span className="tag tag--blue">{post.tag}</span>
                 <span className="blog-date">{post.date}</span>
@@ -328,7 +333,9 @@ export function Homepage() {
           <div className="footer-brand">
             <span className="footer-logo">MANDY.GG</span>
             <span className="footer-sub">YEAH, I&apos;M A GIRL AND I GAMBLE.</span>
-            <span className="footer-code">USE CODE <strong>MANDY</strong> ON THRILL</span>
+            <span className="footer-code" style={{ fontSize: "0.62rem", opacity: 0.5, maxWidth: "320px", lineHeight: 1.5 }}>
+              GAMBLING IS FOR ENTERTAINMENT. IF YOU&apos;RE USING YOUR RENT MONEY, THAT&apos;S A DIFFERENT PROBLEM. PLAY RESPONSIBLY. 18+.
+            </span>
           </div>
           <nav className="footer-nav" aria-label="Footer nav">
             <Link href="/how-to-join">HOW TO JOIN</Link>
