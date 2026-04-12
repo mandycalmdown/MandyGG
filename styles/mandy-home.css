@@ -738,10 +738,7 @@
 
 .faq-item--open,
 .faq-item:hover {
-  border-color: transparent !important;
-  box-shadow:
-    0 0 0 1px rgba(104,89,213,0.55),
-    0 0 14px rgba(104,89,213,0.18) !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.6);
 }
 
 .faq-item > *:not(.card-gloss) {
@@ -773,8 +770,8 @@
   flex-shrink: 0;
   width: 11px;
   height: 11px;
-  border-right: 2px solid var(--m-purple);
-  border-bottom: 2px solid var(--m-purple);
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
   transform: rotate(45deg);
   transition: transform 0.22s ease;
 }
