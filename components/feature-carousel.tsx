@@ -20,10 +20,10 @@ const FLICK_VELOCITY = 0.35;
 const CARD_GLOWS = [
   "#5cfec0",  // $3500 race — lime/teal
   "#3C7BFF",  // thrill — blue
-  "#ff94b4",  // raffle — pink
-  "#fbbf24",  // gossip — yellow/gold
-  "#5ac3ff",  // rewards — cyan
-  "#a855f7",  // dashboard — purple
+  "#c87fa0",  // raffle — muted rose/pink
+  "#f5e133",  // gossip — pure yellow
+  "#c4a0f5",  // rewards — lilac
+  "#8b6ab5",  // dashboard — muted purple
   "#3C7BFF",  // poker — blue
   "#5cfec0",  // connect — lime
 ] as const
@@ -155,7 +155,7 @@ function getSlotStyle(
 }
 
 export function FeatureCarousel() {
-  const [current, setCurrent]     = useState(0);   // default: $3500 WEEKLY RACE (index 0)
+  const [current, setCurrent]     = useState(0);
   const [drag, setDrag]           = useState(0);
   const [dragging, setDragging]   = useState(false);
   const [pokerModalOpen, setPokerModalOpen] = useState(false);
@@ -164,7 +164,45 @@ export function FeatureCarousel() {
   const pointerStartX  = useRef(0);
   const pointerLastX   = useRef(0);
   const pointerLastT   = useRef(0);
-  const velocityRef    = useRef(0);   // px / ms, updated on every pointermove
+  const velocityRef    = useRef(0);
+
+  // Ref for the stage element — used to attach a non-passive touchmove
+  // listener that calls preventDefault() on horizontal gestures, preventing
+  // the browser from treating a rightward swipe as "go back" in history.
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isHorizontal: boolean | null = null;
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartX   = e.touches[0].clientX;
+      touchStartY   = e.touches[0].clientY;
+      isHorizontal  = null;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (isHorizontal === null && (dx > 4 || dy > 4)) {
+        isHorizontal = dx >= dy;
+      }
+      if (isHorizontal) {
+        // Prevent browser back/forward navigation and page scroll
+        e.preventDefault();
+      }
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove",  onTouchMove);
+    };
+  }, []);
 
   const go = useCallback((delta: number) => {
     setCurrent(c => (c + delta + TOTAL) % TOTAL);
@@ -236,6 +274,7 @@ export function FeatureCarousel() {
   return (
     <div className="fc-wrapper">
       <div
+        ref={stageRef}
         className="fc-stage"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -245,7 +284,7 @@ export function FeatureCarousel() {
         aria-label="Feature cards carousel"
         style={{ 
           cursor: dragging ? 'grabbing' : 'grab',
-          touchAction: 'pan-y pinch-zoom',
+          touchAction: 'pan-y',
         }}
       >
         {visibleOffsets.map((offset) => {
