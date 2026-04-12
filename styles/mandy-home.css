@@ -441,10 +441,10 @@
   align-items: flex-start;
 }
 
-/* Arrows row — sits below the feed, aligned right */
+/* Arrows row — sits below the feed, centered like feature card arrows */
 .updates-arrows {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.75rem;
 }
 
