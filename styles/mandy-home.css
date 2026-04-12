@@ -513,6 +513,7 @@
   -ms-overflow-style: none;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .updates-feed::-webkit-scrollbar { display: none; }

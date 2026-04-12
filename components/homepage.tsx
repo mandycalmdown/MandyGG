@@ -148,6 +148,35 @@ export function Homepage() {
   const card  = useCardHandlers();
   const holo  = useHoloHandlers();
 
+  // Prevent browser back/forward navigation when swiping horizontally
+  // on the updates feed — same fix applied to the feature carousel.
+  useEffect(() => {
+    const el = feedRef.current;
+    if (!el) return;
+    let startX = 0;
+    let startY = 0;
+    let isHoriz: boolean | null = null;
+
+    const onStart = (e: TouchEvent) => {
+      startX  = e.touches[0].clientX;
+      startY  = e.touches[0].clientY;
+      isHoriz = null;
+    };
+    const onMove = (e: TouchEvent) => {
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (isHoriz === null && (dx > 4 || dy > 4)) isHoriz = dx >= dy;
+      if (isHoriz) e.preventDefault();
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove",  onMove,  { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove",  onMove);
+    };
+  }, []);
+
   const scrollFeed = (dir: "left" | "right") => {
     if (!feedRef.current) return;
     const w = feedRef.current.querySelector<HTMLElement>(".update-feed-card")?.offsetWidth ?? 320;
