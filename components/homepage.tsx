@@ -362,7 +362,17 @@ export function Homepage() {
           <div className="footer-brand">
             <span className="footer-logo">MANDY.GG</span>
             <span className="footer-sub">YEAH, I&apos;M A GIRL AND I GAMBLE.</span>
-            <span className="footer-code" style={{ fontSize: "0.62rem", opacity: 0.5, maxWidth: "320px", lineHeight: 1.5 }}>
+            <span className="footer-code" style={{
+              fontSize: "0.62rem",
+              lineHeight: 1.5,
+              display: "inline-block",
+              background: "#000000",
+              color: "#ffffff",
+              padding: "0.5rem 0.75rem",
+              borderRadius: "4px",
+              maxWidth: "320px",
+              opacity: 1,
+            }}>
               GAMBLING IS FOR ENTERTAINMENT. IF YOU&apos;RE USING YOUR RENT MONEY, THAT&apos;S A DIFFERENT PROBLEM. PLAY RESPONSIBLY. 18+.
             </span>
           </div>
