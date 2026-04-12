@@ -308,7 +308,7 @@ export function DailyRaffle({ winners: externalWinners }: WeeklyRaffleProps) {
               "Prizes must be claimed within 7 days or are forfeited",
               "Prizes may take up to 72 hours to be sent",
             ].map((rule, i) => (
-              <li key={i} style={{ fontSize: "0.76rem", fontWeight: 600, color: "rgba(255,255,255,0.72)", lineHeight: 1.55 }}>{rule}</li>
+              <li key={i} style={{ fontSize: "0.76rem", fontWeight: 600, color: "#ffffff", lineHeight: 1.55 }}>{rule}</li>
             ))}
           </ol>
         </div>
