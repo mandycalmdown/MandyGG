@@ -19,6 +19,8 @@ const HOLO_PINK    = "#ff94b4"
 const HOLO_GREEN   = "#4ade80"
 const HOLO_YELLOW  = "#fbbf24"
 const LIME         = "#5cfec0"
+const BLUE         = "#3C7BFF"
+const PINK         = "#c87fa0"
 
 /* ── Countdown to next Friday midnight UTC ── */
 function getTimeToFridayUTC() {
