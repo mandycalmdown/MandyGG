@@ -7,8 +7,8 @@ import { faqItems } from "@/components/homepage-faq-data";
 import { FeatureCarousel } from "@/components/feature-carousel";
 import "@/styles/mandy-home.css";
 
-const BLOG_IMG_1 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/49f95991-e49e-4868-a76e-c8b13c814fa3.jpeg"
-const BLOG_IMG_2 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/49f95991-e49e-4868-a76e-c8b13c814fa3.jpeg"
+const BLOG_IMG_1 = "/images/blog-placeholder.webp"
+const BLOG_IMG_2 = "/images/blog-placeholder.webp"
 
 const BLOG_POSTS = [
   {
