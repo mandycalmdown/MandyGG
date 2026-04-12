@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { SiteNavigation } from "@/components/site-navigation";
 import { faqItems } from "@/components/homepage-faq-data";
