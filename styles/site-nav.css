@@ -209,15 +209,13 @@ body > main:first-of-type,
   text-transform: uppercase;
   min-width: 88px;
   transition: transform 0.14s ease, box-shadow 0.14s ease;
-  box-shadow: 0 0 0 0.4px #3C7BFF;
+  box-shadow: none;
   background: transparent;
 }
 
 .nav-holo-btn:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 0 0 0.4px #3C7BFF,
-    0 5px 18px rgba(60,123,255,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
 
 .nav-holo-btn__video {
