@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "How to Join Thrill Casino with Code MANDY | Mandy.gg",
     description: "Step-by-step guide to join Thrill.com using referral code MANDY and unlock exclusive rewards.",
-    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
   },
   alternates: {
     canonical: "https://www.mandy.gg/how-to-join",
