@@ -216,7 +216,7 @@ export function Homepage() {
       </section>
 
       {/* ── Updates — holo video background, cards float on top ── */}
-      <div className="updates-bg-wrap">
+      <div className="updates-bg-wrap" style={{ display: "none" }}>
         {/* Sticky holo video — scrolls with page, stays in place while content passes */}
         <video
           autoPlay
@@ -274,7 +274,7 @@ export function Homepage() {
       </div>
 
       {/* ── Gambling Gossip / Blog ── */}
-      <section className="blog-section" aria-label="Gambling Gossip blog">
+      <section className="blog-section" aria-label="Gambling Gossip blog" style={{ display: "none" }}>
         <div className="blog-header">
           <div
             className="holo-mask"

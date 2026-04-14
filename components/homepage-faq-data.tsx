@@ -5,7 +5,7 @@ export const faqItems = [
       <span>
         Sign up through{" "}
         <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Thrill.com</a>
-        {" "}with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> for exclusive perks, weekly races, instant lossback, and VIP upgrades.
+        {" "}with code <a href="https://thrill.com/?r=MANDY" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline font-bold">MANDY</a> for exclusive perks, weekly races, and VIP upgrades.
       </span>
     ),
   },
@@ -38,7 +38,7 @@ export const faqItems = [
         <ul className="list-disc list-inside space-y-2 mb-3">
           <li><strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize pool.</li>
           <li><strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize pool if you hit the $50,000 monthly wagering requirement.</li>
-          <li><strong>Lossback</strong>: You can request lossback from day one. To request, message the <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Support Bot on Telegram</a>.</li>
+
           <li><strong>Custom High Roller Benefits</strong>: If you are a high volume player, message the <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">MandySupportBot</a> and let{"'"}s put together your perfect VIP package.</li>
           <li><strong>Wager Targets</strong>: We can set personal targets with cash bonuses after completion.</li>
           <li><strong>Events</strong>: Join the <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Telegram</a> and get notified for different events with awesome cash prizes.</li>

@@ -348,7 +348,7 @@ export function Leaderboard() {
       </div>
 
       {/* ── Weekly Raffle ── */}
-      <div style={{ background: PAGE_BG, position: "relative", zIndex: 2 }}>
+      <div style={{ background: PAGE_BG, position: "relative", zIndex: 2, display: "none" }}>
         <DailyRaffle winners={raffleWinners} />
       </div>
 
