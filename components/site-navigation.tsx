@@ -54,19 +54,6 @@ export function SiteNavigation({ currentPage }: SiteNavigationProps) {
 
   return (
     <div className="nav-sticky-wrapper">
-      {/* ── Ticker — sits above the nav bar ── */}
-      <div className="nav-ticker" aria-label="Promo ticker">
-        <video autoPlay loop muted playsInline aria-hidden="true" className="nav-ticker__video">
-          <source src={HOLO_WIDE_WEBM} type="video/webm" />
-          <source src={HOLO_WIDE_MP4}  type="video/mp4" />
-        </video>
-        <div className="nav-ticker__track" aria-hidden="true">
-          <span>{TICKER_TEXT.repeat(14)}</span>
-          <span>{TICKER_TEXT.repeat(14)}</span>
-        </div>
-        <p className="sr-only">{TICKER_TEXT}</p>
-      </div>
-
       {/* ── Nav bar ── */}
       <nav className="site-nav" aria-label="Main navigation">
         <div className="site-nav__inner">
