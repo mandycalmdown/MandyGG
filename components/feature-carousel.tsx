@@ -158,6 +158,7 @@ export function FeatureCarousel() {
   const [current, setCurrent]     = useState(0);
   const [drag, setDrag]           = useState(0);
   const [dragging, setDragging]   = useState(false);
+  const [didDrag, setDidDrag]     = useState(false);
   const [pokerModalOpen, setPokerModalOpen] = useState(false);
 
   // Refs for velocity calculation
@@ -165,6 +166,8 @@ export function FeatureCarousel() {
   const pointerLastX   = useRef(0);
   const pointerLastT   = useRef(0);
   const velocityRef    = useRef(0);
+  // Threshold in px before we consider it a drag (not a click)
+  const DRAG_THRESHOLD = 8;
 
   // Ref for the stage element — used to attach a non-passive touchmove
   // listener that calls preventDefault() on horizontal gestures, preventing
@@ -224,12 +227,16 @@ export function FeatureCarousel() {
   const onPointerDown = (e: React.PointerEvent) => {
     // Only respond to primary pointer (finger, left-mouse, trackpad tap)
     if (e.button !== 0 && e.pointerType === "mouse") return;
+    // Don't capture if clicking directly on a link or button inside a card
+    const target = e.target as HTMLElement;
+    if (target.closest('a, button')) return;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     pointerStartX.current = e.clientX;
     pointerLastX.current  = e.clientX;
     pointerLastT.current  = e.timeStamp;
     velocityRef.current   = 0;
     setDrag(0);
+    setDidDrag(false);
     setDragging(true);
   };
 
@@ -238,13 +245,17 @@ export function FeatureCarousel() {
     const now    = e.timeStamp;
     const dt     = now - pointerLastT.current;
     const dx     = e.clientX - pointerLastX.current;
+    const totalDx = Math.abs(e.clientX - pointerStartX.current);
     // Exponential moving average for velocity — smoother than instantaneous
     if (dt > 0) {
       velocityRef.current = velocityRef.current * 0.6 + (dx / dt) * 0.4;
     }
     pointerLastX.current = e.clientX;
     pointerLastT.current = now;
-    setDrag(e.clientX - pointerStartX.current);
+    if (totalDx > DRAG_THRESHOLD) {
+      setDidDrag(true);
+      setDrag(e.clientX - pointerStartX.current);
+    }
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
@@ -253,6 +264,12 @@ export function FeatureCarousel() {
 
     const totalDrag  = e.clientX - pointerStartX.current;
     const velocity   = velocityRef.current; // px/ms
+
+    // If movement was tiny, treat as a click — don't navigate cards
+    if (!didDrag) {
+      setDrag(0);
+      return;
+    }
 
     let delta = 0;
     if (Math.abs(velocity) >= FLICK_VELOCITY) {
