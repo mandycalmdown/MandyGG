@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mandy.gg - Crypto rewards for degens",
     description: "Weekly $3500 wager battles and exclusive crypto casino bonuses with code MANDY.",
-    image: "/images/linkpreview.png",
+    images: ["/images/linkpreview.png"],
     creator: "@mandygg",
   },
   alternates: {
