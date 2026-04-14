@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { label: "REWARDS",         href: "/rewards" },
   { label: "LEADERBOARD",     href: "/leaderboard" },
   { label: "RAFFLE",          href: "/raffle" },
-  { label: "GOSSIP",          href: "/blog" },
+  // { label: "GOSSIP",          href: "/blog" },  // HIDDEN
   { label: "DEGEN DASHBOARD", href: "/dashboard" },
   { label: "FAQ",             href: "/#faq" },
 ]
