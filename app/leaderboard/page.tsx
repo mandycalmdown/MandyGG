@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Weekly $3500 Wager Race | Mandy.gg",
     description: "Compete for $3500 in weekly prizes with code MANDY on Thrill Casino.",
-    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
   },
   alternates: {
     canonical: "https://www.mandy.gg/leaderboard",
