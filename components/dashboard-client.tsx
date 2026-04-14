@@ -800,7 +800,6 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
                         src={RAFFLE_IMAGE}
                         alt="Raffle Tickets"
                         className="w-full max-w-xs h-auto"
-                        style={{ filter: "drop-shadow(0 4px 20px rgba(60, 123, 255, 0.3))" }}
                       />
                     </div>
                   </div>

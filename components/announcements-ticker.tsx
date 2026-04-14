@@ -63,7 +63,7 @@ export function AnnouncementsTicker({ tickerKey = "ticker_1_text" }: Announcemen
 
   return (
     <div
-      className="w-full overflow-hidden relative"
+      className="hidden md:block w-full overflow-hidden relative"
       style={{ backgroundColor: config.bg, height: "32px", lineHeight: "32px" }}
     >
       <div
