@@ -41,18 +41,18 @@ const CARDS = [
     desc: "PLAY AT THRILL WITH CODE MANDY. TRUSTWORTHY, INSTANT PAYOUTS, NO KYC, NO BULLSHIT.",
     btn: { label: "PLAY AT THRILL", href: "https://thrill.com/?r=MANDY", ext: true },
   },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-lX6r2sI10WNpKSZ9wP94qoofPTmo2X.webp",
-    title: "WEEKLY RAFFLE",
-    desc: "WAGER TO EARN TICKETS AND ENTER THE WEEKLY $250 PRIZE DRAW.",
-    btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false },
-  },
-  {
-    img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_MEGAPHONE_ELEMENT-lMEgz2xUs9EzL3ahx3hxQAM03Dy3N9.webp",
-    title: "GAMBLING GOSSIP",
-    desc: "NEWS, DRAMA, CASINO REVIEWS, BLOGS AND THE STUFF ONLY DEGENS ARE TALKING ABOUT.",
-    btn: { label: "READ MORE", href: "/blog", ext: false },
-  },
+  // {
+  //   img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-lX6r2sI10WNpKSZ9wP94qoofPTmo2X.webp",
+  //   title: "WEEKLY RAFFLE",
+  //   desc: "WAGER TO EARN TICKETS AND ENTER THE WEEKLY $250 PRIZE DRAW.",
+  //   btn: { label: "VIEW RAFFLE", href: "/raffle", ext: false },
+  // },
+  // {
+  //   img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_MEGAPHONE_ELEMENT-lMEgz2xUs9EzL3ahx3hxQAM03Dy3N9.webp",
+  //   title: "GAMBLING GOSSIP",
+  //   desc: "NEWS, DRAMA, CASINO REVIEWS, BLOGS AND THE STUFF ONLY DEGENS ARE TALKING ABOUT.",
+  //   btn: { label: "READ MORE", href: "/blog", ext: false },
+  // },
   {
     img: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_GIFTBOX_ELEMENT-WOlVpXW7THckXd3pgRCKF05UvepZtu.webp",
     title: "REWARDS",
