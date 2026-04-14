@@ -27,11 +27,13 @@ const SOCIAL_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer style={{ position: "relative", overflow: "hidden" }}>
+    <footer style={{ position: "relative" }}>
       {/* Ticker at the top of footer */}
-      <AnnouncementsTicker />
+      <div style={{ position: "relative", zIndex: 10 }}>
+        <AnnouncementsTicker />
+      </div>
       
-      <div style={{ paddingTop: "3.5rem", paddingBottom: "2rem" }}>
+      <div style={{ paddingTop: "3.5rem", paddingBottom: "2rem", position: "relative", overflow: "hidden" }}>
         {/* Holographic video background */}
         <video
           autoPlay loop muted playsInline aria-hidden="true"
