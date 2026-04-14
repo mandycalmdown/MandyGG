@@ -33,7 +33,7 @@ import {
 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
-import { AdminSiteContentEditor } from "@/components/admin-site-content-editor"
+// import { AdminSiteContentEditor } from "@/components/admin-site-content-editor"
 import { captureQualifiersAction, unlinkAllAccountsAction } from "@/app/actions/admin-actions"
 import { LayoutDashboard } from "lucide-react"
 
@@ -972,14 +972,14 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
             <Settings className="h-4 w-4" />
             Settings
           </Button>
-          <Button
+          {/* <Button
             variant={activeTab === "content" ? "default" : "ghost"}
             onClick={() => setActiveTab("content")}
             className="gap-2"
           >
             <LayoutDashboard className="h-4 w-4" />
             Site Content
-          </Button>
+          </Button> */}
         </div>
 
         {/* Users Tab */}
@@ -1734,11 +1734,11 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
         )}
 
         {/* Site Content Tab */}
-        {activeTab === "content" && (
+        {/* {activeTab === "content" && (
           <Card className="p-6 bg-card border-border">
             <AdminSiteContentEditor />
           </Card>
-        )}
+        )} */}
       </div>
     </div>
   )
