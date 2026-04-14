@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Exclusive Rewards | Mandy.gg",
     description: "Unlock VIP perks and bonuses with code MANDY on Thrill Casino.",
-    image: "https://www.mandy.gg/images/mandy-gg-og-preview.jpg",
+    images: ["https://www.mandy.gg/images/mandy-gg-og-preview.jpg"],
   },
   alternates: {
     canonical: "https://www.mandy.gg/rewards",
