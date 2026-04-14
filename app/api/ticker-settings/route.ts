@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
+const DEFAULT_TICKER_1 = "USE CODE MANDY ON THRILL.COM – USE CODE MANDY – USE CODE MANDY ON THRILL.COM – USE CODE MANDY"
+const DEFAULT_TICKER_2 = "USE CODE MANDY ON THRILL.COM – USE CODE MANDY – USE CODE MANDY ON THRILL.COM – USE CODE MANDY"
+const DEFAULT_TICKER_3 = "USE CODE MANDY ON THRILL.COM – USE CODE MANDY – USE CODE MANDY ON THRILL.COM – USE CODE MANDY"
+
 const DEFAULT_SETTINGS = {
   text_color: "#ffffff",
   background_color: "#6366f1",
@@ -9,6 +13,9 @@ const DEFAULT_SETTINGS = {
   font_family: "inherit",
   font_size: "1rem",
   font_weight: "bold",
+  ticker_1_text: DEFAULT_TICKER_1,
+  ticker_2_text: DEFAULT_TICKER_2,
+  ticker_3_text: DEFAULT_TICKER_3,
 }
 
 export async function GET() {
@@ -32,9 +39,7 @@ export async function GET() {
       .single()
 
     if (error) {
-      if (error.code === "PGRST116" || error.code === "PGRST116") {
-        // No rows returned
-        console.log("[v0] No ticker settings found, using defaults")
+      if (error.code === "PGRST116") {
         return NextResponse.json({
           settings: DEFAULT_SETTINGS,
           tableExists: true,
@@ -42,9 +47,6 @@ export async function GET() {
       }
 
       if (error.code === "42P01" || error.message?.includes("does not exist")) {
-        console.log(
-          "[v0] Ticker settings table not found, using defaults. Run scripts/004_add_ticker_settings.sql to enable customization.",
-        )
         return NextResponse.json({
           settings: DEFAULT_SETTINGS,
           tableExists: false,
@@ -57,7 +59,16 @@ export async function GET() {
       })
     }
 
-    return NextResponse.json({ settings: settings || DEFAULT_SETTINGS, tableExists: true })
+    // Merge DB values with defaults for any missing columns
+    const merged = {
+      ...DEFAULT_SETTINGS,
+      ...settings,
+      ticker_1_text: settings?.ticker_1_text || DEFAULT_TICKER_1,
+      ticker_2_text: settings?.ticker_2_text || DEFAULT_TICKER_2,
+      ticker_3_text: settings?.ticker_3_text || DEFAULT_TICKER_3,
+    }
+
+    return NextResponse.json({ settings: merged, tableExists: true })
   } catch (error) {
     console.error("[v0] Error in ticker settings API:", error)
     return NextResponse.json(
@@ -74,7 +85,18 @@ export async function PUT(request: Request) {
     const supabase = await createClient()
     const body = await request.json()
 
-    const { text_color, background_color, background_gradient, speed, font_family, font_size, font_weight } = body
+    const {
+      text_color,
+      background_color,
+      background_gradient,
+      speed,
+      font_family,
+      font_size,
+      font_weight,
+      ticker_1_text,
+      ticker_2_text,
+      ticker_3_text,
+    } = body
 
     const { error: tableCheckError } = await supabase.from("ticker_settings").select("id").limit(1)
 
@@ -84,14 +106,13 @@ export async function PUT(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error: "Ticker settings table not found. Please run scripts/004_add_ticker_settings.sql first.",
+          error: "Ticker settings table not found.",
           tableExists: false,
         },
         { status: 400 },
       )
     }
 
-    // Get the first settings record
     const { data: existingSettings } = await supabase
       .from("ticker_settings")
       .select("id")
@@ -99,40 +120,40 @@ export async function PUT(request: Request) {
       .limit(1)
       .single()
 
+    const updatePayload: Record<string, any> = {
+      updated_at: new Date().toISOString(),
+    }
+
+    // Only include fields that are present in the request body
+    if (text_color !== undefined) updatePayload.text_color = text_color
+    if (background_color !== undefined) updatePayload.background_color = background_color
+    if (background_gradient !== undefined) updatePayload.background_gradient = background_gradient
+    if (speed !== undefined) updatePayload.speed = speed
+    if (font_family !== undefined) updatePayload.font_family = font_family
+    if (font_size !== undefined) updatePayload.font_size = font_size
+    if (font_weight !== undefined) updatePayload.font_weight = font_weight
+    if (ticker_1_text !== undefined) updatePayload.ticker_1_text = ticker_1_text
+    if (ticker_2_text !== undefined) updatePayload.ticker_2_text = ticker_2_text
+    if (ticker_3_text !== undefined) updatePayload.ticker_3_text = ticker_3_text
+
     let result
 
     if (existingSettings) {
-      // Update existing settings
       result = await supabase
         .from("ticker_settings")
-        .update({
-          text_color,
-          background_color,
-          background_gradient,
-          speed,
-          font_family,
-          font_size,
-          font_weight,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq("id", existingSettings.id)
         .select()
         .single()
     } else {
-      // Create new settings
       result = await supabase
         .from("ticker_settings")
-        .insert([
-          {
-            text_color,
-            background_color,
-            background_gradient,
-            speed,
-            font_family,
-            font_size,
-            font_weight,
-          },
-        ])
+        .insert([{
+          ...updatePayload,
+          ticker_1_text: ticker_1_text || DEFAULT_TICKER_1,
+          ticker_2_text: ticker_2_text || DEFAULT_TICKER_2,
+          ticker_3_text: ticker_3_text || DEFAULT_TICKER_3,
+        }])
         .select()
         .single()
     }

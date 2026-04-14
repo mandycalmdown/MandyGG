@@ -1,215 +1,182 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import Image from "next/image"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import "@/styles/site-nav.css";
+
+const HOLO_TEXT_SRC  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
+const HOLO_BTN_WEBM  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
+const HOLO_BTN_MP4   = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_WIDE_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-CNLyaOSVK5cArFRfu1FNHzb433j8iI.webm";
+const HOLO_WIDE_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_WIDE-RpqZaJvObzwBscZHWnnvAXCjgzTJWB.mp4";
+
+const TICKER_TEXT = "| CODE: MANDY ON THRILL.COM ";
+
+const NAV_LINKS = [
+  { href: "/",             label: "HOME" },
+  { href: "/how-to-join",  label: "HOW TO" },
+  { href: "/rewards",      label: "REWARDS" },
+  { href: "/dashboard",    label: "DEGEN DASHBOARD" },
+  { href: "/leaderboard",  label: "LEADERBOARD" },
+  // { href: "/raffle",       label: "RAFFLE" },  // HIDDEN
+  // { href: "/blog",         label: "GOSSIP" },  // HIDDEN
+  { href: "/#faq",         label: "FAQ" },
+];
 
 interface SiteNavigationProps {
-  currentPage?: string
+  currentPage?: string;
 }
 
 export function SiteNavigation({ currentPage }: SiteNavigationProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const router = useRouter()
-  const supabase = createClient()
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [user,     setUser    ] = useState<User | null>(null);
+  const router   = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    async function checkUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    checkUser()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+    if (!supabase) return;
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) =>
+      setUser(s?.user ?? null)
+    );
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/")
-    router.refresh()
-  }
-
-  const navLinks = [
-    { href: "/", label: "HOME", page: "home" },
-    { href: "/how-to-join", label: "HOW TO JOIN", page: "how-to-join" },
-    { href: "/rewards", label: "REWARDS", page: "rewards" },
-    { href: "/leaderboard", label: "LEADERBOARD", page: "leaderboard" },
-    { href: "/#faq", label: "FAQ", page: "faq" },
-    { href: "/christmas", label: "CHRISTMAS", page: "christmas" },
-  ]
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
-    <nav className="mx-2 md:mx-4 mt-2 md:mt-4 mb-2">
-      <Card
-        className="px-3 py-2 md:px-6 md:py-4 rounded-xl md:rounded-2xl border border-white/30 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
-        style={{
-          backgroundColor: "rgba(10, 10, 10, 0.95)",
-          boxShadow:
-            "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-        }}
-      >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <Link href="/">
-              <Image
-                src="/images/mandygg_menu_logo.svg"
-                alt="MandyGG - Premier Crypto Casino Leaderboard & Rewards"
-                width={250}
-                height={80}
-                className="hidden md:block h-12 md:h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </Link>
-            <Link href="/">
-              <Image
-                src="/images/mandygg_m_logo.svg"
-                alt="MandyGG"
-                width={60}
-                height={60}
-                className="md:hidden h-12 w-12 cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </Link>
-          </div>
+    <div className="nav-sticky-wrapper">
+      {/* ── Ticker — sits above the nav bar ── */}
+      <div className="nav-ticker" aria-label="Promo ticker">
+        <video autoPlay loop muted playsInline aria-hidden="true" className="nav-ticker__video">
+          <source src={HOLO_WIDE_WEBM} type="video/webm" />
+          <source src={HOLO_WIDE_MP4}  type="video/mp4" />
+        </video>
+        <div className="nav-ticker__track" aria-hidden="true">
+          <span>{TICKER_TEXT.repeat(14)}</span>
+          <span>{TICKER_TEXT.repeat(14)}</span>
+        </div>
+        <p className="sr-only">{TICKER_TEXT}</p>
+      </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex space-x-4 xl:space-x-6 items-center">
-            {navLinks.map((link) => (
+      {/* ── Nav bar ── */}
+      <nav className="site-nav" aria-label="Main navigation">
+        <div className="site-nav__inner">
+
+          {/* Logo — holo text, "MANDY.GG" on desktop, "M" on mobile */}
+          <Link href="/" className="site-nav__logo nav-logo-holo" aria-label="Mandy.gg home">
+            <span className="nav-logo-holo__text nav-logo-holo__text--desktop">MANDY.GG</span>
+            <span className="nav-logo-holo__text nav-logo-holo__text--mobile">M</span>
+            <video autoPlay loop muted playsInline aria-hidden="true" className="nav-logo-holo__video">
+              <source src={HOLO_TEXT_SRC} type="video/mp4" />
+            </video>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="site-nav__links" role="list">
+            {NAV_LINKS.map((link) => (
               <Link
-                key={link.page}
+                key={link.href}
                 href={link.href}
-                className={`${
-                  currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
-                } transition-colors font-bold uppercase text-lg xl:text-xl`}
+                role="listitem"
+                className={`site-nav__link${currentPage === link.href ? " site-nav__link--active" : ""}`}
               >
                 {link.label}
               </Link>
             ))}
+          </div>
 
-            {user && (
-              <Link
-                href="/dashboard"
-                className={`${
-                  currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
-                } transition-colors font-bold uppercase text-lg xl:text-xl`}
-              >
-                DASHBOARD
-              </Link>
-            )}
-
+          {/* Desktop auth */}
+          <div className="site-nav__auth">
             {user ? (
-              <Button
+              <button
+                type="button"
                 onClick={handleSignOut}
-                variant="outline"
-                size="sm"
-                className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl transition-all duration-300 uppercase text-lg xl:text-xl px-4 py-2 bg-transparent"
+                className="nav-holo-btn"
+                aria-label="Sign out"
               >
-                SIGN OUT
-              </Button>
+                <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                  <source src={HOLO_BTN_WEBM} type="video/webm" />
+                  <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                </video>
+                <span className="nav-holo-btn__label">SIGN OUT</span>
+              </button>
             ) : (
-              <Link href="/auth/login">
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-teal-500/30 uppercase text-lg xl:text-xl px-4 py-2"
-                >
-                  SIGN IN
-                </Button>
+              <Link href="/auth/login" className="nav-holo-btn" aria-label="Sign in">
+                <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                  <source src={HOLO_BTN_WEBM} type="video/webm" />
+                  <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                </video>
+                <span className="nav-holo-btn__label">SIGN IN</span>
               </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-white/20 p-2"
-              aria-label="Toggle mobile menu"
-            >
-              <div className="flex flex-col space-y-1">
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
-                <div className="w-5 h-0.5 bg-white"></div>
-              </div>
-            </Button>
-          </div>
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            className="site-nav__hamburger"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            <span className={`hbg-line${menuOpen ? " hbg-line--top-open" : ""}`} />
+            <span className={`hbg-line${menuOpen ? " hbg-line--mid-open" : ""}`} />
+            <span className={`hbg-line${menuOpen ? " hbg-line--bot-open" : ""}`} />
+          </button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden mt-3 p-3 border-t border-white/20">
-            <div className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.page}
-                  href={link.href}
-                  className={`${
-                    currentPage === link.page ? "text-teal-500" : "text-white hover:text-teal-500"
-                  } transition-colors font-bold uppercase text-lg py-2`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              {/* Dashboard Link Mobile - only show if logged in */}
-              {user && (
-                <Link
-                  href="/dashboard"
-                  className={`${
-                    currentPage === "dashboard" ? "text-indigo-400" : "text-indigo-400 hover:text-indigo-300"
-                  } transition-colors font-bold uppercase text-lg py-2`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  DASHBOARD
-                </Link>
-              )}
-
-              {/* Sign In/Out Button Mobile */}
+        {/* Mobile drawer */}
+        {menuOpen && (
+          <div className="site-nav__mobile-drawer">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`site-nav__mobile-link${currentPage === link.href ? " site-nav__mobile-link--active" : ""}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="site-nav__mobile-auth">
               {user ? (
-                <Button
-                  onClick={() => {
-                    handleSignOut()
-                    setIsMenuOpen(false)
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-black font-bold rounded-xl w-full uppercase text-lg mt-2 bg-transparent"
+                <button
+                  type="button"
+                  onClick={() => { handleSignOut(); setMenuOpen(false); }}
+                  className="nav-holo-btn nav-holo-btn--wide"
                 >
-                  SIGN OUT
-                </Button>
+                  <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                    <source src={HOLO_BTN_WEBM} type="video/webm" />
+                    <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                  </video>
+                  <span className="nav-holo-btn__label">SIGN OUT</span>
+                </button>
               ) : (
-                <Link href="/auth/login">
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl w-full uppercase text-lg mt-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    SIGN IN
-                  </Button>
+                <Link
+                  href="/auth/login"
+                  className="nav-holo-btn nav-holo-btn--wide"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <video autoPlay loop muted playsInline aria-hidden="true" className="nav-holo-btn__video">
+                    <source src={HOLO_BTN_WEBM} type="video/webm" />
+                    <source src={HOLO_BTN_MP4}  type="video/mp4" />
+                  </video>
+                  <span className="nav-holo-btn__label">SIGN IN</span>
                 </Link>
               )}
             </div>
           </div>
         )}
-      </Card>
-    </nav>
-  )
+      </nav>
+    </div>
+  );
 }

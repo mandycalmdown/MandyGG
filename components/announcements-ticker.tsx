@@ -1,96 +1,92 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
-interface Announcement {
-  id: string
-  message: string
-  is_active: boolean
-  created_at: string
+const DEFAULT_TICKER_TEXT = "USE CODE MANDY ON THRILL.COM – USE CODE MANDY – USE CODE MANDY ON THRILL.COM – USE CODE MANDY"
+
+/* Color + speed config per ticker slot */
+const TICKER_CONFIG: Record<string, { bg: string; text: string; speed: number }> = {
+  ticker_1_text: { bg: "#2A69DB", text: "#000000", speed: 18 },
+  ticker_2_text: { bg: "#FFFFFF", text: "#000000", speed: 24 },
+  ticker_3_text: { bg: "#CCFF00", text: "#000000", speed: 14 },
 }
 
-interface TickerSettings {
-  text_color: string
-  background_color: string
-  background_gradient: string
-  speed: number
-  font_family: string
-  font_size: string
-  font_weight: string
+interface AnnouncementsTickerProps {
+  tickerKey?: "ticker_1_text" | "ticker_2_text" | "ticker_3_text"
 }
 
-export function AnnouncementsTicker() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [settings, setSettings] = useState<TickerSettings>({
-    text_color: "#ffffff",
-    background_color: "#6366f1",
-    background_gradient: "linear-gradient(to right, #6366f1, #a855f7, #6366f1)",
-    speed: 8000,
-    font_family: "inherit",
-    font_size: "1rem",
-    font_weight: "bold",
-  })
+export function AnnouncementsTicker({ tickerKey = "ticker_1_text" }: AnnouncementsTickerProps) {
+  const [tickerText, setTickerText] = useState(DEFAULT_TICKER_TEXT)
+  const config = TICKER_CONFIG[tickerKey] ?? TICKER_CONFIG.ticker_1_text
+  const trackRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    fetchAnnouncements()
-    fetchSettings()
+    fetchTickerText()
   }, [])
 
-  const fetchAnnouncements = async () => {
-    try {
-      const response = await fetch("/api/announcements")
-      const data = await response.json()
-      if (data.announcements && data.announcements.length > 0) {
-        setAnnouncements(data.announcements)
-      }
-    } catch (error) {
-      console.error("[v0] Error fetching announcements:", error)
-    }
-  }
+  /* Kick off a pure JS requestAnimationFrame loop for guaranteed mobile animation */
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    let offset = 0
+    let raf: number
+    const pxPerSecond = (el.scrollWidth / 2) / config.speed
+    let last = performance.now()
 
-  const fetchSettings = async () => {
+    function step(now: number) {
+      const dt = (now - last) / 1000
+      last = now
+      offset -= pxPerSecond * dt
+      if (offset <= -(el!.scrollWidth / 2)) offset = 0
+      el!.style.transform = `translate3d(${offset}px, 0, 0)`
+      raf = requestAnimationFrame(step)
+    }
+
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [tickerText, config.speed])
+
+  const fetchTickerText = async () => {
     try {
       const response = await fetch("/api/ticker-settings")
       const data = await response.json()
-      if (data.settings) {
-        setSettings(data.settings)
+      if (data.settings && data.settings[tickerKey]) {
+        setTickerText(data.settings[tickerKey])
       }
     } catch (error) {
-      console.error("[v0] Error fetching ticker settings:", error)
+      // Silently fail, use default text
     }
   }
 
-  if (announcements.length === 0) {
-    return null
-  }
-
-  const combinedMessage = announcements.map((a) => a.message).join(" • ")
-
-  const animationDuration = `${settings.speed / 1000}s`
+  const separator = " \u00A0\u00A0\u2013\u00A0\u00A0 "
+  const chunk = `${tickerText}${separator}`
 
   return (
     <div
-      className="w-full py-3 overflow-hidden relative"
-      style={{
-        background: settings.background_gradient || settings.background_color,
-      }}
+      className="w-full overflow-hidden relative"
+      style={{ backgroundColor: config.bg, height: "32px", lineHeight: "32px" }}
     >
-      <div className="absolute inset-0 bg-black/20" />
-      <div className="relative z-10 flex whitespace-nowrap">
-        {[...Array(3)].map((_, index) => (
-          <div
-            key={index}
-            className="inline-block px-8 animate-marquee-scroll"
+      <div
+        ref={trackRef}
+        className="flex whitespace-nowrap h-full items-center will-change-transform"
+        style={{ transform: "translate3d(0,0,0)" }}
+      >
+        {/* Render the text twice so the second copy seamlessly follows the first */}
+        {[0, 1].map((i) => (
+          <span
+            key={i}
+            className="inline-block shrink-0"
             style={{
-              color: settings.text_color,
-              fontFamily: settings.font_family,
-              fontSize: settings.font_size,
-              fontWeight: settings.font_weight,
-              animationDuration: animationDuration,
+              color: config.text,
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: "15px",
+              fontWeight: 600,
+              textTransform: "uppercase" as const,
+              letterSpacing: "0.06em",
             }}
           >
-            {combinedMessage}
-          </div>
+            {chunk}{chunk}{chunk}
+          </span>
         ))}
       </div>
     </div>

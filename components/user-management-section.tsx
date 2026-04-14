@@ -214,7 +214,7 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                   <h3 className="text-white font-bold truncate flex items-center gap-2">
                     {profile.display_name || "No display name"}
                     {profile.thrill_username_verified && (
-                      <span className="text-yellow-400 text-lg" title="Verified">
+                      <span className="text-[#3C7BFF] text-lg" title="Verified">
                         ⭐
                       </span>
                     )}
@@ -223,7 +223,7 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-indigo-400 font-semibold">@{profile.thrill_username}</p>
                       {profile.thrill_username_verified && <CheckCircle className="h-4 w-4 text-green-500" />}
-                      {profile.thrill_username_locked && <Lock className="h-4 w-4 text-yellow-500" />}
+                      {profile.thrill_username_locked && <Lock className="h-4 w-4 text-[#3C7BFF]" />}
                     </div>
                   ) : (
                     <p className="text-gray-400 text-sm">No username linked</p>
@@ -266,7 +266,7 @@ export function UserManagementSection({ profiles, onRefresh }: UserManagementSec
                       size="sm"
                       className={`${
                         profile.thrill_username_verified
-                          ? "bg-yellow-600 hover:bg-yellow-700"
+                          ? "bg-[#3C7BFF] hover:bg-[#5A93FF]"
                           : "bg-green-600 hover:bg-green-700"
                       } text-white font-bold uppercase rounded-lg`}
                     >

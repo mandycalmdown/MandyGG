@@ -1,0 +1,378 @@
+/* ═══════════════════════════════════════════════════════
+   LEADERBOARD PAGE  –  mandy.gg
+   Depends on mandy-home.css being loaded for shared tokens
+   (site-header, brand-script, site-nav, ticker classes)
+═══════════════════════════════════════════════════════ */
+
+/* ── page wrapper ── */
+.lb-page {
+  background: #0c1118;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  padding-top: 0;
+}
+
+/* ── hero / header area ── */
+.lb-hero {
+  width: min(860px, calc(100% - 3rem));
+  margin: 2.5rem auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  text-align: center;
+}
+
+.lb-logo-img {
+  height: clamp(54px, 10vw, 88px);
+  width: auto;
+  object-fit: contain;
+}
+
+/* ── countdown bar ── */
+
+.lb-countdown-label {
+  font-family: "poppins", monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* ── title ── */
+.lb-title {
+  margin: 0;
+  font-family: "poppins", sans-serif;
+  font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.lb-title span {
+  color: #c1ff00;
+}
+
+/* ── period toggle ── */
+.lb-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lb-toggle-btn {
+  font-family: "poppins", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.52rem 1.15rem;
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  background: transparent;
+}
+
+.lb-toggle-btn--inactive {
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.lb-toggle-btn--active {
+  border-color: #c1ff00;
+  background: #c1ff00;
+  color: #0c1118;
+  font-weight: 700;
+}
+
+/* ── status message ── */
+.lb-status {
+  font-family: "poppins", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  min-height: 1em;
+}
+
+.lb-status--error {
+  color: #ff4444;
+}
+
+/* ── main content column ── */
+.lb-content {
+  width: min(860px, calc(100% - 3rem));
+  margin: 2rem auto 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.2rem;
+  flex: 1;
+}
+
+/* ── podium ── */
+.lb-podium {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 1rem;
+  align-items: end;
+}
+
+.lb-podium-card {
+  background: #141a24;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1.4rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: center;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1));
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+  cursor: default;
+  overflow: hidden;
+  position: relative;
+}
+
+.lb-podium-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+  background-size: 200% 100%;
+  background-position: -200% 0;
+  pointer-events: none;
+  border-radius: inherit;
+  transition: background-position 0s;
+}
+
+.lb-podium-card:hover::after {
+  animation: shimmer 0.65s ease forwards;
+}
+
+.lb-podium-card:hover {
+  --s: 1.018;
+}
+
+.lb-podium-card--center {
+  border-color: rgba(255, 255, 255, 0.1);
+  padding-top: 2rem;
+  padding-bottom: 1.75rem;
+}
+
+.lb-rank-number {
+  font-family: "poppins", sans-serif;
+  font-size: clamp(2.8rem, 6vw, 4rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.lb-username {
+  font-family: "poppins", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: #c1ff00;
+  text-transform: uppercase;
+}
+
+.lb-wager-amount {
+  font-family: "poppins", sans-serif;
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.lb-prize-label {
+  font-family: "poppins", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+/* ── ranks 4-10 table ── */
+.lb-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.lb-table-head {
+  display: flex;
+  align-items: center;
+  padding: 0 1.1rem 0.4rem;
+  font-family: "poppins", monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 0.2rem;
+}
+
+.lb-table-head-rank { width: 3rem; }
+.lb-table-head-user { flex: 1; }
+.lb-table-head-wager { width: 7.5rem; text-align: right; }
+.lb-table-head-prize { width: 5rem; text-align: right; }
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  background: #141a24;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.82rem 1.1rem;
+  transition: border-color 0.18s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.lb-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+  background-size: 200% 100%;
+  background-position: -200% 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.lb-row:hover::after {
+  animation: shimmer 0.65s ease forwards;
+}
+
+.lb-row:hover {
+  border-color: rgba(193, 255, 0, 0.2);
+}
+
+.lb-row-rank {
+  width: 3rem;
+  font-family: "poppins", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.lb-row-user {
+  flex: 1;
+  font-family: "poppins", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+}
+
+.lb-row-wager {
+  width: 7.5rem;
+  text-align: right;
+  font-family: "poppins", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lb-row-prize {
+  width: 5rem;
+  text-align: right;
+  font-family: "poppins", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #c1ff00;
+}
+
+.lb-empty {
+  text-align: center;
+  font-family: "poppins", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  padding: 1.5rem 0;
+}
+
+/* ── live feed bubble grid ── */
+.lb-livefeed {
+  width: min(860px, calc(100% - 3rem));
+  margin: 0 auto 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lb-livefeed-header {
+  font-family: "poppins", monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.lb-livefeed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem;
+}
+
+.lb-livefeed-bubble {
+  background: #141a24;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 50px;
+  padding: 0.55rem 1rem;
+  font-family: "poppins", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.18s ease;
+}
+
+.lb-livefeed-bubble:hover {
+  border-color: rgba(193, 255, 0, 0.2);
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── loading skeleton ── */
+.lb-skeleton-row {
+  height: 48px;
+  background: linear-gradient(90deg, #141a24 25%, #222 50%, #141a24 75%);
+  background-size: 200% 100%;
+  border-radius: 8px;
+  animation: lb-shimmer 1.4s ease infinite;
+}
+
+@keyframes lb-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── responsive ── */
+@media (max-width: 700px) {
+  .lb-podium {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .lb-podium-card--center {
+    order: -1;
+  }
+
+  .lb-table-head { display: none; }
+
+  .lb-row-wager,
+  .lb-row-prize { width: auto; }
+}

@@ -13,9 +13,24 @@ import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
-import { Camera, AlertCircle, CheckCircle, Lock } from "lucide-react"
+import { Camera, AlertCircle, CheckCircle, Lock, Ticket } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { SiteNavigation } from "@/components/site-navigation"
+import "@/styles/mandy-home.css"
+
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4"
+const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm"
+const HOLO_BTN_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4"
+const RAFFLE_IMAGE = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_RAFFLE_ELEMENT-5nXhltypJsyT8gSS71VtOLkfrz07HQ.webp"
+
+// Holographic accent colors from video overlay
+const HOLO_BLUE = "#3C7BFF"
+const HOLO_CYAN = "#5ac3ff"
+const HOLO_PURPLE = "#a855f7"
+const HOLO_PINK = "#ff94b4"
+const HOLO_GREEN = "#4ade80"
+const HOLO_YELLOW = "#fbbf24"
+const ACCENT = HOLO_BLUE  // Primary accent
 
 interface Profile {
   id: string
@@ -45,17 +60,30 @@ interface WagerHistory {
   status: string
 }
 
+interface RaffleTicket {
+  id: string
+  ticket_number: number
+  raffle_date: string
+  wager_amount: number
+  created_at: string
+}
+
 interface DashboardClientProps {
   user: User
   profile: Profile | null
 }
 
+interface RaffleCountdown {
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
+}
+
 export function DashboardClient({ user, profile: initialProfile }: DashboardClientProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(initialProfile)
   const [thrillUsername, setThrillUsername] = useState(initialProfile?.thrill_username || "")
   const [displayName, setDisplayName] = useState(initialProfile?.display_name || "")
-  const [pokernowUsername, setPokernowUsername] = useState(initialProfile?.pokernow_username || "")
   const [telegramUsername, setTelegramUsername] = useState(initialProfile?.telegram_username || "")
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -65,26 +93,28 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
   const [isLoadingStats, setIsLoadingStats] = useState(false)
   const [statsError, setStatsError] = useState<string | null>(null)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
-  const [activeTab, setActiveTab] = useState<"current" | "past">("current")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const supabase = createClient()
-  const [isLinking, setIsLinking] = useState(false)
-  const [linkError, setLinkError] = useState<string | null>(null)
-  const [linkSuccess, setLinkSuccess] = useState<string | null>(null)
   const [wagerHistory, setWagerHistory] = useState<WagerHistory | null>(null)
   const [isLoadingWagerHistory, setIsLoadingWagerHistory] = useState(false)
 
   const [monthlyWager, setMonthlyWager] = useState<number>(0)
   const [isLoadingMonthlyWager, setIsLoadingMonthlyWager] = useState(false)
-  const POKER_REQUIREMENT = 50000 // $50,000 requirement for poker night
-
-  const [christmasRaffleTickets, setChristmasRaffleTickets] = useState<number>(0)
-  const [christmasWager, setChristmasWager] = useState<number>(0)
-  const [isLoadingChristmasRaffle, setIsLoadingChristmasRaffle] = useState(false)
+  const POKER_REQUIREMENT = 50000
 
   const [dailyWager, setDailyWager] = useState<number>(0)
   const [isLoadingDailyWager, setIsLoadingDailyWager] = useState(false)
+
+  const [raffleTickets, setRaffleTickets] = useState<RaffleTicket[]>([])
+  const [isLoadingRaffle, setIsLoadingRaffle] = useState(false)
+
+  const [raffleCountdown, setRaffleCountdown] = useState<RaffleCountdown>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
 
   const [pokerCountdown, setPokerCountdown] = useState({
     days: 0,
@@ -93,12 +123,48 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     seconds: 0,
   })
 
+  // Calculate raffle countdown (weekly - Friday)
+  useEffect(() => {
+    const calculateRaffleCountdown = () => {
+      const now = new Date()
+      const currentDay = now.getDay()
+      const currentHour = now.getHours()
+
+      // Find next Friday at midnight UTC
+      let daysUntilFriday = (5 - currentDay + 7) % 7
+      if (daysUntilFriday === 0 && currentHour >= 0) {
+        // It's Friday and past midnight, so next Friday
+        daysUntilFriday = 7
+      }
+
+      const nextFriday = new Date(now)
+      nextFriday.setDate(now.getDate() + daysUntilFriday)
+      nextFriday.setUTCHours(0, 0, 0, 0)
+
+      const timeDiff = nextFriday.getTime() - now.getTime()
+
+      if (timeDiff > 0) {
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000)
+
+        setRaffleCountdown({ days, hours, minutes, seconds })
+      } else {
+        setRaffleCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      }
+    }
+
+    calculateRaffleCountdown()
+    const timer = setInterval(calculateRaffleCountdown, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   useEffect(() => {
     const calculatePokerCountdown = () => {
       const now = new Date()
       const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }))
 
-      // Find the first Sunday of the current month
       const currentMonth = centralTime.getMonth()
       const currentYear = centralTime.getFullYear()
 
@@ -107,9 +173,8 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
       while (firstSundayOfCurrentMonth.getDay() !== 0) {
         firstSundayOfCurrentMonth.setDate(firstSundayOfCurrentMonth.getDate() + 1)
       }
-      firstSundayOfCurrentMonth.setHours(18, 0, 0, 0) // 6 PM CST
+      firstSundayOfCurrentMonth.setHours(18, 0, 0, 0)
 
-      // Find the first Sunday of next month
       let nextMonth = currentMonth + 1
       let nextYear = currentYear
       if (nextMonth > 11) {
@@ -122,15 +187,12 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
       while (firstSundayOfNextMonth.getDay() !== 0) {
         firstSundayOfNextMonth.setDate(firstSundayOfNextMonth.getDate() + 1)
       }
-      firstSundayOfNextMonth.setHours(18, 0, 0, 0) // 6 PM CST
+      firstSundayOfNextMonth.setHours(18, 0, 0, 0)
 
-      // Determine which deadline to count down to
       let targetDeadline: Date
       if (centralTime < firstSundayOfCurrentMonth) {
-        // Before this month's deadline
         targetDeadline = firstSundayOfCurrentMonth
       } else {
-        // After this month's deadline, count down to next month
         targetDeadline = firstSundayOfNextMonth
       }
 
@@ -164,7 +226,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
       setIsLoadingStats(true)
       setStatsError(null)
       try {
-        const response = await fetch(`/api/player-stats?period=${activeTab}`)
+        const response = await fetch(`/api/player-stats?period=current`)
         const data = await response.json()
 
         if (!response.ok) {
@@ -182,7 +244,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
           setStatsError(null)
         }
       } catch (err) {
-        console.error("[v0] Error fetching user stats:", err)
+        console.error("Error fetching user stats:", err)
         setStatsError(err instanceof Error ? err.message : "Failed to load stats")
         setUserStats(null)
       } finally {
@@ -191,17 +253,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     }
 
     fetchUserStats()
-  }, [profile?.thrill_username, activeTab])
-
-  useEffect(() => {
-    async function checkEmailVerification() {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser()
-      // Removed emailVerified state usage
-    }
-    checkEmailVerification()
-  }, [supabase])
+  }, [profile?.thrill_username])
 
   useEffect(() => {
     async function fetchWagerHistory() {
@@ -216,7 +268,6 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         const data = await response.json()
 
         if (response.status === 429) {
-          console.log("[v0] Rate limited, using cached data if available")
           if (data.last7Days !== undefined && data.last30Days !== undefined) {
             setWagerHistory(data)
           } else {
@@ -231,7 +282,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
         setWagerHistory(data)
       } catch (err) {
-        console.error("[v0] Error fetching wager history:", err)
+        console.error("Error fetching wager history:", err)
         if (!wagerHistory) {
           setWagerHistory({ last7Days: 0, last30Days: 0, status: "error" })
         }
@@ -241,7 +292,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     }
 
     fetchWagerHistory()
-  }, [])
+  }, [profile?.thrill_username])
 
   useEffect(() => {
     async function fetchMonthlyWager() {
@@ -256,7 +307,6 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         const data = await response.json()
 
         if (response.status === 429) {
-          console.log("[v0] Rate limited for monthly wager")
           if (data.last30Days !== undefined) {
             setMonthlyWager(data.last30Days)
           }
@@ -267,40 +317,13 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
           setMonthlyWager(data.last30Days || 0)
         }
       } catch (err) {
-        console.error("[v0] Error fetching monthly wager:", err)
+        console.error("Error fetching monthly wager:", err)
       } finally {
         setIsLoadingMonthlyWager(false)
       }
     }
 
     fetchMonthlyWager()
-  }, [])
-
-  useEffect(() => {
-    async function fetchChristmasRaffle() {
-      if (!profile?.thrill_username) {
-        setChristmasRaffleTickets(0)
-        setChristmasWager(0)
-        return
-      }
-
-      setIsLoadingChristmasRaffle(true)
-      try {
-        const response = await fetch("/api/christmas-raffle")
-        const data = await response.json()
-
-        if (response.ok) {
-          setChristmasRaffleTickets(data.raffleTickets || 0)
-          setChristmasWager(data.wager || 0)
-        }
-      } catch (err) {
-        console.error("[v0] Error fetching Christmas raffle:", err)
-      } finally {
-        setIsLoadingChristmasRaffle(false)
-      }
-    }
-
-    fetchChristmasRaffle()
   }, [profile?.thrill_username])
 
   useEffect(() => {
@@ -323,7 +346,7 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
           setDailyWager(userEntry?.wager || 0)
         }
       } catch (err) {
-        console.error("[v0] Error fetching daily wager:", err)
+        console.error("Error fetching daily wager:", err)
       } finally {
         setIsLoadingDailyWager(false)
       }
@@ -331,6 +354,22 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
 
     fetchDailyWager()
   }, [profile?.thrill_username])
+
+  useEffect(() => {
+    async function fetchRaffleTickets() {
+      setIsLoadingRaffle(true)
+      try {
+        const res = await fetch("/api/raffle/tickets")
+        const data = await res.json()
+        if (data.tickets) setRaffleTickets(data.tickets)
+      } catch (err) {
+        console.error("Error fetching raffle tickets:", err)
+      } finally {
+        setIsLoadingRaffle(false)
+      }
+    }
+    fetchRaffleTickets()
+  }, [])
 
   const handleSaveProfile = async () => {
     setIsSaving(true)
@@ -346,7 +385,6 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
         body: JSON.stringify({
           thrill_username: thrillUsername || null,
           display_name: displayName || null,
-          pokernow_username: pokernowUsername || null,
           telegram_username: telegramUsername || null,
         }),
       })
@@ -410,8 +448,6 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     }
   }
 
-  // Removed unused verification functions
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -425,520 +461,410 @@ export function DashboardClient({ user, profile: initialProfile }: DashboardClie
     return new Intl.NumberFormat("en-US").format(value)
   }
 
+  // Calculate wager progress to next raffle ticket (every $500)
+  const TICKET_INTERVAL = 500
+  const currentWager = wagerHistory?.last7Days || 0
+  const ticketsEarned = Math.floor(currentWager / TICKET_INTERVAL)
+  const wagerTowardNext = currentWager % TICKET_INTERVAL
+  const progressPercent = (wagerTowardNext / TICKET_INTERVAL) * 100
+
   return (
-    <div className="min-h-screen bg-black font-sans">
-      <div className="relative z-10">
-        {/* Navigation */}
-        <SiteNavigation currentPage="dashboard" />
-
-        {/* Dashboard Content */}
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-teal-500 mb-8 uppercase text-center">DEGEN DASHBOARD</h1>
-
-          {/* Profile Section */}
-          <Card
-            className="p-6 md:p-8 mb-6 rounded-xl border border-white/30"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-            }}
-          >
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <div className="relative group">
-                <Avatar className="h-24 w-24 border-2 border-teal-500">
-                  <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                  <AvatarFallback className="bg-[#1a1a1a] text-teal-500 text-2xl font-bold">
-                    {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingPhoto}
-                  className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer disabled:cursor-not-allowed"
-                  aria-label="Upload profile photo"
-                >
-                  <Camera className="h-8 w-8 text-teal-500" />
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                  disabled={isUploadingPhoto}
-                />
-              </div>
-
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {profile?.display_name || "Set your display name"}
-                </h2>
-                <p className="text-gray-400 mb-1">{user.email}</p>
-                {profile?.thrill_username && (
-                  <div className="flex items-center gap-2 justify-center md:justify-start">
-                    <p className="text-teal-500 font-semibold">Thrill: @{profile.thrill_username}</p>
-                    {profile.thrill_username_verified && (
-                      <div className="flex items-center gap-1 bg-teal-500/20 px-2 py-1 rounded-md">
-                        <CheckCircle className="h-4 w-4 text-teal-500" />
-                        <span className="text-xs text-teal-500 font-bold">VERIFIED</span>
-                      </div>
-                    )}
-                    {profile.thrill_username_locked && (
-                      <Lock className="h-4 w-4 text-teal-500" title="Account locked" />
-                    )}
-                  </div>
-                )}
-                {isUploadingPhoto && <p className="text-sm text-gray-400 mt-2">Uploading photo...</p>}
-              </div>
-
-              {!profile?.thrill_username_locked && (
-                <Button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="bg-teal-500 text-black hover:bg-teal-400 font-bold rounded-xl"
-                >
-                  {isEditing ? "Cancel" : "Edit Profile"}
-                </Button>
-              )}
-              {profile?.thrill_username_locked && (
-                <div className="text-center md:text-right">
-                  <div className="flex items-center gap-2 text-teal-500 mb-1">
-                    <Lock className="h-5 w-5" />
-                    <span className="font-bold">Account Locked</span>
-                  </div>
-                  <p className="text-xs text-gray-400">Contact support to change username</p>
-                </div>
-              )}
+    <>
+      <SiteNavigation currentPage="dashboard" />
+      <div className="mandy-home min-h-screen bg-black font-sans">
+        <div className="relative z-10">
+          <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Holo Header */}
+            <div className="holo-mask mb-6" style={{ textAlign: "center" }}>
+              <h1
+                className="holo-mask__letters"
+                style={{
+                  fontSize: "clamp(2rem, 7vw, 3.5rem)",
+                  fontFamily: "Poppins, var(--font-poppins), sans-serif",
+                  fontWeight: 900,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                DEGEN DASHBOARD
+              </h1>
+              <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+                <source src={HOLO_TEXT_SRC} type="video/mp4" />
+              </video>
+              <span className="holo-sheen" aria-hidden="true" />
             </div>
 
-            {isEditing && !profile?.thrill_username_locked && (
-              <div className="mt-6 pt-6 border-t border-white/20 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="displayName" className="text-gray-300">
-                    Display Name
-                  </Label>
-                  <Input
-                    id="displayName"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Your display name"
-                    className="bg-[#1a1a1a] border-[#333] text-white"
+            {/* Profile Section */}
+            <Card
+              className="p-5 mb-5 rounded-xl border border-white/10 transition-all duration-300"
+              style={{
+                backgroundColor: "rgba(10, 10, 10, 0.95)",
+                boxShadow: "none",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = "none"
+              }}
+            >
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+                <div className="relative group">
+                  <Avatar className="h-20 w-20 border-2 border-[#3C7BFF]">
+                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
+                    <AvatarFallback className="bg-[#1a1a1a] text-[#3C7BFF] text-xl font-bold">
+                      {profile?.display_name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingPhoto}
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer disabled:cursor-not-allowed"
+                    aria-label="Upload profile photo"
+                  >
+                    <Camera className="h-6 w-6 text-[#3C7BFF]" />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                    disabled={isUploadingPhoto}
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="thrillUsername" className="text-gray-300">
-                    Thrill Username
-                  </Label>
-                  <Input
-                    id="thrillUsername"
-                    value={thrillUsername}
-                    onChange={(e) => setThrillUsername(e.target.value)}
-                    placeholder="Your Thrill username (without @)"
-                    className="bg-[#1a1a1a] border-[#333] text-white"
-                    disabled={profile?.thrill_username_locked}
-                  />
-                  {!profile?.thrill_username && (
-                    <p className="text-sm text-gray-400">
-                      Enter your Thrill username to link your account and track your stats.
-                    </p>
+                <div className="flex-1 text-center md:text-left">
+                  <h2 className="text-xl font-bold text-white mb-1">
+                    {profile?.display_name || "Set your display name"}
+                  </h2>
+                  <p className="text-gray-400 text-sm mb-1">{user.email}</p>
+                  {profile?.thrill_username && (
+                    <div className="flex items-center gap-2 justify-center md:justify-start mb-1">
+                      <p className="text-[#3C7BFF] font-semibold text-sm">Thrill: @{profile.thrill_username}</p>
+                      {profile.thrill_username_verified && (
+                        <div className="flex items-center gap-1 bg-[#3C7BFF]/20 px-2 py-0.5 rounded-md">
+                          <CheckCircle className="h-3 w-3 text-[#3C7BFF]" />
+                          <span className="text-xs text-[#3C7BFF] font-bold">VERIFIED</span>
+                        </div>
+                      )}
+                    </div>
                   )}
-                  {profile?.thrill_username && !profile?.thrill_username_locked && (
-                    <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-                      <p className="text-sm text-yellow-400 flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4" />
-                        To unlink your Thrill username, please contact admin support. This process may take a few days.
+                  {profile?.telegram_username && (
+                    <p className="text-gray-400 text-sm">Telegram: @{profile.telegram_username}</p>
+                  )}
+                  {isUploadingPhoto && <p className="text-xs text-gray-400 mt-1">Uploading...</p>}
+                </div>
+
+                {!profile?.thrill_username_locked && (
+                  <Button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="bg-[#3C7BFF] text-black hover:bg-[#5A93FF] font-bold rounded-xl text-sm px-4 py-2"
+                  >
+                    {isEditing ? "Cancel" : "Edit Profile"}
+                  </Button>
+                )}
+              </div>
+
+              {isEditing && !profile?.thrill_username_locked && (
+                <div className="mt-4 pt-4 border-t border-white/20 space-y-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="displayName" className="text-gray-300 text-sm">
+                      Display Name
+                    </Label>
+                    <Input
+                      id="displayName"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your display name"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="thrillUsername" className="text-gray-300 text-sm">
+                      Thrill Username
+                    </Label>
+                    <Input
+                      id="thrillUsername"
+                      value={thrillUsername}
+                      onChange={(e) => setThrillUsername(e.target.value)}
+                      placeholder="Your Thrill username (without @)"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                      disabled={profile?.thrill_username_locked}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="telegramUsername" className="text-gray-300 text-sm">
+                      Telegram Username (optional)
+                    </Label>
+                    <Input
+                      id="telegramUsername"
+                      value={telegramUsername}
+                      onChange={(e) => setTelegramUsername(e.target.value)}
+                      placeholder="Your Telegram username (without @)"
+                      className="bg-[#1a1a1a] border-[#333] text-white text-sm"
+                    />
+                    <p className="text-xs text-gray-500">Add your Telegram for support and community access</p>
+                  </div>
+
+                  {error && (
+                    <div className="p-2 bg-red-900/20 border border-red-500/30 rounded text-red-400 text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  {success && (
+                    <div className="p-2 bg-green-900/20 border border-green-500/30 rounded text-green-400 text-sm">
+                      {success}
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={isSaving}
+                    className="w-full bg-[#3C7BFF] text-black hover:bg-[#5A93FF] font-bold rounded-xl"
+                  >
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            {/* Main Bento Grid */}
+            {profile?.thrill_username ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
+                {/* Wager Stats - spans 2 columns on large screens */}
+                <Card
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
+                >
+                  <h3 className="text-lg font-bold text-white mb-3 uppercase">Wager Stats</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">24H</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
+                        {isLoadingDailyWager ? "..." : formatCurrency(dailyWager)}
                       </p>
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pokernowUsername" className="text-gray-300">
-                    PokerNow Username
-                  </Label>
-                  <Input
-                    id="pokernowUsername"
-                    value={pokernowUsername}
-                    onChange={(e) => setPokernowUsername(e.target.value)}
-                    placeholder="Your PokerNow username (optional)"
-                    className="bg-[#1a1a1a] border-[#333] text-white"
-                  />
-                  <p className="text-sm text-gray-400">
-                    Add your PokerNow username so admins can identify you for poker tournaments.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="telegramUsername" className="text-gray-300">
-                    Telegram Username
-                  </Label>
-                  <Input
-                    id="telegramUsername"
-                    value={telegramUsername}
-                    onChange={(e) => setTelegramUsername(e.target.value)}
-                    placeholder="Your Telegram username (without @)"
-                    className="bg-[#1a1a1a] border-[#333] text-white"
-                  />
-                  <p className="text-sm text-gray-400">
-                    Add your Telegram username for direct communication and updates.
-                  </p>
-                </div>
-
-                {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md">
-                    <p className="text-sm text-red-400">{error}</p>
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">7 Days</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
+                        {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last7Days) : "$0"}
+                      </p>
+                    </div>
+                    <div className="text-center p-3 bg-[#1a1a1a] rounded-lg border border-white/10">
+                      <p className="text-gray-400 text-xs uppercase mb-1">30 Days</p>
+                      <p className="text-xl font-bold text-[#3C7BFF]">
+                        {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last30Days) : "$0"}
+                      </p>
+                    </div>
                   </div>
-                )}
+                </Card>
 
-                {success && (
-                  <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-md">
-                    <p className="text-sm text-teal-500">{success}</p>
-                  </div>
-                )}
-
-                <Button
-                  onClick={handleSaveProfile}
-                  disabled={isSaving}
-                  className="w-full bg-indigo-400 hover:bg-indigo-500 text-black font-bold rounded-xl"
+                {/* Leaderboard Stats */}
+                <Card
+                  className="p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            )}
-          </Card>
-
-          {profile?.thrill_username ? (
-            <>
-              <Card
-                className="p-6 rounded-xl border border-white/30 mb-6"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                }}
-              >
-                <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">
-                  Monthly Poker Night Progress
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm text-gray-300">
-                    <span>Progress to Poker Night Qualification</span>
-                    <span className="font-bold text-teal-500">
-                      {isLoadingMonthlyWager
-                        ? "..."
-                        : `${formatCurrency(monthlyWager)} / ${formatCurrency(POKER_REQUIREMENT)}`}
-                    </span>
+                  <h3 className="text-lg font-bold text-white mb-3 uppercase">Leaderboard</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Your Rank:</span>
+                      <span className="text-[#3C7BFF] font-bold text-lg">
+                        {isLoadingStats ? "..." : userStats ? `#${userStats.rank}` : "N/A"}
+                      </span>
+                    </div>
+                    {userStats && userStats.rank > 1 && (
+                      <div className="text-xs text-gray-500">
+                        Keep wagering to move up!
+                      </div>
+                    )}
+                    {userStats && userStats.rank === 1 && (
+                      <div className="text-xs text-[#3C7BFF] font-bold">
+                        🏆 You're #1!
+                      </div>
+                    )}
                   </div>
+                </Card>
+
+                {/* Poker Night - spans 2 columns */}
+                <Card
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
+                >
+                  <h3 className="text-lg font-bold text-white mb-2 uppercase">Poker Night Qualifier</h3>
+                  <p className="text-xs text-gray-400 mb-3">Wager ${POKER_REQUIREMENT.toLocaleString()} monthly to qualify for the $1,000 tournament</p>
                   <Progress
                     value={Math.min((monthlyWager / POKER_REQUIREMENT) * 100, 100)}
-                    className="h-4 bg-gray-800"
+                    className="h-3 bg-gray-800 mb-2"
                   />
-                  <p className="text-xs text-gray-400 text-center">
-                    {monthlyWager >= POKER_REQUIREMENT
-                      ? "🎉 Qualified for this month's poker tournament!"
-                      : `Wager ${formatCurrency(POKER_REQUIREMENT - monthlyWager)} more to qualify for the $1,000 poker tournament`}
-                  </p>
-                  <div className="text-center mt-4">
-                    <p className="text-sm text-gray-400 mb-2">Next Poker Night:</p>
-                    <div className="flex justify-center gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.days}</div>
-                        <div className="text-xs text-gray-400">DAYS</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.hours}</div>
-                        <div className="text-xs text-gray-400">HRS</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.minutes}</div>
-                        <div className="text-xs text-gray-400">MIN</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-500">{pokerCountdown.seconds}</div>
-                        <div className="text-xs text-gray-400">SEC</div>
-                      </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-400">
+                      {formatCurrency(monthlyWager)} / {formatCurrency(POKER_REQUIREMENT)}
+                    </span>
+                    <span className="text-[#3C7BFF] font-bold">
+                      {Math.min(Math.floor((monthlyWager / POKER_REQUIREMENT) * 100), 100)}%
+                    </span>
+                  </div>
+                  {monthlyWager >= POKER_REQUIREMENT && (
+                    <div className="mt-2 p-2 bg-[#3C7BFF]/10 border border-[#3C7BFF]/30 rounded text-[#3C7BFF] text-xs text-center font-bold">
+                      ✓ QUALIFIED FOR THIS MONTH
                     </div>
+                  )}
+                  <div className="flex justify-center gap-3 mt-3">
+                    {[
+                      { label: "DAYS", value: pokerCountdown.days },
+                      { label: "HRS", value: pokerCountdown.hours },
+                      { label: "MIN", value: pokerCountdown.minutes },
+                      { label: "SEC", value: pokerCountdown.seconds },
+                    ].map((item) => (
+                      <div key={item.label} className="text-center">
+                        <div className="text-lg font-bold text-[#3C7BFF]">{String(item.value).padStart(2, "0")}</div>
+                        <div className="text-xs text-gray-400">{item.label}</div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-xs text-gray-500 text-center italic">
-                    Resets on the 1st Sunday of each month at 6 PM CST
-                  </p>
-                </div>
-              </Card>
+                </Card>
 
-              <Card
-                className="p-6 rounded-xl border mb-6"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  borderColor: "rgba(212, 175, 55, 0.5)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.25), 0 0 40px rgba(185, 28, 28, 0.1)",
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <span className="text-2xl">🎄</span>
-                  <h3 className="text-2xl font-bold text-[#D4AF37] uppercase text-center">Christmas Raffle</h3>
-                  <span className="text-2xl">🎁</span>
-                </div>
-                <p className="text-gray-400 text-sm text-center mb-4">
-                  December 1-25, 2025 | Every $1,000 wagered = 1 raffle ticket
-                </p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-[#D4AF37]/30">
-                    <p className="text-gray-400 text-sm uppercase mb-2">December Wager</p>
-                    <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isLoadingChristmasRaffle ? "..." : formatCurrency(christmasWager)}
-                    </p>
-                  </div>
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-[#B91C1C]/30">
-                    <p className="text-gray-400 text-sm uppercase mb-2">Raffle Tickets</p>
-                    <p className="text-3xl font-bold text-[#B91C1C]">
-                      {isLoadingChristmasRaffle ? "..." : christmasRaffleTickets}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 text-center mt-4 italic">
-                  Must be signed up under code MANDY to participate
-                </p>
-              </Card>
-
-              {/* Wager Stats Card */}
-              <Card
-                className="p-6 rounded-xl border border-white/30 mb-6"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                }}
-              >
-                <h3 className="text-2xl font-bold text-white mb-4 uppercase text-center">Wager Stats</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-sm uppercase mb-2">24 Hour Wager (USD)</p>
-                    <p className="text-3xl font-bold text-amber-500">
-                      {isLoadingDailyWager ? "..." : formatCurrency(dailyWager)}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Midnight UTC - Midnight UTC</p>
-                  </div>
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-sm uppercase mb-2">7 Day Wager (USD)</p>
-                    <p className="text-3xl font-bold text-teal-500">
-                      {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last7Days) : "$0"}
-                    </p>
-                  </div>
-                  <div className="text-center p-4 bg-[#1a1a1a] rounded-lg border border-white/20">
-                    <p className="text-gray-400 text-sm uppercase mb-2">30 Day Wager (USD)</p>
-                    <p className="text-3xl font-bold text-indigo-400">
-                      {isLoadingWagerHistory ? "..." : wagerHistory ? formatCurrency(wagerHistory.last30Days) : "$0"}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              {statsError && (
+                {/* Raffle Section - full width */}
                 <Card
-                  className="p-6 rounded-xl border border-yellow-500/30 mb-6"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(234, 179, 8, 0.15)",
-                  }}
+                  className="lg:col-span-3 p-4 rounded-xl border border-white/10 transition-all duration-300 relative overflow-hidden"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {/* Left side - Info and Stats */}
                     <div>
-                      <p className="text-yellow-500 font-semibold mb-1">Stats Not Available</p>
-                      <p className="text-gray-300 text-sm">{statsError}</p>
+                      <h3 className="text-lg font-bold text-white mb-2 uppercase flex items-center gap-2">
+                        <Ticket className="w-5 h-5 text-[#3C7BFF]" />
+                        Weekly $250 Raffle
+                      </h3>
+                      <p className="text-xs text-gray-400 mb-3">Wager $500 = 1 ticket. Drawing every Friday at midnight UTC.</p>
+
+                      <div className="space-y-2 mb-3">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Your Tickets:</span>
+                          <span className="text-[#3C7BFF] font-bold">{raffleTickets.length}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-400">Progress to Next:</span>
+                          <span className="text-[#3C7BFF] font-bold">
+                            {formatCurrency(wagerTowardNext)} / {formatCurrency(TICKET_INTERVAL)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Progress value={progressPercent} className="h-2 bg-gray-800 mb-3" />
+
+                      {/* Countdown */}
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-400 mb-2 text-center">Next Drawing:</p>
+                        <div className="flex justify-center gap-3">
+                          {[
+                            { label: "D", value: raffleCountdown.days },
+                            { label: "H", value: raffleCountdown.hours },
+                            { label: "M", value: raffleCountdown.minutes },
+                            { label: "S", value: raffleCountdown.seconds },
+                          ].map((item) => (
+                            <div key={item.label} className="text-center bg-[#1a1a1a] rounded px-2 py-1">
+                              <div className="text-base font-bold text-[#3C7BFF]">{String(item.value).padStart(2, "0")}</div>
+                              <div className="text-xs text-gray-400">{item.label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Holo Button to Raffle Page */}
+                      <Link href="/raffle" className="block">
+                        <button className="holo-button w-full">
+                          <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
+                            <source src={HOLO_BTN_WEBM} type="video/webm" />
+                            <source src={HOLO_BTN_MP4} type="video/mp4" />
+                          </video>
+                          <span className="holo-btn__label">VIEW RAFFLE PAGE</span>
+                        </button>
+                      </Link>
+                    </div>
+
+                    {/* Right side - Raffle Tickets Image */}
+                    <div className="flex items-center justify-center">
+                      <img
+                        src={RAFFLE_IMAGE}
+                        alt="Raffle Tickets"
+                        className="w-full max-w-xs h-auto"
+                        style={{ filter: "drop-shadow(0 4px 20px rgba(60, 123, 255, 0.3))" }}
+                      />
                     </div>
                   </div>
                 </Card>
-              )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Need Help Box */}
                 <Card
-                  className="p-6 rounded-xl border border-white/30"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                  }}
+                  className="p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
-                  <div className="text-center">
-                    <p className="text-gray-400 text-sm uppercase mb-2">Current Leaderboard Rank</p>
-                    <p className="text-3xl font-bold text-teal-500">
-                      {isLoadingStats ? "..." : userStats ? `#${userStats.rank}` : "N/A"}
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2 uppercase">Need Help?</h3>
+                  <p className="text-sm text-gray-400 mb-3">Open a ticket with our Telegram bot</p>
+                  <a href="https://t.me/mandysupport_bot" target="_blank" rel="noopener noreferrer" className="block">
+                    <button className="holo-button w-full">
+                      <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
+                        <source src={HOLO_BTN_WEBM} type="video/webm" />
+                        <source src={HOLO_BTN_MP4} type="video/mp4" />
+                      </video>
+                      <span className="holo-btn__label">GET SUPPORT</span>
+                    </button>
+                  </a>
                 </Card>
 
+                {/* Chat with Community */}
                 <Card
-                  className="p-6 rounded-xl border border-white/30"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                  }}
+                  className="lg:col-span-2 p-4 rounded-xl border border-white/10 transition-all duration-300"
+                  style={{ backgroundColor: "rgba(10, 10, 10, 0.95)", boxShadow: "none" }}
+                  onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(60, 123, 255, 0.15)"}
+                  onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
-                  <div className="text-center">
-                    <p className="text-gray-400 text-sm uppercase mb-2">Total Prizes</p>
-                    <p className="text-3xl font-bold text-teal-500">
-                      {isLoadingStats ? "..." : userStats ? formatCurrency(userStats.prize) : "N/A"}
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2 uppercase">Join the Community</h3>
+                  <p className="text-sm text-gray-400 mb-3">Come chat with likeminded weirdos in the MandyGG Telegram</p>
+                  <a href="https://t.me/mandyggchat" target="_blank" rel="noopener noreferrer" className="block">
+                    <button className="holo-button w-full">
+                      <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
+                        <source src={HOLO_BTN_WEBM} type="video/webm" />
+                        <source src={HOLO_BTN_MP4} type="video/mp4" />
+                      </video>
+                      <span className="holo-btn__label">JOIN TELEGRAM</span>
+                    </button>
+                  </a>
                 </Card>
               </div>
-            </>
-          ) : (
-            <Card
-              className="p-8 rounded-xl border border-white/30 mb-6 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-              }}
-            >
-              <p className="text-gray-300 text-lg mb-4">
-                Add your Thrill username to see your stats and leaderboard position!
-              </p>
-              <Button
-                onClick={() => setIsEditing(true)}
-                className="bg-teal-500 text-black hover:bg-teal-400 font-bold rounded-xl"
+            ) : (
+              <Card
+                className="p-6 rounded-xl border border-white/10 mb-5 text-center"
+                style={{ backgroundColor: "rgba(10, 10, 10, 0.95)" }}
               >
-                Add Thrill Username
-              </Button>
-            </Card>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card
-              className="p-6 rounded-xl border border-white/30 hover:scale-105 transition-transform"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-              }}
-            >
-              <h3 className="text-xl font-bold text-white mb-2 uppercase">View Top 10</h3>
-              <p className="text-gray-400 mb-4">Check out the top players on the leaderboard</p>
-              <Link href="/leaderboard">
-                <Button className="w-full bg-indigo-400 hover:bg-indigo-500 text-black font-bold rounded-xl uppercase">
-                  Go to Leaderboard
+                <p className="text-gray-300 text-base mb-3">
+                  Add your Thrill username to see your stats and leaderboard position!
+                </p>
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-[#3C7BFF] text-black hover:bg-[#5A93FF] font-bold rounded-xl"
+                >
+                  Add Thrill Username
                 </Button>
-              </Link>
-            </Card>
-
-            <Card
-              className="p-6 rounded-xl border border-white/30 hover:scale-105 transition-transform"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-              }}
-            >
-              <h3 className="text-xl font-bold text-white mb-2 uppercase">Rewards</h3>
-              <p className="text-gray-400 mb-4">
-                {profile?.thrill_username && monthlyWager >= POKER_REQUIREMENT
-                  ? "🎉 You qualify for poker night!"
-                  : profile?.thrill_username
-                    ? "Keep wagering to qualify for poker night"
-                    : "Link your account to track rewards"}
-              </p>
-              <Link href="/rewards">
-                <Button className="w-full bg-indigo-400 hover:bg-indigo-500 text-black font-bold rounded-xl uppercase">
-                  View Rewards
-                </Button>
-              </Link>
-            </Card>
-
-            <Card
-              className="p-6 rounded-xl border border-teal-500/50 hover:scale-105 transition-all duration-300 relative overflow-hidden"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow:
-                  "0 8px 32px rgba(20, 184, 166, 0.3), 0 0 40px rgba(20, 184, 166, 0.2), 0 0 60px rgba(20, 184, 166, 0.1)",
-              }}
-            >
-              {/* Metallic gradient overlay */}
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(20, 184, 166, 0.4) 50%, rgba(20, 184, 166, 0.4) 100%)",
-                  backgroundSize: "200% 200%",
-                  animation: "shimmer 3s ease-in-out infinite",
-                }}
-              />
-
-              {/* Blur overlay with "wen?" text */}
-              <div className="absolute inset-0 backdrop-blur-sm bg-black/40 flex items-center justify-center z-10">
-                <div className="text-center">
-                  <p
-                    className="text-6xl font-black text-teal-500 mb-2"
-                    style={{ textShadow: "0 0 20px rgba(20, 184, 166, 0.8)" }}
-                  >
-                    wen?
-                  </p>
-                  <p className="text-sm text-teal-500/80 uppercase tracking-wider">Something awesome is coming</p>
-                </div>
-              </div>
-
-              <h3 className="text-xl font-bold text-white mb-2 uppercase">Mystery Feature</h3>
-              <p className="text-gray-400 mb-4">Stay tuned for something special...</p>
-              <Button
-                disabled
-                className="w-full bg-teal-500/20 text-teal-500 font-bold rounded-xl uppercase cursor-not-allowed"
-              >
-                Locked
-              </Button>
-            </Card>
+              </Card>
+            )}
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="px-4 mt-6 md:mt-8 pb-4">
-          <Card
-            className="max-w-6xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/30 transition-all duration-300 hover:scale-[1.01] md:py-[23px] my-[11px]"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-            }}
-          >
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <Image
-                  src="/images/mandy-logo-menu-icon-white.svg"
-                  alt="Mandy.gg"
-                  width={500}
-                  height={200}
-                  className="h-16 md:h-20 w-auto"
-                />
-              </div>
-              <div className="flex flex-wrap justify-center gap-3 md:gap-6 text-sm md:text-lg text-gray-200 mb-3 md:mb-4">
-                <Link href="/privacy" className="hover:text-primary transition-colors uppercase">
-                  PRIVACY POLICY
-                </Link>
-                <Link href="/terms" className="hover:text-primary transition-colors uppercase">
-                  TERMS OF SERVICE
-                </Link>
-                <Link
-                  href="https://t.me/mandysupport_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors uppercase"
-                >
-                  SUPPORT
-                </Link>
-              </div>
-              <p className="text-sm md:text-base text-gray-300 mb-2 uppercase leading-relaxed">
-                © 2025 MANDY.GG. ALL RIGHTS RESERVED.
-              </p>
-              <p className="text-sm md:text-base text-gray-300 uppercase leading-relaxed">
-                PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE.
-              </p>
-            </div>
-          </Card>
-        </footer>
       </div>
-    </div>
+    </>
   )
 }

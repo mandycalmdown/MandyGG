@@ -16,19 +16,26 @@ import {
   Trophy,
   AlertTriangle,
   Users,
-  Gift,
   Settings,
   Bell,
   Gamepad2,
   RefreshCw,
-  Calendar,
-  Clock,
-  Calculator,
+  Ticket,
+  FileText,
+  Megaphone,
+  Bold,
+  Italic,
+  List,
+  Image as ImageIcon,
+  Save,
+  Eye,
+  X,
 } from "lucide-react"
 import { SiteNavigation } from "@/components/site-navigation"
 import { UserManagementSection } from "@/components/user-management-section"
-import { RewardsManagementSection } from "@/components/rewards-management-section"
+import { AdminSiteContentEditor } from "@/components/admin-site-content-editor"
 import { captureQualifiersAction, unlinkAllAccountsAction } from "@/app/actions/admin-actions"
+import { LayoutDashboard } from "lucide-react"
 
 interface Profile {
   id: string
@@ -71,6 +78,9 @@ interface TickerSettings {
   font_family: string
   font_size: string
   font_weight: string
+  ticker_1_text: string
+  ticker_2_text: string
+  ticker_3_text: string
 }
 
 interface Announcement {
@@ -80,21 +90,26 @@ interface Announcement {
   created_at: string
 }
 
-interface ChristmasRafflePlayer {
-  username: string
-  wager: number
-  raffleTickets: number
-  status: string
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  content: string
+  excerpt: string | null
+  featured_image: string | null
+  author_id: string
+  is_published: boolean
+  created_at: string
+  updated_at: string
 }
 
-// Added AdventGift interface
-interface AdventGift {
+interface UpdatePost {
   id: string
-  day: number
   title: string
   description: string
-  reward: string
-  image_url?: string
+  icon_url: string | null
+  is_active: boolean
+  created_at: string
   updated_at: string
 }
 
@@ -104,9 +119,8 @@ interface AdminDashboardClientProps {
 }
 
 export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminDashboardClientProps) {
-  // Updated activeTab type to include "advent" and "daily"
   const [activeTab, setActiveTab] = useState<
-    "users" | "daily" | "custom" | "rewards" | "announcements" | "poker" | "christmas" | "advent" | "settings"
+    "users" | "daily" | "custom" | "announcements" | "poker" | "raffle" | "blog" | "updates" | "settings"
   >("users")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
@@ -119,30 +133,39 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [isLoadingQualifiers, setIsLoadingQualifiers] = useState(false)
   const [pokerNightDate, setPokerNightDate] = useState<string>("")
   const [isCapturingQualifiers, setIsCapturingQualifiers] = useState(false)
+
+  // Raffle state
+  const [raffleDate, setRaffleDate] = useState(new Date().toISOString().split("T")[0])
+  const [raffleTickets, setRaffleTickets] = useState<any[]>([])
+  const [raffleWinner, setRaffleWinner] = useState<any>(null)
+  const [recentRaffleWinners, setRecentRaffleWinners] = useState<any[]>([])
+  const [isLoadingRaffle, setIsLoadingRaffle] = useState(false)
+  const [raffleIssueUserId, setRaffleIssueUserId] = useState("")
+  const [raffleWagerAmount, setRaffleWagerAmount] = useState("")
+  const [winnerTicketNumber, setWinnerTicketNumber] = useState("")
+  const [prizeAmount, setPrizeAmount] = useState("")
+  const [prizeDescription, setPrizeDescription] = useState("Weekly Raffle Prize — $250")
+  const [raffleSettings, setRaffleSettings] = useState({ prize_amount: 250, tickets_per_wager: 500, is_active: true })
+  const [isSavingRaffleSettings, setIsSavingRaffleSettings] = useState(false)
+  const [raffleStatus, setRaffleStatus] = useState<string | null>(null)
+  
   const [tickerSettings, setTickerSettings] = useState<TickerSettings>({
     text_color: "#ffffff",
-    background_color: "#6366f1",
-    background_gradient: "linear-gradient(to right, #6366f1, #a855f7, #6366f1)",
+    background_color: "#3C7BFF",
+    background_gradient: "linear-gradient(to right, #3C7BFF, #5A93FF, #3C7BFF)",
     speed: 8000,
     font_family: "inherit",
     font_size: "1rem",
     font_weight: "bold",
+    ticker_1_text: "",
+    ticker_2_text: "",
+    ticker_3_text: "",
   })
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [newAnnouncement, setNewAnnouncement] = useState("")
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
   const [tickerTableExists, setTickerTableExists] = useState(true)
-  const [christmasRafflePlayers, setChristmasRafflePlayers] = useState<ChristmasRafflePlayer[]>([])
-  const [isLoadingChristmasRaffle, setIsLoadingChristmasRaffle] = useState(false)
-  const [totalRaffleTickets, setTotalRaffleTickets] = useState(0)
-
-  // Added advent gifts state
-  const [adventGifts, setAdventGifts] = useState<AdventGift[]>([])
-  const [isLoadingAdventGifts, setIsLoadingAdventGifts] = useState(false)
-  const [editingGift, setEditingGift] = useState<AdventGift | null>(null)
-  const [adventSaveStatus, setAdventSaveStatus] = useState<string | null>(null)
-
   const [dailyLeaderboard, setDailyLeaderboard] = useState<Array<{ username: string; wager: number; rank: number }>>([])
   const [isLoadingDailyLeaderboard, setIsLoadingDailyLeaderboard] = useState(false)
   const [dailyDateRange, setDailyDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
@@ -158,22 +181,33 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   const [customStatsError, setCustomStatsError] = useState<string | null>(null)
   const [customStatsDateRange, setCustomStatsDateRange] = useState<{ fromDate: string; toDate: string } | null>(null)
 
-  const [cstDate, setCstDate] = useState("")
-  const [cstTime, setCstTime] = useState("")
-  const [cstAmPm, setCstAmPm] = useState<"AM" | "PM">("AM")
-  const [convertedUtc, setConvertedUtc] = useState<string | null>(null)
+  // Blog state
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [isLoadingBlog, setIsLoadingBlog] = useState(false)
+  const [editingBlogPost, setEditingBlogPost] = useState<BlogPost | null>(null)
+  const [blogTitle, setBlogTitle] = useState("")
+  const [blogSlug, setBlogSlug] = useState("")
+  const [blogContent, setBlogContent] = useState("")
+  const [blogExcerpt, setBlogExcerpt] = useState("")
+  const [blogFeaturedImage, setBlogFeaturedImage] = useState("")
+  const [blogPublished, setBlogPublished] = useState(false)
+  const [uploadingBlogImage, setUploadingBlogImage] = useState(false)
+
+  // Updates state
+  const [updatePosts, setUpdatePosts] = useState<UpdatePost[]>([])
+  const [isLoadingUpdates, setIsLoadingUpdates] = useState(false)
+  const [editingUpdate, setEditingUpdate] = useState<UpdatePost | null>(null)
+  const [updateTitle, setUpdateTitle] = useState("")
+  const [updateDescription, setUpdateDescription] = useState("")
+  const [updateIcon, setUpdateIcon] = useState("")
+  const [updateActive, setUpdateActive] = useState(true)
+  const [uploadingUpdateIcon, setUploadingUpdateIcon] = useState(false)
 
   const router = useRouter()
   const supabase = createClient()
 
-  // Fetch advent gifts when the "advent" tab is selected
-  useEffect(() => {
-    if (activeTab === "advent") {
-      fetchAdventGifts()
-    }
-  }, [activeTab])
+  // (rest of the existing useEffects and functions like fetch stats, poker qualifiers, etc.)
 
-  // Fetch user stats
   useEffect(() => {
     async function fetchAllUserStats() {
       const usersWithThrill = profiles.filter((p) => p.thrill_username)
@@ -203,7 +237,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     fetchAllUserStats()
   }, [profiles, selectedPeriod])
 
-  // Fetch poker qualifiers
   useEffect(() => {
     async function fetchPokerQualifiers() {
       setIsLoadingQualifiers(true)
@@ -225,11 +258,10 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     fetchPokerQualifiers()
   }, [])
 
-  // Fetch ticker settings, announcements, and Christmas raffle data on mount
   useEffect(() => {
     fetchTickerSettings()
-    // fetchAllAnnouncements() // Moved to below
-    // fetchChristmasRaffle() // Moved to below
+    fetchAllAnnouncements()
+    fetchDailyLeaderboard()
   }, [])
 
   const fetchDailyLeaderboard = async (force = false) => {
@@ -251,8 +283,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   }
 
   useEffect(() => {
-    // fetchDailyLeaderboard() // Moved to below
-
     const interval = setInterval(() => {
       if (activeTab === "daily") {
         fetchDailyLeaderboard()
@@ -263,11 +293,150 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   }, [activeTab])
 
   useEffect(() => {
-    fetchTickerSettings()
-    fetchAllAnnouncements()
-    fetchChristmasRaffle()
-    fetchDailyLeaderboard() // Fetch initial daily leaderboard data
-  }, [])
+    if (activeTab === "raffle") {
+      fetchRaffleData()
+    }
+  }, [activeTab, raffleDate])
+
+  useEffect(() => {
+    if (activeTab === "blog") {
+      fetchBlogPosts()
+    }
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab === "updates") {
+      fetchUpdatePosts()
+    }
+  }, [activeTab])
+
+  async function fetchBlogPosts() {
+    setIsLoadingBlog(true)
+    try {
+      const res = await fetch("/api/admin/blog")
+      const data = await res.json()
+      if (data.posts) {
+        setBlogPosts(data.posts)
+      }
+    } catch (err) {
+      console.error("[v0] Error fetching blog posts:", err)
+    } finally {
+      setIsLoadingBlog(false)
+    }
+  }
+
+  async function fetchUpdatePosts() {
+    setIsLoadingUpdates(true)
+    try {
+      const res = await fetch("/api/admin/updates")
+      const data = await res.json()
+      if (data.updates) {
+        setUpdatePosts(data.updates)
+      }
+    } catch (err) {
+      console.error("[v0] Error fetching updates:", err)
+    } finally {
+      setIsLoadingUpdates(false)
+    }
+  }
+
+  async function fetchRaffleData() {
+    setIsLoadingRaffle(true)
+    try {
+      const res = await fetch(`/api/admin/raffle?week=${raffleDate}`)
+      const data = await res.json()
+      setRaffleTickets(data.stats?.entries || [])
+      setRaffleWinner(data.winner || null)
+      setRecentRaffleWinners(data.recentWinners || [])
+      if (data.settings) setRaffleSettings(data.settings)
+    } catch (err) {
+      console.error("[v0] Error fetching raffle data:", err)
+    } finally {
+      setIsLoadingRaffle(false)
+    }
+  }
+
+  async function handleIssueTickets() {
+    if (!raffleIssueUserId || !raffleWagerAmount) return
+    setRaffleStatus(null)
+    try {
+      const body: Record<string, any> = {
+        action: "issue_tickets",
+        userId: raffleIssueUserId,
+        raffleWeek: raffleDate,
+        wagerAmount: parseFloat(raffleWagerAmount),
+      }
+      const res = await fetch("/api/admin/raffle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus(`Issued ${data.ticketCount} ticket(s) for week of ${data.weekFriday}!`)
+        setRaffleIssueUserId("")
+        setRaffleWagerAmount("")
+        fetchRaffleData()
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setRaffleStatus("Error issuing tickets")
+    }
+  }
+
+  async function handleDrawRaffleWinner() {
+    setRaffleStatus(null)
+    if (!confirm("This will randomly select a winner from all tickets. Continue?")) return
+
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "run_draw",
+          raffle_week: raffleDate,
+          prizeAmount: raffleSettings.prize_amount,
+          prizeDescription,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus(`Draw complete! Winner: ${data.winner?.thrill_username || "unknown"} (Ticket #${data.winner?.winning_ticket})`)
+        fetchRaffleData()
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      setRaffleStatus("Error running draw")
+    }
+  }
+
+  async function handleRaffleSettingsSave() {
+    setIsSavingRaffleSettings(true)
+    setRaffleStatus(null)
+    try {
+      const res = await fetch("/api/admin/raffle", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prize_amount: raffleSettings.prize_amount,
+          tickets_per_wager: raffleSettings.tickets_per_wager,
+          is_active: raffleSettings.is_active,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setRaffleStatus("Settings saved!")
+      } else {
+        setRaffleStatus(`Error: ${data.error}`)
+      }
+    } catch {
+      setRaffleStatus("Error saving settings")
+    } finally {
+      setIsSavingRaffleSettings(false)
+    }
+  }
 
   const fetchTickerSettings = async () => {
     try {
@@ -299,72 +468,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     }
   }
 
-  const fetchChristmasRaffle = async () => {
-    setIsLoadingChristmasRaffle(true)
-    try {
-      const response = await fetch("/api/christmas-raffle", {
-        method: "POST",
-      })
-      const data = await response.json()
-
-      if (response.ok && data.players) {
-        setChristmasRafflePlayers(data.players)
-        setTotalRaffleTickets(data.players.reduce((sum: number, p: ChristmasRafflePlayer) => sum + p.raffleTickets, 0))
-      }
-    } catch (err) {
-      console.error("[v0] Error fetching Christmas raffle:", err)
-    } finally {
-      setIsLoadingChristmasRaffle(false)
-    }
-  }
-
-  // Added fetchAdventGifts function
-  const fetchAdventGifts = async () => {
-    setIsLoadingAdventGifts(true)
-    try {
-      const response = await fetch("/api/advent-gifts")
-      const data = await response.json()
-      if (data.gifts) {
-        setAdventGifts(data.gifts)
-      }
-    } catch (error) {
-      console.error("Error fetching advent gifts:", error)
-    } finally {
-      setIsLoadingAdventGifts(false)
-    }
-  }
-
-  // Added handleSaveAdventGift function
-  const handleSaveAdventGift = async (gift: AdventGift) => {
-    setAdventSaveStatus("Saving...")
-    try {
-      const response = await fetch("/api/advent-gifts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          day: gift.day,
-          title: gift.title,
-          description: gift.description,
-          reward: gift.reward,
-          image_url: gift.image_url,
-        }),
-      })
-
-      if (response.ok) {
-        setAdventSaveStatus("Saved!")
-        setEditingGift(null)
-        fetchAdventGifts()
-        setTimeout(() => setAdventSaveStatus(null), 2000)
-      } else {
-        setAdventSaveStatus("Error saving")
-      }
-    } catch (error) {
-      console.error("Error saving advent gift:", error)
-      setAdventSaveStatus("Error saving")
-    }
-  }
-
   const handleForceRefresh = async () => {
     setIsForceRefreshing(true)
     setForceRefreshStatus("Refreshing...")
@@ -375,7 +478,6 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
       if (response.ok && data.success) {
         setForceRefreshStatus("Stats refreshed successfully!")
-        // Reload all data
         window.location.reload()
       } else {
         setForceRefreshStatus(data.message || "Failed to refresh stats")
@@ -396,11 +498,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
   }
 
   const handleCaptureQualifiers = async () => {
-    if (
-      !confirm(
-        "This will capture all players who have met the $50,000 wagering requirement for the upcoming poker night. Continue?",
-      )
-    ) {
+    if (!confirm("This will capture all players who have met the $50,000 wagering requirement for the upcoming poker night. Continue?")) {
       return
     }
 
@@ -450,9 +548,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
   const handleSaveTickerSettings = async () => {
     if (!tickerTableExists) {
-      alert(
-        "Cannot save settings: ticker_settings table not found. Please run scripts/004_add_ticker_settings.sql first.",
-      )
+      alert("Cannot save settings: ticker_settings table not found. Please run scripts/004_add_ticker_settings.sql first.")
       return
     }
 
@@ -470,11 +566,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
 
       if (data.tableExists === false) {
         setTickerTableExists(false)
-        alert(
-          "Cannot save settings: ticker_settings table not found. Please run the SQL script{" +
-            " scripts/004_add_ticker_settings.sql" +
-            "} to enable customization.",
-        )
+        alert("Cannot save settings: ticker_settings table not found. Please run the SQL script to enable customization.")
         return
       }
 
@@ -572,1297 +664,1081 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     setCustomStatsError(null)
 
     try {
-      // The API expects toDate to be exclusive, so we add 1 day
       const toDatePlusOne = new Date(customToDate)
       toDatePlusOne.setDate(toDatePlusOne.getDate() + 1)
       const adjustedToDate = toDatePlusOne.toISOString().split("T")[0]
 
-      const response = await fetch(
-        `/api/daily-leaderboard?uncensored=true&force=true&fromDate=${customFromDate}&toDate=${adjustedToDate}`,
-      )
+      const response = await fetch(`/api/custom-stats?from=${customFromDate}&to=${adjustedToDate}`)
       const data = await response.json()
 
-      if (data.error) {
-        setCustomStatsError(data.error)
-      } else {
+      if (response.ok) {
         setCustomStats(data.leaderboard || [])
-        setCustomStatsDateRange({ fromDate: customFromDate, toDate: customToDate })
+        setCustomStatsDateRange(data.dateRange)
+      } else {
+        setCustomStatsError(data.error || "Failed to fetch stats")
       }
     } catch (error) {
-      setCustomStatsError("Failed to fetch custom stats")
+      console.error("[v0] Error fetching custom stats:", error)
+      setCustomStatsError("An error occurred while fetching stats")
     } finally {
       setIsLoadingCustomStats(false)
     }
   }
 
-  const convertCstToUtc = () => {
-    if (!cstDate || !cstTime) {
-      setConvertedUtc(null)
+  // Blog handlers
+  const handleBlogImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingBlogImage(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (data.url) {
+        setBlogFeaturedImage(data.url)
+      }
+    } catch (err) {
+      console.error("[v0] Error uploading image:", err)
+      alert("Failed to upload image")
+    } finally {
+      setUploadingBlogImage(false)
+    }
+  }
+
+  const handleSaveBlogPost = async () => {
+    if (!blogTitle || !blogContent) {
+      alert("Title and content are required")
       return
     }
 
     try {
-      // Parse the CST time
-      let hour = Number.parseInt(cstTime.split(":")[0])
-      const minute = Number.parseInt(cstTime.split(":")[1]) || 0
+      const method = editingBlogPost ? "PUT" : "POST"
+      const res = await fetch("/api/admin/blog", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingBlogPost?.id,
+          title: blogTitle,
+          slug: blogSlug || blogTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          content: blogContent,
+          excerpt: blogExcerpt,
+          featured_image: blogFeaturedImage,
+          is_published: blogPublished,
+        }),
+      })
 
-      // Convert 12-hour to 24-hour
-      if (cstAmPm === "PM" && hour !== 12) {
-        hour += 12
-      } else if (cstAmPm === "AM" && hour === 12) {
-        hour = 0
+      const data = await res.json()
+      if (data.success) {
+        alert(`Blog post ${editingBlogPost ? "updated" : "created"} successfully!`)
+        resetBlogForm()
+        fetchBlogPosts()
+      } else {
+        alert(`Error: ${data.error}`)
       }
-
-      // Create date in CST
-      const [year, month, day] = cstDate.split("-").map(Number)
-
-      // CST is UTC-6, CDT is UTC-5
-      // For simplicity, we'll assume CST (UTC-6) since that's what the user mentioned
-      // In reality, you'd want to check if DST is in effect
-      const cstOffsetHours = 6
-
-      // Convert to UTC by adding 6 hours
-      let utcHour = hour + cstOffsetHours
-      let utcDay = day
-      let utcMonth = month
-      let utcYear = year
-
-      if (utcHour >= 24) {
-        utcHour -= 24
-        utcDay += 1
-        // Handle month overflow (simplified)
-        const daysInMonth = new Date(utcYear, utcMonth, 0).getDate()
-        if (utcDay > daysInMonth) {
-          utcDay = 1
-          utcMonth += 1
-          if (utcMonth > 12) {
-            utcMonth = 1
-            utcYear += 1
-          }
-        }
-      }
-
-      const utcDateStr = `${utcYear}-${String(utcMonth).padStart(2, "0")}-${String(utcDay).padStart(2, "0")}`
-      const utcTimeStr = `${String(utcHour).padStart(2, "0")}:${String(minute).padStart(2, "0")} UTC`
-
-      setConvertedUtc(`${utcDateStr} ${utcTimeStr}`)
-    } catch (error) {
-      setConvertedUtc("Invalid date/time")
+    } catch (err) {
+      console.error("[v0] Error saving blog post:", err)
+      alert("Failed to save blog post")
     }
   }
 
-  useEffect(() => {
-    convertCstToUtc()
-  }, [cstDate, cstTime, cstAmPm])
+  const handleEditBlogPost = (post: BlogPost) => {
+    setEditingBlogPost(post)
+    setBlogTitle(post.title)
+    setBlogSlug(post.slug)
+    setBlogContent(post.content)
+    setBlogExcerpt(post.excerpt || "")
+    setBlogFeaturedImage(post.featured_image || "")
+    setBlogPublished(post.is_published)
+  }
+
+  const handleDeleteBlogPost = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this blog post?")) return
+
+    try {
+      const res = await fetch(`/api/admin/blog?id=${id}`, {
+        method: "DELETE",
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert("Blog post deleted!")
+        fetchBlogPosts()
+      }
+    } catch (err) {
+      alert("Failed to delete blog post")
+    }
+  }
+
+  const resetBlogForm = () => {
+    setEditingBlogPost(null)
+    setBlogTitle("")
+    setBlogSlug("")
+    setBlogContent("")
+    setBlogExcerpt("")
+    setBlogFeaturedImage("")
+    setBlogPublished(false)
+  }
+
+  // Update handlers
+  const handleUpdateIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingUpdateIcon(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (data.url) {
+        setUpdateIcon(data.url)
+      }
+    } catch (err) {
+      console.error("[v0] Error uploading icon:", err)
+      alert("Failed to upload icon")
+    } finally {
+      setUploadingUpdateIcon(false)
+    }
+  }
+
+  const handleSaveUpdate = async () => {
+    if (!updateTitle || !updateDescription) {
+      alert("Title and description are required")
+      return
+    }
+
+    try {
+      const method = editingUpdate ? "PUT" : "POST"
+      const res = await fetch("/api/admin/updates", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingUpdate?.id,
+          title: updateTitle,
+          description: updateDescription,
+          icon_url: updateIcon,
+          is_active: updateActive,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.success) {
+        alert(`Update ${editingUpdate ? "saved" : "created"} successfully!`)
+        resetUpdateForm()
+        fetchUpdatePosts()
+      } else {
+        alert(`Error: ${data.error}`)
+      }
+    } catch (err) {
+      console.error("[v0] Error saving update:", err)
+      alert("Failed to save update")
+    }
+  }
+
+  const handleEditUpdate = (update: UpdatePost) => {
+    setEditingUpdate(update)
+    setUpdateTitle(update.title)
+    setUpdateDescription(update.description)
+    setUpdateIcon(update.icon_url || "")
+    setUpdateActive(update.is_active)
+  }
+
+  const handleDeleteUpdate = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this update?")) return
+
+    try {
+      const res = await fetch(`/api/admin/updates?id=${id}`, {
+        method: "DELETE",
+      })
+      const data = await res.json()
+      if (data.success) {
+        alert("Update deleted!")
+        fetchUpdatePosts()
+      }
+    } catch (err) {
+      alert("Failed to delete update")
+    }
+  }
+
+  const resetUpdateForm = () => {
+    setEditingUpdate(null)
+    setUpdateTitle("")
+    setUpdateDescription("")
+    setUpdateIcon("")
+    setUpdateActive(true)
+  }
 
   const filteredProfiles = profiles.filter((profile) => {
     const query = searchQuery.toLowerCase()
     return (
-      profile.display_name?.toLowerCase().includes(query) ||
       profile.thrill_username?.toLowerCase().includes(query) ||
-      profile.id.toLowerCase().includes(query) ||
-      profile.pokernow_username?.toLowerCase().includes(query) ||
-      profile.telegram_username?.toLowerCase().includes(query)
+      profile.display_name?.toLowerCase().includes(query) ||
+      profile.id.toLowerCase().includes(query)
     )
   })
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat("en-US").format(value)
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
-
-  const formatPokerNightDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      timeZone: "America/Chicago",
-      timeZoneName: "short",
-    })
-  }
-
-  const totalUsers = profiles.length
-  const verifiedUsers = profiles.filter((p) => p.thrill_username_verified).length
-  const totalLinks = profiles.filter((p) => p.thrill_username).length
-  const totalWager = Object.values(userStats).reduce((sum, stats) => sum + stats.wager, 0)
-  const totalPrizes = Object.values(userStats).reduce((sum, stats) => sum + stats.prize, 0)
-
-  // Added Advent Gifts tab to tabs array
-  const tabs = [
-    { id: "users" as const, label: "User Management", icon: Users },
-    { id: "daily" as const, label: "24hr Race", icon: Clock }, // Added 24hr tab
-    { id: "custom" as const, label: "Custom Stats", icon: Calculator }, // New tab
-    { id: "rewards" as const, label: "Rewards", icon: Gift },
-    { id: "announcements" as const, label: "Announcements", icon: Bell },
-    { id: "poker" as const, label: "Poker Night", icon: Gamepad2 },
-    { id: "christmas" as const, label: "Christmas Raffle", icon: Gift },
-    { id: "advent" as const, label: "Advent Gifts", icon: Calendar }, // Added Advent Gifts tab
-    { id: "settings" as const, label: "Settings", icon: Settings },
-  ]
-
   return (
-    <div className="min-h-screen bg-black font-sans">
-      <div className="relative z-10">
-        <SiteNavigation currentPage="admin" />
+    <div className="min-h-screen bg-background">
+      <SiteNavigation user={user} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-teal-500 mb-8 uppercase text-center">ADMIN DASHBOARD</h1>
-
-          {/* Statistics Overview Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <Card
-              className="p-4 rounded-xl border border-teal-500/50 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-              }}
-            >
-              <p className="text-gray-400 text-xs uppercase mb-2">Total Users</p>
-              <p className="text-3xl font-bold text-teal-500">{totalUsers}</p>
-            </Card>
-            <Card
-              className="p-4 rounded-xl border border-teal-500/50 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-              }}
-            >
-              <p className="text-gray-400 text-xs uppercase mb-2">Verified</p>
-              <p className="text-3xl font-bold text-green-500">{verifiedUsers}</p>
-            </Card>
-            <Card
-              className="p-4 rounded-xl border border-teal-500/50 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-              }}
-            >
-              <p className="text-gray-400 text-xs uppercase mb-2">Linked</p>
-              <p className="text-3xl font-bold text-blue-500">{totalLinks}</p>
-            </Card>
-            <Card
-              className="p-4 rounded-xl border border-teal-500/50 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-              }}
-            >
-              <p className="text-gray-400 text-xs uppercase mb-2">Total Wager</p>
-              <p className="text-2xl font-bold text-white">{formatCurrency(totalWager)}</p>
-            </Card>
-            <Card
-              className="p-4 rounded-xl border border-teal-500/50 text-center"
-              style={{
-                backgroundColor: "rgba(10, 10, 10, 0.95)",
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-              }}
-            >
-              <p className="text-gray-400 text-xs uppercase mb-2">Total Prizes</p>
-              <p className="text-2xl font-bold text-yellow-500">{formatCurrency(totalPrizes)}</p>
-            </Card>
-          </div>
-
-          <div className="flex justify-end mb-4">
-            <Button
-              onClick={handleForceRefresh}
-              disabled={isForceRefreshing}
-              className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isForceRefreshing ? "animate-spin" : ""}`} />
-              {isForceRefreshing ? "Refreshing..." : "Force Pull Stats"}
-            </Button>
-            {forceRefreshStatus && (
-              <span
-                className={`ml-4 text-sm self-center ${forceRefreshStatus.includes("success") ? "text-green-500" : "text-yellow-500"}`}
-              >
-                {forceRefreshStatus}
-              </span>
-            )}
-          </div>
-
-          {/* Tabbed Navigation */}
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-2 bg-[#1a1a1a] p-2 rounded-xl border border-teal-500/30">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-lg font-bold uppercase text-sm transition-all duration-200 ${
-                      activeTab === tab.id
-                        ? "bg-teal-500 text-black shadow-lg"
-                        : "text-gray-300 hover:text-white hover:bg-gray-800/50"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden md:inline">{tab.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Tab Panels */}
-          {activeTab === "users" && (
-            <div className="space-y-6">
-              {/* User Management Section */}
-              <UserManagementSection profiles={filteredProfiles} onRefresh={() => router.refresh()} />
-
-              {/* Unlink All Button */}
-              <Button
-                onClick={handleUnlinkAll}
-                disabled={isUnlinkingAll || totalLinks === 0}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold uppercase text-lg py-6 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isUnlinkingAll ? "Unlinking All Accounts..." : `Unlink All Accounts (${totalLinks} linked)`}
-              </Button>
-
-              {/* Search Bar */}
-              <Card
-                className="p-4 rounded-xl border border-white/30"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
-                }}
-              >
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search by display name, Thrill username, PokerNow username, Telegram username, or user ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-[#1a1a1a] border-[#333] text-white"
-                  />
-                </div>
-              </Card>
-
-              {/* User List */}
-              {/* The detailed user cards with leaderboard rankings are no longer shown here */}
-              {/* This section is now handled by UserManagementSection */}
-            </div>
-          )}
-
-          {activeTab === "daily" && (
-            <div className="space-y-6">
-              <Card
-                className="p-6 rounded-xl border border-amber-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(245, 158, 11, 0.25)",
-                }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-amber-500 uppercase mb-2">24 Hour Wager Race</h2>
-                    <p className="text-gray-400 text-sm">
-                      Top 20 players by wager amount today (Midnight UTC - Midnight UTC)
-                    </p>
-                    {dailyDateRange && (
-                      <p className="text-gray-500 text-xs mt-1">
-                        Date range: {dailyDateRange.fromDate} to {dailyDateRange.toDate}
-                      </p>
-                    )}
-                    {dailyLastUpdated && (
-                      <p className="text-amber-500/70 text-xs mt-1">
-                        Last updated: {new Date(dailyLastUpdated).toLocaleString()} (auto-refreshes every 2 min)
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    onClick={() => fetchDailyLeaderboard(true)}
-                    disabled={isLoadingDailyLeaderboard}
-                    className="bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl"
-                  >
-                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingDailyLeaderboard ? "animate-spin" : ""}`} />
-                    Force Refresh
-                  </Button>
-                </div>
-
-                {isLoadingDailyLeaderboard ? (
-                  <div className="text-center py-8">
-                    <RefreshCw className="h-8 w-8 animate-spin text-amber-500 mx-auto mb-2" />
-                    <p className="text-gray-400">Loading daily leaderboard...</p>
-                  </div>
-                ) : dailyLeaderboard.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Clock className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">No wager data for today yet</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-amber-500/30">
-                          <th className="text-left py-3 px-4 text-amber-500 font-bold uppercase text-sm">Rank</th>
-                          <th className="text-left py-3 px-4 text-amber-500 font-bold uppercase text-sm">Username</th>
-                          <th className="text-right py-3 px-4 text-amber-500 font-bold uppercase text-sm">
-                            Wager (USD)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dailyLeaderboard.map((player, index) => (
-                          <tr
-                            key={player.username}
-                            className={`border-b border-gray-800 ${index < 3 ? "bg-amber-500/10" : ""}`}
-                          >
-                            <td className="py-3 px-4">
-                              <span
-                                className={`font-bold ${
-                                  index === 0
-                                    ? "text-yellow-400"
-                                    : index === 1
-                                      ? "text-gray-300"
-                                      : index === 2
-                                        ? "text-amber-600"
-                                        : "text-gray-400"
-                                }`}
-                              >
-                                #{player.rank}
-                              </span>
-                            </td>
-                            <td className="py-3 px-4 text-white font-medium">{player.username}</td>
-                            <td className="py-3 px-4 text-right text-amber-400 font-bold">
-                              ${player.wager.toLocaleString()}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* Daily Summary Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-amber-500/30">
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Total Players</p>
-                    <p className="text-2xl font-bold text-white">{dailyLeaderboard.length}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Total Wagered</p>
-                    <p className="text-2xl font-bold text-amber-500">
-                      ${dailyLeaderboard.reduce((sum, p) => sum + p.wager, 0).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
-                    <p className="text-2xl font-bold text-yellow-400">
-                      ${(dailyLeaderboard[0]?.wager || 0).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-gray-400 text-xs uppercase mb-1">Avg Wager</p>
-                    <p className="text-2xl font-bold text-gray-300">
-                      $
-                      {dailyLeaderboard.length > 0
-                        ? Math.round(
-                            dailyLeaderboard.reduce((sum, p) => sum + p.wager, 0) / dailyLeaderboard.length,
-                          ).toLocaleString()
-                        : 0}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {/* Custom Stats tab panel */}
-          {activeTab === "custom" && (
-            <div className="space-y-6">
-              {/* Timezone Converter Card */}
-              <Card
-                className="p-6 rounded-xl border border-purple-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.25)",
-                }}
-              >
-                <h2 className="text-xl font-bold text-purple-500 uppercase mb-4">CST to UTC Converter</h2>
-                <p className="text-gray-400 text-sm mb-4">
-                  Convert your local CST time to UTC for API queries. The Thrill API only accepts dates (not times), so
-                  use this to figure out which UTC dates to query.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">Date (CST)</label>
-                    <input
-                      type="date"
-                      value={cstDate}
-                      onChange={(e) => setCstDate(e.target.value)}
-                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">Time (CST)</label>
-                    <input
-                      type="text"
-                      placeholder="HH:MM"
-                      value={cstTime}
-                      onChange={(e) => setCstTime(e.target.value)}
-                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">AM/PM</label>
-                    <select
-                      value={cstAmPm}
-                      onChange={(e) => setCstAmPm(e.target.value as "AM" | "PM")}
-                      className="w-full bg-[#1a1a1a] border border-purple-500/30 rounded-lg px-4 py-2 text-white"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">UTC Result</label>
-                    <div className="w-full bg-[#0a0a0a] border border-purple-500/50 rounded-lg px-4 py-2 text-purple-400 font-mono">
-                      {convertedUtc || "Enter date/time"}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-[#1a1a1a] rounded-lg p-4 text-sm">
-                  <p className="text-gray-400 mb-2">
-                    <strong className="text-purple-400">Remember:</strong> The API uses exclusive end dates.
-                  </p>
-                  <p className="text-gray-400">
-                    To get stats for Dec 2, 2025 (midnight to midnight UTC), query:
-                    <code className="text-purple-400 ml-2">fromDate=2025-12-02 toDate=2025-12-03</code>
-                  </p>
-                </div>
-              </Card>
-
-              {/* Custom Stats Query Card */}
-              <Card
-                className="p-6 rounded-xl border border-cyan-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.25)",
-                }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-cyan-500 uppercase mb-2">Custom Date Range Stats</h2>
-                    <p className="text-gray-400 text-sm">
-                      Pull leaderboard stats for any date range. Dates are in UTC.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">From Date (UTC)</label>
-                    <input
-                      type="date"
-                      value={customFromDate}
-                      onChange={(e) => setCustomFromDate(e.target.value)}
-                      className="w-full bg-[#1a1a1a] border border-cyan-500/30 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-400 text-sm mb-2">To Date (UTC)</label>
-                    <input
-                      type="date"
-                      value={customToDate}
-                      onChange={(e) => setCustomToDate(e.target.value)}
-                      className="w-full bg-[#1a1a1a] border border-cyan-500/30 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div className="flex items-end">
-                    <Button
-                      onClick={fetchCustomStats}
-                      disabled={isLoadingCustomStats || !customFromDate || !customToDate}
-                      className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl"
-                    >
-                      <Search className={`h-4 w-4 mr-2 ${isLoadingCustomStats ? "animate-spin" : ""}`} />
-                      {isLoadingCustomStats ? "Loading..." : "Pull Stats"}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Quick presets */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="text-gray-400 text-sm">Quick presets:</span>
-                  <button
-                    onClick={() => {
-                      const now = new Date()
-                      const today = now.toISOString().split("T")[0]
-                      setCustomFromDate(today)
-                      setCustomToDate(today)
-                    }}
-                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
-                  >
-                    Today
-                  </button>
-                  <button
-                    onClick={() => {
-                      const now = new Date()
-                      const yesterday = new Date(now)
-                      yesterday.setDate(yesterday.getDate() - 1)
-                      setCustomFromDate(yesterday.toISOString().split("T")[0])
-                      setCustomToDate(yesterday.toISOString().split("T")[0])
-                    }}
-                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
-                  >
-                    Yesterday
-                  </button>
-                  <button
-                    onClick={() => {
-                      const now = new Date()
-                      const weekAgo = new Date(now)
-                      weekAgo.setDate(weekAgo.getDate() - 7)
-                      setCustomFromDate(weekAgo.toISOString().split("T")[0])
-                      setCustomToDate(now.toISOString().split("T")[0])
-                    }}
-                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
-                  >
-                    Last 7 Days
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCustomFromDate("2025-12-01")
-                      setCustomToDate("2025-12-25")
-                    }}
-                    className="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-lg text-sm hover:bg-cyan-500/30"
-                  >
-                    Christmas (Dec 1-25)
-                  </button>
-                </div>
-
-                {customStatsError && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
-                    <p className="text-red-400">{customStatsError}</p>
-                  </div>
-                )}
-
-                {customStatsDateRange && (
-                  <p className="text-gray-500 text-xs mb-4">
-                    Showing results for: {customStatsDateRange.fromDate} to {customStatsDateRange.toDate} (UTC)
-                  </p>
-                )}
-
-                {isLoadingCustomStats ? (
-                  <div className="text-center py-8">
-                    <RefreshCw className="h-8 w-8 animate-spin text-cyan-500 mx-auto mb-2" />
-                    <p className="text-gray-400">Loading custom stats...</p>
-                  </div>
-                ) : customStats.length === 0 && customStatsDateRange ? (
-                  <div className="text-center py-8">
-                    <Calendar className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">No wager data found for this date range</p>
-                  </div>
-                ) : customStats.length > 0 ? (
-                  <>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-cyan-500/30">
-                            <th className="text-left py-3 px-4 text-cyan-500 font-bold uppercase text-sm">Rank</th>
-                            <th className="text-left py-3 px-4 text-cyan-500 font-bold uppercase text-sm">Username</th>
-                            <th className="text-right py-3 px-4 text-cyan-500 font-bold uppercase text-sm">
-                              Wager (USD)
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {customStats.map((player, index) => (
-                            <tr
-                              key={player.username}
-                              className={`border-b border-gray-800 ${index < 3 ? "bg-cyan-500/10" : ""}`}
-                            >
-                              <td className="py-3 px-4">
-                                <span
-                                  className={`font-bold ${
-                                    index === 0
-                                      ? "text-yellow-400"
-                                      : index === 1
-                                        ? "text-gray-300"
-                                        : index === 2
-                                          ? "text-amber-600"
-                                          : "text-gray-400"
-                                  }`}
-                                >
-                                  #{player.rank}
-                                </span>
-                              </td>
-                              <td className="py-3 px-4 text-white font-medium">{player.username}</td>
-                              <td className="py-3 px-4 text-right text-cyan-400 font-bold">
-                                ${player.wager.toLocaleString()}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Summary Stats */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-cyan-500/30">
-                      <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase mb-1">Total Players</p>
-                        <p className="text-2xl font-bold text-white">{customStats.length}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase mb-1">Total Wagered</p>
-                        <p className="text-2xl font-bold text-cyan-500">
-                          ${customStats.reduce((sum, p) => sum + p.wager, 0).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase mb-1">Top Wager</p>
-                        <p className="text-2xl font-bold text-yellow-400">
-                          ${(customStats[0]?.wager || 0).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-gray-400 text-xs uppercase mb-1">Avg Wager</p>
-                        <p className="text-2xl font-bold text-gray-300">
-                          $
-                          {customStats.length > 0
-                            ? Math.round(
-                                customStats.reduce((sum, p) => sum + p.wager, 0) / customStats.length,
-                              ).toLocaleString()
-                            : 0}
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "rewards" && (
-            <div>
-              <RewardsManagementSection />
-            </div>
-          )}
-
-          {activeTab === "announcements" && (
-            <div className="space-y-6">
-              {/* News Ticker Customization */}
-              <Card
-                className="p-6 rounded-xl border border-teal-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-                }}
-              >
-                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">News Ticker Customization</h2>
-
-                {!tickerTableExists && (
-                  <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-yellow-500 font-bold mb-1">Database Table Missing</p>
-                      <p className="text-yellow-200 text-sm">
-                        The ticker_settings table doesn't exist yet. Please run the SQL script{" "}
-                        <code className="bg-black/30 px-2 py-0.5 rounded">scripts/004_add_ticker_settings.sql</code> to
-                        enable customization.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Live Preview */}
-                <div className="mb-6">
-                  <Label className="text-white mb-2 block">Live Preview</Label>
-                  <div
-                    className="w-full py-3 px-4 overflow-hidden relative rounded-lg"
-                    style={{
-                      background: tickerSettings.background_gradient || tickerSettings.background_color,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-black/20" />
-                    <div className="relative z-10 text-center">
-                      <p
-                        style={{
-                          color: tickerSettings.text_color,
-                          fontFamily: tickerSettings.font_family,
-                          fontSize: tickerSettings.font_size,
-                          fontWeight: tickerSettings.font_weight,
-                        }}
-                      >
-                        {announcements.find((a) => a.is_active)?.message ||
-                          "🎰 Get your $50,000 wager in by Sunday's deadline for Monthly Poker Night! 🃏"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  {/* Text Color */}
-                  <div>
-                    <Label htmlFor="text-color" className="text-white mb-2 block">
-                      Text Color
-                    </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="text-color"
-                        type="color"
-                        value={tickerSettings.text_color}
-                        onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
-                        className="w-20 h-10"
-                      />
-                      <Input
-                        type="text"
-                        value={tickerSettings.text_color}
-                        onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
-                        className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                        placeholder="#ffffff"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Background Color */}
-                  <div>
-                    <Label htmlFor="bg-color" className="text-white mb-2 block">
-                      Background Color
-                    </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="bg-color"
-                        type="color"
-                        value={tickerSettings.background_color}
-                        onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
-                        className="w-20 h-10"
-                      />
-                      <Input
-                        type="text"
-                        value={tickerSettings.background_color}
-                        onChange={(e) => setTickerSettings({ ...tickerSettings, background_color: e.target.value })}
-                        className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                        placeholder="#6366f1"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Background Gradient */}
-                  <div className="md:col-span-2">
-                    <Label htmlFor="bg-gradient" className="text-white mb-2 block">
-                      Background Gradient (CSS)
-                    </Label>
-                    <Input
-                      id="bg-gradient"
-                      type="text"
-                      value={tickerSettings.background_gradient}
-                      onChange={(e) => setTickerSettings({ ...tickerSettings, background_gradient: e.target.value })}
-                      className="bg-[#1a1a1a] border border-[#333] text-white"
-                      placeholder="linear-gradient(to right, #6366f1, #a855f7, #6366f1)"
-                    />
-                  </div>
-
-                  {/* Speed */}
-                  <div>
-                    <Label htmlFor="speed" className="text-white mb-2 block">
-                      Speed (milliseconds)
-                    </Label>
-                    <Input
-                      id="speed"
-                      type="number"
-                      value={tickerSettings.speed}
-                      onChange={(e) =>
-                        setTickerSettings({ ...tickerSettings, speed: Number.parseInt(e.target.value) || 8000 })
-                      }
-                      className="bg-[#1a1a1a] border border-[#333] text-white"
-                      min="1000"
-                      max="30000"
-                      step="1000"
-                    />
-                  </div>
-
-                  {/* Font Family */}
-                  <div>
-                    <Label htmlFor="font-family" className="text-white mb-2 block">
-                      Font Family
-                    </Label>
-                    <Input
-                      id="font-family"
-                      type="text"
-                      value={tickerSettings.font_family}
-                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_family: e.target.value })}
-                      className="bg-[#1a1a1a] border border-[#333] text-white"
-                      placeholder="inherit"
-                    />
-                  </div>
-
-                  {/* Font Size */}
-                  <div>
-                    <Label htmlFor="font-size" className="text-white mb-2 block">
-                      Font Size
-                    </Label>
-                    <Input
-                      id="font-size"
-                      type="text"
-                      value={tickerSettings.font_size}
-                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_size: e.target.value })}
-                      className="bg-[#1a1a1a] border border-[#333] text-white"
-                      placeholder="1rem"
-                    />
-                  </div>
-
-                  {/* Font Weight */}
-                  <div>
-                    <Label htmlFor="font-weight" className="text-white mb-2 block">
-                      Font Weight
-                    </Label>
-                    <select
-                      id="font-weight"
-                      value={tickerSettings.font_weight}
-                      onChange={(e) => setTickerSettings({ ...tickerSettings, font_weight: e.target.value })}
-                      className="w-full bg-[#1a1a1a] border border-[#333] text-white rounded-md px-3 py-2"
-                    >
-                      <option value="normal">Normal</option>
-                      <option value="bold">Bold</option>
-                      <option value="600">Semi-Bold (600)</option>
-                      <option value="700">Bold (700)</option>
-                      <option value="800">Extra Bold (800)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleSaveTickerSettings}
-                  disabled={isSavingSettings || !tickerTableExists}
-                  className="w-full bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50"
-                >
-                  {isSavingSettings
-                    ? "Saving..."
-                    : !tickerTableExists
-                      ? "Table Not Found - Cannot Save"
-                      : "Save Ticker Settings"}
-                </Button>
-              </Card>
-
-              {/* Announcements Management */}
-              <Card
-                className="p-6 rounded-xl border border-teal-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-                }}
-              >
-                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">Manage Announcements</h2>
-
-                {/* Create New Announcement */}
-                <div className="mb-6">
-                  <Label htmlFor="new-announcement" className="text-white mb-2 block">
-                    New Announcement
-                  </Label>
-                  <div className="flex gap-2">
-                    <Textarea
-                      id="new-announcement"
-                      value={newAnnouncement}
-                      onChange={(e) => setNewAnnouncement(e.target.value)}
-                      placeholder="Enter announcement message..."
-                      className="flex-1 bg-[#1a1a1a] border-[#333] text-white"
-                      rows={2}
-                    />
-                    <Button
-                      onClick={handleCreateAnnouncement}
-                      className="bg-teal-500 hover:bg-teal-600 text-black font-bold uppercase rounded-xl"
-                    >
-                      Create
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Announcements List */}
-                <div className="space-y-3">
-                  {isLoadingAnnouncements ? (
-                    <div className="text-center py-8">
-                      <p className="text-gray-400">Loading announcements...</p>
-                    </div>
-                  ) : announcements.length > 0 ? (
-                    announcements.map((announcement) => (
-                      <div
-                        key={announcement.id}
-                        className={`p-4 rounded-lg border transition-all ${
-                          announcement.is_active
-                            ? "bg-[#1a1a1a] border-teal-500/50"
-                            : "bg-[#0a0a0a] border-gray-700 opacity-60"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white mb-2">{announcement.message}</p>
-                            <p className="text-xs text-gray-400">
-                              Created: {new Date(announcement.created_at).toLocaleString()}
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => handleToggleAnnouncement(announcement.id, announcement.is_active)}
-                              size="sm"
-                              className={`${
-                                announcement.is_active
-                                  ? "bg-yellow-600 hover:bg-yellow-700"
-                                  : "bg-teal-500 hover:bg-teal-600"
-                              } text-white font-bold uppercase rounded-lg`}
-                            >
-                              {announcement.is_active ? "Deactivate" : "Activate"}
-                            </Button>
-                            <Button
-                              onClick={() => handleDeleteAnnouncement(announcement.id)}
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded-lg"
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-                      <p className="text-gray-400">No announcements yet</p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "poker" && (
-            <div>
-              <Card
-                className="p-6 rounded-xl border border-[#5cfec0]/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(92, 254, 192, 0.25)",
-                }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-[#5cfec0] uppercase mb-2">Poker Night Qualifiers</h2>
-                    {pokerNightDate && (
-                      <p className="text-gray-400 text-sm">
-                        Next Poker Night:{" "}
-                        <span className="text-white font-semibold">{formatPokerNightDate(pokerNightDate)}</span>
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    onClick={handleCaptureQualifiers}
-                    disabled={isCapturingQualifiers}
-                    className="bg-[#5cfec0] hover:bg-[#4de8ad] text-black font-bold uppercase rounded-xl transition-all duration-300 disabled:opacity-50"
-                  >
-                    {isCapturingQualifiers ? "Capturing..." : "Capture Qualified Players"}
-                  </Button>
-                </div>
-
-                {isLoadingQualifiers ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">Loading qualified players...</p>
-                  </div>
-                ) : pokerQualifiers.length > 0 ? (
-                  <div className="space-y-3">
-                    <p className="text-sm text-gray-400 mb-4">
-                      <Trophy className="inline h-4 w-4 mr-1 text-[#5cfec0]" />
-                      {pokerQualifiers.length} player{pokerQualifiers.length !== 1 ? "s" : ""} qualified for the $1,000
-                      poker tournament
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {pokerQualifiers.map((qualifier) => (
-                        <div
-                          key={qualifier.id}
-                          className="p-4 bg-[#1a1a1a] rounded-lg border border-[#5cfec0]/30 hover:border-[#5cfec0]/60 transition-all"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10 border-2 border-[#5cfec0]">
-                              <AvatarFallback className="bg-[#0a0a0a] text-[#5cfec0] font-bold">
-                                {qualifier.display_name?.charAt(0).toUpperCase() ||
-                                  qualifier.thrill_username.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white font-bold truncate">
-                                {qualifier.display_name || qualifier.thrill_username}
-                              </p>
-                              <p className="text-[#5cfec0] text-sm">@{qualifier.thrill_username}</p>
-                              <p className="text-gray-400 text-xs">{formatCurrency(qualifier.monthly_wager)} wagered</p>
-                            </div>
-                            <CheckCircle className="h-5 w-5 text-[#5cfec0] flex-shrink-0" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
-                    <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-400">No qualified players yet</p>
-                    <p className="text-gray-500 text-sm mt-1">Players need to wager $50,000 to qualify</p>
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "christmas" && (
-            <div className="space-y-6">
-              <Card
-                className="p-6 rounded-xl border"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  borderColor: "rgba(212, 175, 55, 0.5)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.25)",
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <span className="text-3xl">🎄</span>
-                  <h2 className="text-3xl font-bold text-[#D4AF37] uppercase">Christmas Raffle 2025</h2>
-                  <span className="text-3xl">🎁</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <Card
-                    className="p-4 rounded-xl border border-[#D4AF37]/50 text-center"
-                    style={{ backgroundColor: "rgba(20, 20, 20, 0.95)" }}
-                  >
-                    <p className="text-gray-400 text-xs uppercase mb-2">Total Participants</p>
-                    <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isLoadingChristmasRaffle ? "..." : christmasRafflePlayers.length}
-                    </p>
-                  </Card>
-                  <Card
-                    className="p-4 rounded-xl border border-[#B91C1C]/50 text-center"
-                    style={{ backgroundColor: "rgba(20, 20, 20, 0.95)" }}
-                  >
-                    <p className="text-gray-400 text-xs uppercase mb-2">Total Raffle Tickets</p>
-                    <p className="text-3xl font-bold text-[#B91C1C]">
-                      {isLoadingChristmasRaffle ? "..." : totalRaffleTickets}
-                    </p>
-                  </Card>
-                </div>
-
-                <p className="text-gray-400 text-sm text-center mb-4">
-                  December 1-25, 2025 UTC | Every $1,000 wagered = 1 raffle ticket
-                </p>
-
-                {isLoadingChristmasRaffle ? (
-                  <div className="text-center py-8">
-                    <RefreshCw className="h-8 w-8 animate-spin text-[#D4AF37] mx-auto" />
-                    <p className="text-gray-400 mt-2">Loading raffle data...</p>
-                  </div>
-                ) : christmasRafflePlayers.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">No participants yet</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-[#D4AF37]/30">
-                          <th className="text-left py-3 px-4 text-[#D4AF37] font-bold">#</th>
-                          <th className="text-left py-3 px-4 text-[#D4AF37] font-bold">Username</th>
-                          <th className="text-right py-3 px-4 text-[#D4AF37] font-bold">December Wager</th>
-                          <th className="text-right py-3 px-4 text-[#D4AF37] font-bold">Raffle Tickets</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {christmasRafflePlayers.map((player, index) => (
-                          <tr
-                            key={player.username}
-                            className="border-b border-white/10 hover:bg-white/5 transition-colors"
-                          >
-                            <td className="py-3 px-4 text-gray-400">{index + 1}</td>
-                            <td className="py-3 px-4 text-white font-medium">{player.username}</td>
-                            <td className="py-3 px-4 text-right text-[#D4AF37]">{formatCurrency(player.wager)}</td>
-                            <td className="py-3 px-4 text-right">
-                              <span className="bg-[#B91C1C]/20 text-[#B91C1C] px-3 py-1 rounded-full font-bold">
-                                {player.raffleTickets}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {/* Added Advent Gifts tab panel */}
-          {activeTab === "advent" && (
-            <div className="space-y-6">
-              <Card
-                className="p-6 rounded-xl border"
-                style={{
-                  borderColor: "rgba(212, 175, 55, 0.5)",
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.15)",
-                }}
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold uppercase mb-2" style={{ color: "#D4AF37" }}>
-                      Advent Calendar Gifts
-                    </h2>
-                    <p className="text-gray-400 text-sm">
-                      Manage the daily gifts for the Christmas advent calendar. Changes are live immediately.
-                    </p>
-                  </div>
-                  {adventSaveStatus && (
-                    <span
-                      className={`text-sm font-medium ${adventSaveStatus === "Saved!" ? "text-green-500" : adventSaveStatus === "Saving..." ? "text-yellow-500" : "text-red-500"}`}
-                    >
-                      {adventSaveStatus}
-                    </span>
-                  )}
-                </div>
-
-                {isLoadingAdventGifts ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400">Loading advent gifts...</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {adventGifts.map((gift) => (
-                      <div
-                        key={gift.id}
-                        className="p-4 rounded-lg border transition-all hover:border-amber-500/50"
-                        style={{
-                          backgroundColor: "rgba(26, 26, 26, 0.8)",
-                          borderColor:
-                            editingGift?.day === gift.day ? "rgba(212, 175, 55, 0.6)" : "rgba(50, 50, 50, 0.5)",
-                        }}
-                      >
-                        {editingGift?.day === gift.day ? (
-                          // Edit mode
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-2xl font-bold" style={{ color: "#D4AF37" }}>
-                                Day {gift.day}
-                              </span>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleSaveAdventGift(editingGift)}
-                                  style={{ backgroundColor: "#D4AF37", color: "#000" }}
-                                >
-                                  Save
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => setEditingGift(null)}
-                                  className="border-gray-600 text-gray-300"
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                            <Input
-                              value={editingGift.title}
-                              onChange={(e) => setEditingGift({ ...editingGift, title: e.target.value })}
-                              placeholder="Title"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                            <Textarea
-                              value={editingGift.description}
-                              onChange={(e) => setEditingGift({ ...editingGift, description: e.target.value })}
-                              placeholder="Description"
-                              className="bg-[#0a0a0a] border-gray-700 text-white min-h-[80px]"
-                            />
-                            <Input
-                              value={editingGift.reward}
-                              onChange={(e) => setEditingGift({ ...editingGift, reward: e.target.value })}
-                              placeholder="Reward"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                            <Input
-                              value={editingGift.image_url || ""}
-                              onChange={(e) => setEditingGift({ ...editingGift, image_url: e.target.value })}
-                              placeholder="Image URL (optional)"
-                              className="bg-[#0a0a0a] border-gray-700 text-white"
-                            />
-                          </div>
-                        ) : (
-                          // View mode
-                          <div>
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-2xl font-bold" style={{ color: "#D4AF37" }}>
-                                Day {gift.day}
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setEditingGift(gift)}
-                                className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                            <h3 className="text-white font-semibold mb-1">{gift.title}</h3>
-                            <p className="text-gray-400 text-sm mb-2 line-clamp-2">{gift.description}</p>
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="text-amber-500/60">✦</span>
-                              <span className="text-amber-400 font-medium">{gift.reward}</span>
-                            </div>
-                            {gift.image_url && (
-                              <p className="text-gray-500 text-xs mt-2 truncate">Image: {gift.image_url}</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {activeTab === "settings" && (
-            <div>
-              <Card
-                className="p-6 rounded-xl border border-teal-500/50"
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.25)",
-                }}
-              >
-                <h2 className="text-2xl font-bold text-teal-500 uppercase mb-6">Admin Settings</h2>
-                <p className="text-gray-400 mb-4">Additional admin settings and configurations will be added here.</p>
-              </Card>
-            </div>
-          )}
+      <div className="container mx-auto p-6 pt-24">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage users, content, and site settings</p>
         </div>
 
-        <footer className="px-4 mt-8 pb-4">
-          <Card
-            className="max-w-7xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/30 transition-all duration-300 hover:scale-[1.01]"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15)",
-            }}
+        {/* Tab Navigation */}
+        <div className="flex flex-wrap gap-2 mb-6 border-b border-border pb-2">
+          <Button
+            variant={activeTab === "users" ? "default" : "ghost"}
+            onClick={() => setActiveTab("users")}
+            className="gap-2"
           >
-            <div className="text-center">
-              <p className="text-sm text-gray-300 uppercase">© 2025 MANDY.GG ADMIN DASHBOARD</p>
+            <Users className="h-4 w-4" />
+            Users
+          </Button>
+          <Button
+            variant={activeTab === "daily" ? "default" : "ghost"}
+            onClick={() => setActiveTab("daily")}
+            className="gap-2"
+          >
+            <Trophy className="h-4 w-4" />
+            24hr Race
+          </Button>
+          <Button
+            variant={activeTab === "custom" ? "default" : "ghost"}
+            onClick={() => setActiveTab("custom")}
+            className="gap-2"
+          >
+            <Search className="h-4 w-4" />
+            Custom Stats
+          </Button>
+          <Button
+            variant={activeTab === "announcements" ? "default" : "ghost"}
+            onClick={() => setActiveTab("announcements")}
+            className="gap-2"
+          >
+            <Bell className="h-4 w-4" />
+            Announcements
+          </Button>
+          <Button
+            variant={activeTab === "poker" ? "default" : "ghost"}
+            onClick={() => setActiveTab("poker")}
+            className="gap-2"
+          >
+            <Gamepad2 className="h-4 w-4" />
+            Poker Night
+          </Button>
+          <Button
+            variant={activeTab === "raffle" ? "default" : "ghost"}
+            onClick={() => setActiveTab("raffle")}
+            className="gap-2"
+          >
+            <Ticket className="h-4 w-4" />
+            Raffle
+          </Button>
+          <Button
+            variant={activeTab === "blog" ? "default" : "ghost"}
+            onClick={() => setActiveTab("blog")}
+            className="gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            Blog
+          </Button>
+          <Button
+            variant={activeTab === "updates" ? "default" : "ghost"}
+            onClick={() => setActiveTab("updates")}
+            className="gap-2"
+          >
+            <Megaphone className="h-4 w-4" />
+            Updates
+          </Button>
+          <Button
+            variant={activeTab === "settings" ? "default" : "ghost"}
+            onClick={() => setActiveTab("settings")}
+            className="gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            Settings
+          </Button>
+          <Button
+            variant={activeTab === "content" ? "default" : "ghost"}
+            onClick={() => setActiveTab("content")}
+            className="gap-2"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Site Content
+          </Button>
+        </div>
+
+        {/* Users Tab */}
+        {activeTab === "users" && (
+          <UserManagementSection
+            profiles={filteredProfiles}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            userStats={userStats}
+            isLoadingStats={isLoadingStats}
+            selectedPeriod={selectedPeriod}
+            setSelectedPeriod={setSelectedPeriod}
+            handleUnlinkAll={handleUnlinkAll}
+            isUnlinkingAll={isUnlinkingAll}
+          />
+        )}
+
+        {/* Daily 24hr Race Tab */}
+        {activeTab === "daily" && (
+          <Card className="p-6 bg-card border-border">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-card-foreground">24-Hour Race Leaderboard</h2>
+                {dailyDateRange && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {dailyDateRange.fromDate} to {dailyDateRange.toDate}
+                  </p>
+                )}
+                {dailyLastUpdated && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Last updated: {new Date(dailyLastUpdated).toLocaleTimeString()}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => fetchDailyLeaderboard()} disabled={isLoadingDailyLeaderboard} variant="outline">
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingDailyLeaderboard ? "animate-spin" : ""}`} />
+                  Refresh
+                </Button>
+                <Button
+                  onClick={handleForceRefresh}
+                  disabled={isForceRefreshing}
+                  variant="default"
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  {isForceRefreshing ? "Refreshing..." : "Force Refresh"}
+                </Button>
+              </div>
+            </div>
+
+            {forceRefreshStatus && (
+              <div className="mb-4 p-3 bg-accent rounded-md text-accent-foreground">{forceRefreshStatus}</div>
+            )}
+
+            {isLoadingDailyLeaderboard ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : dailyLeaderboard.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No data available</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Rank</th>
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Username</th>
+                      <th className="text-right p-3 text-muted-foreground font-semibold">Wager</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dailyLeaderboard.map((player, idx) => (
+                      <tr key={idx} className="border-b border-border/50 hover:bg-accent/50">
+                        <td className="p-3 text-card-foreground font-medium">#{player.rank}</td>
+                        <td className="p-3 text-card-foreground">{player.username}</td>
+                        <td className="p-3 text-right text-card-foreground">${player.wager.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Custom Stats Tab */}
+        {activeTab === "custom" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Custom Date Range Stats</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div>
+                <Label htmlFor="customFromDate" className="text-muted-foreground">From Date</Label>
+                <Input
+                  id="customFromDate"
+                  type="date"
+                  value={customFromDate}
+                  onChange={(e) => setCustomFromDate(e.target.value)}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div>
+                <Label htmlFor="customToDate" className="text-muted-foreground">To Date</Label>
+                <Input
+                  id="customToDate"
+                  type="date"
+                  value={customToDate}
+                  onChange={(e) => setCustomToDate(e.target.value)}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="flex items-end">
+                <Button onClick={fetchCustomStats} disabled={isLoadingCustomStats} className="w-full">
+                  {isLoadingCustomStats ? "Loading..." : "Fetch Stats"}
+                </Button>
+              </div>
+            </div>
+
+            {customStatsError && (
+              <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md">{customStatsError}</div>
+            )}
+
+            {customStatsDateRange && (
+              <p className="text-sm text-muted-foreground mb-4">
+                Showing stats from {customStatsDateRange.fromDate} to {customStatsDateRange.toDate}
+              </p>
+            )}
+
+            {customStats.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Rank</th>
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Username</th>
+                      <th className="text-right p-3 text-muted-foreground font-semibold">Wager</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {customStats.map((player, idx) => (
+                      <tr key={idx} className="border-b border-border/50 hover:bg-accent/50">
+                        <td className="p-3 text-card-foreground font-medium">#{player.rank}</td>
+                        <td className="p-3 text-card-foreground">{player.username}</td>
+                        <td className="p-3 text-right text-card-foreground">${player.wager.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Announcements Tab */}
+        {activeTab === "announcements" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Site Announcements</h2>
+
+            <div className="mb-6">
+              <Label htmlFor="newAnnouncement" className="text-muted-foreground">New Announcement</Label>
+              <div className="flex gap-2 mt-2">
+                <Textarea
+                  id="newAnnouncement"
+                  value={newAnnouncement}
+                  onChange={(e) => setNewAnnouncement(e.target.value)}
+                  placeholder="Enter announcement message..."
+                  className="bg-background border-border text-foreground"
+                  rows={3}
+                />
+                <Button onClick={handleCreateAnnouncement} className="self-end">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Create
+                </Button>
+              </div>
+            </div>
+
+            {isLoadingAnnouncements ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : announcements.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No announcements yet</div>
+            ) : (
+              <div className="space-y-3">
+                {announcements.map((announcement) => (
+                  <div
+                    key={announcement.id}
+                    className="flex items-center justify-between p-4 bg-accent/30 rounded-lg border border-border"
+                  >
+                    <div className="flex-1">
+                      <p className="text-card-foreground">{announcement.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(announcement.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={announcement.is_active ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleToggleAnnouncement(announcement.id, announcement.is_active)}
+                      >
+                        {announcement.is_active ? "Active" : "Inactive"}
+                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteAnnouncement(announcement.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Poker Night Tab */}
+        {activeTab === "poker" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Poker Night Qualifiers</h2>
+
+            <div className="mb-6 p-4 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-2">Next Poker Night</h3>
+              <p className="text-muted-foreground mb-4">
+                {pokerNightDate || "No upcoming poker night scheduled"}
+              </p>
+              <Button onClick={handleCaptureQualifiers} disabled={isCapturingQualifiers} className="gap-2">
+                <Gamepad2 className="h-4 w-4" />
+                {isCapturingQualifiers ? "Capturing..." : "Capture Current Qualifiers"}
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                This will snapshot all users with $50,000+ monthly wager
+              </p>
+            </div>
+
+            {isLoadingQualifiers ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : pokerQualifiers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No qualifiers captured yet</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Thrill Username</th>
+                      <th className="text-left p-3 text-muted-foreground font-semibold">Display Name</th>
+                      <th className="text-right p-3 text-muted-foreground font-semibold">Monthly Wager</th>
+                      <th className="text-right p-3 text-muted-foreground font-semibold">Qualified Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pokerQualifiers.map((q) => (
+                      <tr key={q.id} className="border-b border-border/50 hover:bg-accent/50">
+                        <td className="p-3 text-card-foreground font-medium">{q.thrill_username}</td>
+                        <td className="p-3 text-card-foreground">{q.display_name || "—"}</td>
+                        <td className="p-3 text-right text-card-foreground">${q.monthly_wager.toLocaleString()}</td>
+                        <td className="p-3 text-right text-muted-foreground">
+                          {new Date(q.qualification_date).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Raffle Tab */}
+        {activeTab === "raffle" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Weekly Raffle Management</h2>
+
+            {raffleStatus && <div className="mb-4 p-3 bg-accent rounded-md text-accent-foreground">{raffleStatus}</div>}
+
+            {/* Raffle Settings */}
+            <div className="mb-6 p-4 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-4">Raffle Settings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <Label className="text-muted-foreground">Prize Amount ($)</Label>
+                  <Input
+                    type="number"
+                    value={raffleSettings.prize_amount}
+                    onChange={(e) => setRaffleSettings({ ...raffleSettings, prize_amount: parseFloat(e.target.value) })}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Tickets Per $</Label>
+                  <Input
+                    type="number"
+                    value={raffleSettings.tickets_per_wager}
+                    onChange={(e) =>
+                      setRaffleSettings({ ...raffleSettings, tickets_per_wager: parseFloat(e.target.value) })
+                    }
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={handleRaffleSettingsSave} disabled={isSavingRaffleSettings} className="w-full">
+                    {isSavingRaffleSettings ? "Saving..." : "Save Settings"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Week Selector */}
+            <div className="mb-6">
+              <Label htmlFor="raffleDate" className="text-muted-foreground">Select Raffle Week (Friday)</Label>
+              <Input
+                id="raffleDate"
+                type="date"
+                value={raffleDate}
+                onChange={(e) => setRaffleDate(e.target.value)}
+                className="bg-background border-border text-foreground mt-2"
+              />
+            </div>
+
+            {/* Issue Tickets */}
+            <div className="mb-6 p-4 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-4">Issue Tickets Manually</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">User ID</Label>
+                  <Input
+                    value={raffleIssueUserId}
+                    onChange={(e) => setRaffleIssueUserId(e.target.value)}
+                    placeholder="Enter user UUID"
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Wager Amount ($)</Label>
+                  <Input
+                    type="number"
+                    value={raffleWagerAmount}
+                    onChange={(e) => setRaffleWagerAmount(e.target.value)}
+                    placeholder="e.g. 5000"
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={handleIssueTickets} className="w-full">
+                    Issue Tickets
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Draw Winner */}
+            <div className="mb-6 p-4 bg-primary/10 rounded-lg border border-primary/30">
+              <h3 className="font-semibold text-card-foreground mb-4">Draw Winner (Random & Fair)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">Prize Description</Label>
+                  <Input
+                    value={prizeDescription}
+                    onChange={(e) => setPrizeDescription(e.target.value)}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={handleDrawRaffleWinner} className="w-full bg-primary hover:bg-primary/90">
+                    <Ticket className="h-4 w-4 mr-2" />
+                    Draw Random Winner
+                  </Button>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Uses cryptographically secure random selection from all tickets
+              </p>
+            </div>
+
+            {/* Current Week Stats */}
+            {isLoadingRaffle ? (
+              <div className="text-center py-8 text-muted-foreground">Loading raffle data...</div>
+            ) : (
+              <>
+                {raffleWinner && (
+                  <div className="mb-6 p-4 bg-accent rounded-lg border border-border">
+                    <h3 className="font-semibold text-card-foreground mb-2">Winner for {raffleDate}</h3>
+                    <p className="text-muted-foreground">
+                      {raffleWinner.thrill_username} - Ticket #{raffleWinner.winning_ticket}
+                    </p>
+                    <p className="text-muted-foreground text-sm">Prize: ${raffleWinner.prize_amount}</p>
+                    <p className="text-muted-foreground text-sm">
+                      Status: {raffleWinner.prize_claimed ? "Claimed" : "Unclaimed"}
+                    </p>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <h3 className="font-semibold text-card-foreground mb-2">
+                    Ticket Entries ({raffleTickets.length} users, {raffleTickets.reduce((sum, e) => sum + e.ticket_count, 0)} total tickets)
+                  </h3>
+                </div>
+
+                {raffleTickets.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left p-3 text-muted-foreground font-semibold">Username</th>
+                          <th className="text-right p-3 text-muted-foreground font-semibold">Tickets</th>
+                          <th className="text-right p-3 text-muted-foreground font-semibold">Wager</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {raffleTickets.map((entry, idx) => (
+                          <tr key={idx} className="border-b border-border/50 hover:bg-accent/50">
+                            <td className="p-3 text-card-foreground">{entry.thrill_username}</td>
+                            <td className="p-3 text-right text-card-foreground">{entry.ticket_count}</td>
+                            <td className="p-3 text-right text-muted-foreground">${entry.wager_amount.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+          </Card>
+        )}
+
+        {/* Blog Tab */}
+        {activeTab === "blog" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Blog Post Editor</h2>
+
+            {/* Blog Editor Form */}
+            <div className="mb-8 p-6 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-4">
+                {editingBlogPost ? "Edit Blog Post" : "Create New Post"}
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-muted-foreground">Title *</Label>
+                  <Input
+                    value={blogTitle}
+                    onChange={(e) => setBlogTitle(e.target.value)}
+                    placeholder="Enter post title"
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Slug</Label>
+                  <Input
+                    value={blogSlug}
+                    onChange={(e) => setBlogSlug(e.target.value)}
+                    placeholder="url-friendly-slug (auto-generated if empty)"
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Excerpt (Short Description)</Label>
+                  <Textarea
+                    value={blogExcerpt}
+                    onChange={(e) => setBlogExcerpt(e.target.value)}
+                    placeholder="Brief summary for preview cards"
+                    className="bg-background border-border text-foreground"
+                    rows={2}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Featured Image</Label>
+                  <div className="flex gap-2 items-end mt-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBlogImageUpload}
+                      disabled={uploadingBlogImage}
+                      className="bg-background border-border text-foreground"
+                    />
+                    {uploadingBlogImage && <span className="text-sm text-muted-foreground">Uploading...</span>}
+                  </div>
+                  {blogFeaturedImage && (
+                    <div className="mt-2">
+                      <img src={blogFeaturedImage} alt="Featured" className="w-32 h-32 object-cover rounded-md" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Content * (Markdown supported)</Label>
+                  <Textarea
+                    value={blogContent}
+                    onChange={(e) => setBlogContent(e.target.value)}
+                    placeholder="Write your blog post content here..."
+                    className="bg-background border-border text-foreground font-mono"
+                    rows={12}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Supports **bold**, *italic*, lists, and other markdown formatting
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-card-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={blogPublished}
+                      onChange={(e) => setBlogPublished(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span>Publish immediately</span>
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveBlogPost} className="gap-2">
+                    <Save className="h-4 w-4" />
+                    {editingBlogPost ? "Update Post" : "Create Post"}
+                  </Button>
+                  {editingBlogPost && (
+                    <Button onClick={resetBlogForm} variant="outline" className="gap-2">
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Existing Posts List */}
+            <div>
+              <h3 className="font-semibold text-card-foreground mb-4">Existing Posts</h3>
+              {isLoadingBlog ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : blogPosts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">No blog posts yet</div>
+              ) : (
+                <div className="space-y-3">
+                  {blogPosts.map((post) => (
+                    <div
+                      key={post.id}
+                      className="flex items-center justify-between p-4 bg-accent/30 rounded-lg border border-border"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-card-foreground">{post.title}</h4>
+                        <p className="text-sm text-muted-foreground">{post.slug}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(post.created_at).toLocaleDateString()} •{" "}
+                          {post.is_published ? "Published" : "Draft"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleEditBlogPost(post)}>
+                          Edit
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteBlogPost(post.id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </Card>
-        </footer>
+        )}
+
+        {/* Updates Tab */}
+        {activeTab === "updates" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Updates Feed Manager</h2>
+
+            {/* Update Creator Form */}
+            <div className="mb-8 p-6 bg-accent/30 rounded-lg border border-border">
+              <h3 className="font-semibold text-card-foreground mb-4">
+                {editingUpdate ? "Edit Update" : "Create New Update"}
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-muted-foreground">Title *</Label>
+                  <Input
+                    value={updateTitle}
+                    onChange={(e) => setUpdateTitle(e.target.value)}
+                    placeholder="Update title"
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Description *</Label>
+                  <Textarea
+                    value={updateDescription}
+                    onChange={(e) => setUpdateDescription(e.target.value)}
+                    placeholder="Brief description of the update"
+                    className="bg-background border-border text-foreground"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-muted-foreground">Icon Image (optional)</Label>
+                  <div className="flex gap-2 items-end mt-2">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUpdateIconUpload}
+                      disabled={uploadingUpdateIcon}
+                      className="bg-background border-border text-foreground"
+                    />
+                    {uploadingUpdateIcon && <span className="text-sm text-muted-foreground">Uploading...</span>}
+                  </div>
+                  {updateIcon && (
+                    <div className="mt-2">
+                      <img src={updateIcon} alt="Icon" className="w-16 h-16 object-cover rounded-md" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-card-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={updateActive}
+                      onChange={(e) => setUpdateActive(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span>Active (show on homepage)</span>
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveUpdate} className="gap-2">
+                    <Save className="h-4 w-4" />
+                    {editingUpdate ? "Update" : "Create Update"}
+                  </Button>
+                  {editingUpdate && (
+                    <Button onClick={resetUpdateForm} variant="outline" className="gap-2">
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Existing Updates List */}
+            <div>
+              <h3 className="font-semibold text-card-foreground mb-4">Existing Updates</h3>
+              {isLoadingUpdates ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : updatePosts.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">No updates yet</div>
+              ) : (
+                <div className="space-y-3">
+                  {updatePosts.map((update) => (
+                    <div
+                      key={update.id}
+                      className="flex items-center justify-between p-4 bg-accent/30 rounded-lg border border-border"
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        {update.icon_url && (
+                          <img src={update.icon_url} alt="" className="w-12 h-12 object-cover rounded-md" />
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-card-foreground">{update.title}</h4>
+                          <p className="text-sm text-muted-foreground">{update.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(update.created_at).toLocaleDateString()} •{" "}
+                            {update.is_active ? "Active" : "Inactive"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleEditUpdate(update)}>
+                          Edit
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteUpdate(update.id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === "settings" && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="text-2xl font-bold mb-6 text-card-foreground">Site Settings</h2>
+
+            {!tickerTableExists && (
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive">
+                <p className="font-semibold mb-2">Ticker Settings Table Missing</p>
+                <p className="text-sm">
+                  Please run scripts/004_add_ticker_settings.sql to enable ticker customization.
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">Text Color</Label>
+                  <Input
+                    type="color"
+                    value={tickerSettings.text_color}
+                    onChange={(e) => setTickerSettings({ ...tickerSettings, text_color: e.target.value })}
+                    className="h-10"
+                  />
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Speed (ms)</Label>
+                  <Input
+                    type="number"
+                    value={tickerSettings.speed}
+                    onChange={(e) => setTickerSettings({ ...tickerSettings, speed: parseInt(e.target.value) })}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-muted-foreground">Ticker Message 1</Label>
+                <Input
+                  value={tickerSettings.ticker_1_text}
+                  onChange={(e) => setTickerSettings({ ...tickerSettings, ticker_1_text: e.target.value })}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+
+              <div>
+                <Label className="text-muted-foreground">Ticker Message 2</Label>
+                <Input
+                  value={tickerSettings.ticker_2_text}
+                  onChange={(e) => setTickerSettings({ ...tickerSettings, ticker_2_text: e.target.value })}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+
+              <div>
+                <Label className="text-muted-foreground">Ticker Message 3</Label>
+                <Input
+                  value={tickerSettings.ticker_3_text}
+                  onChange={(e) => setTickerSettings({ ...tickerSettings, ticker_3_text: e.target.value })}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+
+              <Button onClick={handleSaveTickerSettings} disabled={isSavingSettings || !tickerTableExists}>
+                {isSavingSettings ? "Saving..." : "Save Ticker Settings"}
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Site Content Tab */}
+        {activeTab === "content" && (
+          <Card className="p-6 bg-card border-border">
+            <AdminSiteContentEditor />
+          </Card>
+        )}
       </div>
     </div>
   )

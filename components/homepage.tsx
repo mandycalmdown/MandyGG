@@ -1,623 +1,400 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import Image from "next/image"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
-import MailingListForm from "@/components/MailingListForm"
-import { AnnouncementsTicker } from "@/components/announcements-ticker"
-import { SiteNavigation } from "@/components/site-navigation"
+import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { SiteNavigation } from "@/components/site-navigation";
+import { faqItems } from "@/components/homepage-faq-data";
+import { FeatureCarousel } from "@/components/feature-carousel";
+import "@/styles/mandy-home.css";
+
+const BLOG_IMG_1 = "/images/blog-placeholder.webp"
+const BLOG_IMG_2 = "/images/blog-placeholder.webp"
+
+const BLOG_POSTS = [
+  {
+    slug: "why-thrill-is-different",
+    tag: "PLATFORM REVIEW",
+    date: "APR 3, 2026",
+    title: "WHY THRILL IS ACTUALLY DIFFERENT (AND I MEAN IT THIS TIME)",
+    excerpt: "COMING SOON! I KNOW, I KNOW. CALM DOWN I'M TRYING. THERE'S ONLY ONE OF ME AND I HAVE A GAMBLING PROBLEM TO MAINTAIN.",
+    img: BLOG_IMG_1,
+  },
+  {
+    slug: "casino-red-flags",
+    tag: "ADVICE",
+    date: "MAR 28, 2026",
+    title: "7 RED FLAGS THAT TELL YOU TO LEAVE A CASINO IMMEDIATELY",
+    excerpt: "OKAY FINE, IT'S NOT WRITTEN YET. GIVE ME A SECOND. I'M LITERALLY AT THE TABLES RIGHT NOW. PRIORITIES.",
+    img: BLOG_IMG_2,
+  },
+  {
+    slug: "leaderboard-strategy",
+    tag: "STRATEGY",
+    date: "MAR 21, 2026",
+    title: "HOW TO ACTUALLY COMPETE IN THE WEEKLY LEADERBOARD",
+    excerpt: "COMING SOON! (I'M MANIFESTING THIS ONE.) IT WILL BE GOOD. PROBABLY. CHECK BACK WHEN I'M NOT BUSY LOSING.",
+    img: BLOG_IMG_2,
+  },
+];
+
+const HOLO_TEXT_SRC = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_TEXT_MASK-33yJOP7lDSqCgZJrk17eCG6mcmeOXx.mp4";
+const HOLO_BTN_WEBM = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-vvBqpLnG9SqDfqO5NCxaJ1mHFqE3AU.webm";
+const HOLO_BTN_MP4  = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BUTTON-zrU5QXiUVY9IjiMdNU0qMrdnhBGg9M.mp4";
+const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4";
+
+/* ── Holo text mask: white letters + multiply-blend video ── */
+function HoloText() {
+  return (
+    <video autoPlay loop muted playsInline aria-hidden="true" className="holo-video">
+      <source src={HOLO_TEXT_SRC} type="video/mp4" />
+    </video>
+  );
+}
+
+/* ── Holo button: video fills button background ── */
+function HoloButton({
+  href,
+  external,
+  children,
+  className = "",
+  onClick,
+}: {
+  href?: string;
+  external?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
+  const inner = (
+    <>
+      <video autoPlay loop muted playsInline aria-hidden="true" className="holo-btn__video">
+        <source src={HOLO_BTN_WEBM} type="video/webm" />
+        <source src={HOLO_BTN_MP4} type="video/mp4" />
+      </video>
+      <span className="holo-btn__label">{children}</span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={`holo-button ${className}`}>
+        {inner}
+      </button>
+    );
+  }
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={`holo-button ${className}`}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link href={href!} className={`holo-button ${className}`}>
+      {inner}
+    </Link>
+  );
+}
+
+/* ── Reusable card mouse handlers ── */
+function useCardHandlers() {
+  const onMove = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget as HTMLElement;
+    const r = card.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const rx = ((y - r.height / 2) / (r.height / 2)) * -5;
+    const ry = ((x - r.width  / 2) / (r.width  / 2)) *  5;
+    card.style.setProperty("--rx", `${rx}deg`);
+    card.style.setProperty("--ry", `${ry}deg`);
+    card.style.setProperty("--mx", `${(x / r.width  * 100).toFixed(1)}%`);
+    card.style.setProperty("--my", `${(y / r.height * 100).toFixed(1)}%`);
+    card.style.setProperty("--icon-x", `${((x - r.width  / 2) / (r.width  / 2)) * -12}px`);
+    card.style.setProperty("--icon-y", `${((y - r.height / 2) / (r.height / 2)) * -12}px`);
+  };
+  const onLeave = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget as HTMLElement;
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+    card.style.setProperty("--mx", "50%");
+    card.style.setProperty("--my", "50%");
+    card.style.setProperty("--icon-x", "0px");
+    card.style.setProperty("--icon-y", "0px");
+  };
+  return { onMove, onLeave };
+}
+
+/* ── Holo header tilt handlers ── */
+function useHoloHandlers() {
+  const onMove = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget as HTMLElement;
+    const r  = el.getBoundingClientRect();
+    el.style.setProperty("--rx", `${((e.clientY - r.top)  / r.height - 0.5) * -8}deg`);
+    el.style.setProperty("--ry", `${((e.clientX - r.left) / r.width  - 0.5) *  8}deg`);
+  };
+  const onLeave = (e: React.MouseEvent<HTMLElement>) => {
+    const el = e.currentTarget as HTMLElement;
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+  };
+  return { onMove, onLeave };
+}
 
 export function Homepage() {
-  const [scrollY, setScrollY] = useState(0)
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
-  const [user, setUser] = useState<User | null>(null)
-  const router = useRouter()
-  const supabase = createClient()
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const feedRef = useRef<HTMLDivElement>(null);
 
+  const logoRef = useRef<HTMLDivElement>(null);
+  const card  = useCardHandlers();
+  const holo  = useHoloHandlers();
+
+  // Prevent browser back/forward navigation when swiping horizontally
+  // on the updates feed — same fix applied to the feature carousel.
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY)
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    const el = feedRef.current;
+    if (!el) return;
+    let startX = 0;
+    let startY = 0;
+    let isHoriz: boolean | null = null;
 
-  useEffect(() => {
-    async function checkUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    checkUser()
+    const onStart = (e: TouchEvent) => {
+      startX  = e.touches[0].clientX;
+      startY  = e.touches[0].clientY;
+      isHoriz = null;
+    };
+    const onMove = (e: TouchEvent) => {
+      const dx = Math.abs(e.touches[0].clientX - startX);
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (isHoriz === null && (dx > 4 || dy > 4)) isHoriz = dx >= dy;
+      if (isHoriz) e.preventDefault();
+    };
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove",  onMove,  { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove",  onMove);
+    };
+  }, []);
 
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  const scrollFeed = (dir: "left" | "right") => {
+    if (!feedRef.current) return;
+    const w = feedRef.current.querySelector<HTMLElement>(".update-feed-card")?.offsetWidth ?? 320;
+    feedRef.current.scrollBy({ left: dir === "left" ? -(w + 16) : (w + 16), behavior: "smooth" });
+  };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.refresh()
-  }
+  const announcements = [
+    { tag: "NEW",    variant: "new",    date: "MAR 8, 2026",  title: "$3500 WEEKLY RACE IS LIVE",         body: "Use code MANDY on Thrill.com to start earning towards this week's leaderboard. Top 20 players split the prize pool every week." },
+    { tag: "UPDATE", variant: "update", date: "MAR 5, 2026",  title: "NEW GAMING TOOLS DROPPING SOON",    body: "Bankroll tracker, session logger, and a degenerate calculator are all in the pipeline. Join Telegram for early access." },
+    { tag: "ALERT",  variant: "alert",  date: "MAR 1, 2026",  title: "THRILL BONUS CODE: MANDY",          body: "Deposit bonus is active. Use code MANDY for the best rakeback deal on Thrill. Don't sign up without it." },
+    { tag: "INFO",   variant: "info",   date: "FEB 22, 2026", title: "MANDY.GG IS NOW LIVE",              body: "Welcome to the site. Still building, always improving. Check back for tools, race updates, and whatever chaos comes next." },
+    { tag: "HOT",    variant: "new",    date: "FEB 16, 2026", title: "THRILL VIP LEVEL NOTES ADDED",      body: "VIP notes for wagering pace, reload timing, and perk optimization are now in progress for the next tool drop." },
+  ];
 
   return (
-    <div className="min-h-screen bg-black font-sans">
-      <AnnouncementsTicker />
+    <main className="mandy-home">
+      <SiteNavigation />
 
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(circle at 90% 90%, rgba(0, 255, 159, ${0.1 + scrollY * 0.0002}) 0%, transparent 40%),
-            radial-gradient(circle at 30% 70%, rgba(0, 255, 159, ${0.08 + scrollY * 0.0001}) 0%, transparent 30%),
-            radial-gradient(circle at 70% 30%, rgba(0, 255, 159, ${0.06 + scrollY * 0.0001}) 0%, transparent 35%)
-          `,
-          transition: "background 0.3s ease",
-        }}
-      />
+      {/* ── Hero ── */}
+      <section className="hero" aria-labelledby="hero-title">
+        <div
+          ref={logoRef}
+          className="holo-mask"
+          onMouseMove={holo.onMove}
+          onMouseLeave={holo.onLeave}
+        >
+          <h1 id="hero-title" className="holo-mask__letters mandy-logo-size">MANDY.GG</h1>
+          <HoloText />
+          <span className="holo-sheen" aria-hidden="true" />
+        </div>
+        <p className="hero-tagline">YEAH, I&apos;M A GIRL AND I GAMBLE.</p>
+      </section>
 
-      <div className="relative z-10">
-        <SiteNavigation currentPage="home" />
+      {/* ── Feature Cards Carousel ── */}
+      <section className="features" aria-label="Main features">
+        <FeatureCarousel />
+      </section>
 
-        <section className="relative w-full mb-2">
-          <div className="w-full max-w-6xl mx-auto relative px-2 md:px-0">
-            {/* Desktop Video */}
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="hidden md:block w-full h-auto
-             max-h-[55vh] lg:max-h-[65vh] xl:max-h-[75vh]
-             object-contain"
-              preload="metadata"
-            >
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MANDYGG_VIDEO_BANNER_FINAL-ptsvWmFNYXFpHriXVQD0mLp5P3ohqU.webm" type="video/webm" />
-            </video>
+      {/* ── Updates — holo video background, cards float on top ── */}
+      <div className="updates-bg-wrap" style={{ display: "none" }}>
+        {/* Sticky holo video — scrolls with page, stays in place while content passes */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-hidden="true"
+          className="updates-bg-video"
+        >
+          <source src={HOLO_BG_MP4} type="video/mp4" />
+        </video>
 
-            <video
-              autoPlay={true}
-              loop={true}
-              muted={true}
-              playsInline={true}
-              className="md:hidden w-full h-auto max-w-sm mx-auto object-contain rounded-lg"
-              preload="metadata"
-            >
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/THRILL%20MANDY%20BANNER%20%281000%20x%201000%20px-H2Ne4vrNsZwbdXNFBEbwqQ9puuiphM.MP4" type="video/mp4" />
-            </video>
+        <section className="updates-section" aria-label="Latest updates">
+          <div
+            className="holo-mask"
+            onMouseMove={holo.onMove}
+            onMouseLeave={holo.onLeave}
+          >
+            <span className="holo-mask__letters updates-title-size">UPDATES</span>
+            <HoloText />
+            <span className="holo-sheen" aria-hidden="true" />
           </div>
-        </section>
 
-        <section className="py-2 px-2 text-center md:py-0">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-1 md:mb-2 uppercase tracking-wide">
-              <span className="text-indigo-300 font-black text-6xl">MANDY.GG</span>
-            </h1>
-            <p className="text-lg sm:text-xl max-w-2xl mx-auto leading-tight uppercase tracking-wider text-white font-light md:text-xl">
-              YEAH, I'M A GIRL AND I GAMBLE.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-3 px-3 md:py-[59px] my-2 md:my-5">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-              <Card
-                className={`p-3 md:p-6 lg:p-8 text-center relative rounded-xl md:rounded-2xl border border-white/30 overflow-visible transition-all duration-300 flex flex-col h-[320px] md:h-[400px] ${
-                  hoveredCard === 1 ? "transform scale-105" : ""
-                }`}
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    hoveredCard === 1
-                      ? "0 20px 40px rgba(99, 102, 241, 0.4), 0 0 30px rgba(20, 184, 166, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)"
-                      : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                }}
-                onMouseEnter={() => setHoveredCard(1)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="mb-2 -mt-8 md:-mt-20 relative z-10">
-                  <Image
-                    src="/images/rewards-icon-new.webp"
-                    alt="Rewards - Crypto Casino Bonuses"
-                    width={200}
-                    height={200}
-                    className="mx-auto h-36 w-36 md:h-48 md:w-48 drop-shadow-2xl"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-base md:text-2xl lg:text-3xl font-bold text-white mb-0.5 md:mb-2 uppercase leading-tight">
-                      Rewards
-                    </h3>
-                    <p className="text-gray-200 mb-2 md:mb-4 leading-tight text-xs md:text-base">
-                      WANT MORE BONUSES? USE CODE: MANDY
-                    </p>
-                  </div>
-                  <div className="mt-auto">
-                    <Link href="/rewards">
-                      <Button className="bg-indigo-400 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-indigo-400/30 uppercase text-xs md:text-lg py-2 md:py-3 w-full">
-                        TELL ME MORE
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-
-              <Card
-                className={`p-3 md:p-6 lg:p-8 text-center relative rounded-xl md:rounded-2xl border border-white/30 overflow-visible transition-all duration-300 flex flex-col h-[320px] md:h-[400px] ${
-                  hoveredCard === 2 ? "transform scale-105" : ""
-                }`}
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    hoveredCard === 2
-                      ? "0 20px 40px rgba(99, 102, 241, 0.4), 0 0 30px rgba(20, 184, 166, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)"
-                      : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                }}
-                onMouseEnter={() => setHoveredCard(2)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="mb-2 -mt-8 md:-mt-20 relative z-10">
-                  <Image
-                    src="/images/leaderboard-icon-new.webp"
-                    alt="$3500 Weekly Leaderboard - Crypto Casino Competition"
-                    width={200}
-                    height={200}
-                    className="mx-auto h-36 w-36 md:h-48 md:w-48 drop-shadow-2xl"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-sm md:text-xl lg:text-2xl font-bold text-white mb-0.5 md:mb-2 uppercase leading-tight">
-                      $3500 WEEKLY RACE
-                    </h3>
-                    <p className="text-gray-200 mb-2 md:mb-4 leading-tight text-xs md:text-base">
-                      FORGET MONTHLY LEADERBOARDS, WITH CODE MANDY YOU CAN WAGER TO WIN EVERY WEEK
-                    </p>
-                  </div>
-                  <div className="mt-auto">
-                    <Link href="/leaderboard">
-                      <Button className="bg-indigo-400 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-indigo-400/30 uppercase text-xs md:text-lg py-2 md:py-3 w-full">
-                        VIEW LEADERBOARD
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-
-              <Card
-                className={`p-3 md:p-6 lg:p-8 text-center relative rounded-xl md:rounded-2xl border border-white/30 overflow-visible transition-all duration-300 flex flex-col h-[320px] md:h-[400px] ${
-                  hoveredCard === 3 ? "transform scale-105" : ""
-                }`}
-                style={{
-                  backgroundColor: "rgba(10, 10, 10, 0.95)",
-                  boxShadow:
-                    hoveredCard === 3
-                      ? "0 20px 40px rgba(99, 102, 241, 0.4), 0 0 30px rgba(20, 184, 166, 0.3), 0 0 60px rgba(99, 102, 241, 0.2)"
-                      : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-                }}
-                onMouseEnter={() => setHoveredCard(3)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="mb-2 -mt-8 md:-mt-20 relative z-10">
-                  <Image
-                    src="/images/connect-icon-new.webp"
-                    alt="Connect - Join Crypto Casino Community"
-                    width={200}
-                    height={200}
-                    className="mx-auto h-36 w-36 md:h-48 md:w-48 drop-shadow-2xl"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-base md:text-2xl lg:text-3xl font-bold text-white mb-0.5 md:mb-2 uppercase leading-tight">
-                      CONNECT
-                    </h3>
-                    <p className="text-gray-200 mb-2 md:mb-4 leading-tight text-xs md:text-base">JOIN THE CHAOS</p>
-                  </div>
-                  <div className="mt-auto">
-                    <Link href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer">
-                      <Button className="bg-indigo-400 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-indigo-400/30 uppercase text-xs md:text-lg py-2 md:py-3 w-full">
-                        TELEGRAM
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section id="faq" className="py-4 px-4 gap-px my-[-39px] md:py-[5px] mt-12 md:mt-0">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-4 md:mb-6 text-center uppercase">
-              FREQUENTLY ASKED QUESTIONS
-            </h2>
-            <div className="space-y-3 md:space-y-4">
-              {[
-                {
-                  question: "How can I get the best casino bonuses?",
-                  answer: (
-                    <span>
-                      Sign up through{" "}
-                      <Link
-                        href="https://thrill.com/?r=MANDY"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Thrill.com
-                      </Link>{" "}
-                      with code <code className="bg-gray-800 px-1 rounded">MANDY</code> for exclusive perks, weekly
-                      races, instant lossback, and VIP upgrades.
-                    </span>
-                  ),
-                },
-                {
-                  question: "What's the best Stake alternative?",
-                  answer: (
-                    <span>
-                      <Link
-                        href="https://thrill.com/?r=MANDY"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Thrill
-                      </Link>{" "}
-                      offers the most generous bonuses and fastest payouts for crypto gamblers. You get extra rewards by
-                      joining with code <code className="bg-gray-800 px-1 rounded">MANDY</code>.
-                    </span>
-                  ),
-                },
-                {
-                  question: "Is lossback available instantly?",
-                  answer: (
-                    <span>
-                      Yes! With Mandy.gg, you can request lossback on{" "}
-                      <Link
-                        href="https://thrill.com/?r=MANDY"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Thrill
-                      </Link>{" "}
-                      even without being VIP rank. Message{" "}
-                      <Link
-                        href="https://t.me/MandySupport_bot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        MandySupportBot
-                      </Link>{" "}
-                      on Telegram with your username.
-                    </span>
-                  ),
-                },
-                {
-                  question: "HOW DO I CONTACT YOU?",
-                  answer: (
-                    <span>
-                      Join the{" "}
-                      <Link
-                        href="https://t.me/mandycalmdown"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        official Telegram group
-                      </Link>{" "}
-                      first and follow the{" "}
-                      <Link
-                        href="https://t.me/mandyggannouncements"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        official Telegram channel
-                      </Link>
-                      . If you can't find your answer in the group, message the{" "}
-                      <Link
-                        href="https://t.me/MandySupport_bot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        MandySupport bot
-                      </Link>
-                      . Please do not DM me personally: personal messages go straight to the archive so I will not see
-                      them.
-                    </span>
-                  ),
-                },
-                {
-                  question: "WHAT PERKS COME WITH CODE MANDY?",
-                  answer: (
-                    <div>
-                      <p className="mb-3">
-                        Using code <code className="bg-gray-800 px-1 rounded">MANDY</code> gives you access to:
-                      </p>
-                      <ul className="list-disc list-inside space-y-2 mb-3">
-                        <li>
-                          <strong>Weekly Leaderboard</strong>: Automatic entry into a weekly race with a $3,500 prize
-                          pool. Bigger than many monthly races elsewhere.
-                        </li>
-                        <li>
-                          <strong>Monthly Poker Tournament</strong>: Access to a poker tournament with a $1,000 prize
-                          pool if you hit the $50,000 monthly wagering requirement.
-                        </li>
-                        <li>
-                          <strong>Lossback</strong>: You can request lossback from day one. Most casinos only offer this
-                          at higher VIP levels after millions wagered. To request, send a message to the{" "}
-                          <Link
-                            href="https://t.me/MandySupport_bot"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-teal-400 hover:text-teal-300 underline"
-                          >
-                            Support Bot on Telegram
-                          </Link>
-                          .
-                        </li>
-                        <li>
-                          <strong>Custom High Roller Benefits</strong>: If you are a high volume player, send a message
-                          to the{" "}
-                          <Link
-                            href="https://t.me/MandySupport_bot"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-teal-400 hover:text-teal-300 underline"
-                          >
-                            MandySupportBot
-                          </Link>{" "}
-                          and let's put together your perfect VIP package.
-                        </li>
-                        <li>
-                          <strong>Wager Targets</strong>: We can set personal targets with cash bonuses after
-                          completion.
-                        </li>
-                        <li>
-                          <strong>Events</strong>: Join the{" "}
-                          <Link
-                            href="https://t.me/mandycalmdown"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-teal-400 hover:text-teal-300 underline"
-                          >
-                            Telegram
-                          </Link>{" "}
-                          and get notified for different events that always include awesome cash prizes.
-                        </li>
-                      </ul>
-                      <p className="mb-2">
-                        <strong>More Stuff:</strong>
-                      </p>
-                      <ul className="list-disc list-inside space-y-1 mb-3">
-                        <li>
-                          <strong>Random Poker Games + Crypto Drops</strong> in the Telegram group. Use the command{" "}
-                          <code className="bg-gray-800 px-1 rounded">!mandywallet</code> in the group for details on how
-                          to claim, withdraw, or even do your own drops.
-                        </li>
-                        <li>
-                          <strong>Cashdrop codes a few times a week</strong> for eligible players who meet the wagering
-                          requirement.
-                        </li>
-                        <li>
-                          <strong>Trivia, roll hunts, and whatever else I come up with.</strong> I enjoy hanging out
-                          with you weirdos so I like to make it a fun time.
-                        </li>
-                      </ul>
-                      <p className="text-sm italic bg-gray-800/50 p-2 rounded">
-                        <strong>Reminder on bonuses and rewards:</strong> Think of them as a small rebate for play
-                        you're already planning to do, not a way to profit. You'll almost always lose money on the way
-                        to earning them; they're just nice extras for regulars.
-                      </p>
-                    </div>
-                  ),
-                },
-                {
-                  question: "WHAT CASINO IS THE BEST?",
-                  answer: (
-                    <span>
-                      Currently your best option is{" "}
-                      <Link
-                        href="https://thrill.com/?r=MANDY"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Thrill
-                      </Link>
-                      . Hands down. It's new so they are eager and the bonuses are boosted, but it's been well vetted
-                      and they are very reliable. You'll get the best deal by signing up with code{" "}
-                      <code className="bg-gray-800 px-1 rounded">MANDY</code> at{" "}
-                      <Link
-                        href="https://thrill.com/?r=MANDY"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Thrill
-                      </Link>
-                      .
-                    </span>
-                  ),
-                },
-                {
-                  question: "HOW DO I KNOW IF I USED CODE MANDY?",
-                  answer: (
-                    <span>
-                      Ask support in the live chat or check your profile page. It will show "Referred by: mandycalmdown"
-                      but do it within 24 hours of signing up. After that, you can't add or change a referral code.
-                    </span>
-                  ),
-                },
-                {
-                  question: "I USED YOUR CODE AT THRILL AND I NEED LOSSBACK.",
-                  answer: (
-                    <span>
-                      Send a message to{" "}
-                      <Link
-                        href="https://t.me/MandySupport_bot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        t.me/MandySupport_bot
-                      </Link>{" "}
-                      with your Thrill username and a screenshot of your most recent deposit page.
-                    </span>
-                  ),
-                },
-                {
-                  question: "WHEN I GO TO THE CASINO WEBSITE IT SAYS MY LOCATION IS BLOCKED.",
-                  answer:
-                    "Many people prefer to keep their degen lives private and use a VPN to mask their location. Check out VPN tutorials online for guidance on getting started.",
-                },
-                {
-                  question: "ARE THESE CASINOS REAL? WILL THEY SCAM ME?",
-                  answer:
-                    "Any casino listed on Mandy.gg has been vetted by me. If you're not breaking the terms of service or abusing promos or alts, you should have no issues withdrawing your winnings.",
-                },
-                {
-                  question: "I DON'T USE TELEGRAM. WHAT SHOULD I DO?",
-                  answer: (
-                    <span>
-                      You should download{" "}
-                      <Link
-                        href="https://telegram.org"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-teal-400 hover:text-teal-300 underline"
-                      >
-                        Telegram
-                      </Link>{" "}
-                      and start using it if you don't want to miss events or payouts for leaderboard wins. Right now,
-                      it's the best way to communicate and connect with the community.
-                    </span>
-                  ),
-                },
-              ].map((faq, index) => (
-                <Card
-                  key={index}
-                  className="rounded-xl border border-white/30 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.01]"
-                  style={{
-                    backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow:
-                      index % 2 === 0
-                        ? "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)"
-                        : "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.15), 0 0 40px rgba(20, 184, 166, 0.1)",
-                  }}
+          <div className="updates-feed-wrap">
+            <div ref={feedRef} className="updates-feed" role="list">
+              {announcements.map((item, i) => (
+                <article
+                  key={i}
+                  role="listitem"
+                  className="update-card mandy-card"
+                  onMouseMove={card.onMove}
+                  onMouseLeave={card.onLeave}
                 >
-                  <button
-                    className="w-full px-4 md:px-4 py-1 md:py-1 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                    aria-expanded={expandedFaq === index}
-                    aria-controls={`faq-content-${index}`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-black text-white uppercase text-left text-lg md:text-xl pr-4">
-                        {faq.question}
-                      </h3>
-                      <span
-                        className="text-2xl md:text-3xl transition-transform duration-300 text-primary flex-shrink-0"
-                        style={{
-                          transform: expandedFaq === index ? "rotate(180deg)" : "rotate(0deg)",
-                        }}
-                      >
-                        ↓
-                      </span>
-                    </div>
-                    {expandedFaq === index && (
-                      <div id={`faq-content-${index}`} className="mt-1 md:mt-1 pt-1 border-t border-white/20">
-                        <div className="text-gray-200 text-left text-base md:text-lg lg:text-xl leading-relaxed pb-1">
-                          {typeof faq.answer === "string" ? faq.answer : faq.answer}
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                </Card>
+                  <span className="card-gloss" aria-hidden="true" />
+                  <div className="update-card-top">
+                    <span className={`tag tag--${item.variant}`}>{item.tag}</span>
+                    <time className="update-date">{item.date}</time>
+                  </div>
+                  <h3 className="update-title">{item.title}</h3>
+                  <p className="update-body">{item.body}</p>
+                </article>
               ))}
             </div>
-            <div className="text-center mt-6 md:mt-8">
-              <p className="text-xl md:text-2xl lg:text-4xl mb-4 uppercase font-black text-indigo-200 md:mb-[-14px]">
-                JOIN OUR COMMUNITY ON TELEGRAM TO UNLOCK ALL BENEFITS.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center my-7">
-                <Link href="https://t.me/Mandythrill" target="_blank" rel="noopener noreferrer">
-                  <Button
-                    size="lg"
-                    className="hover:bg-indigo-500 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-indigo-400/30 uppercase text-lg md:text-xl lg:text-2xl bg-indigo-400 w-full sm:w-auto"
-                  >
-                    JOIN TELEGRAM
-                  </Button>
-                </Link>
-              </div>
+            {/* Arrows sit below the feed, flanking it */}
+            <div className="updates-arrows" aria-label="Updates navigation">
+              <button type="button" className="arrow-btn" onClick={() => scrollFeed("left")} aria-label="Previous update">
+                <span className="arrow-btn__chevron arrow-btn__chevron--left" aria-hidden="true" />
+              </button>
+              <button type="button" className="arrow-btn" onClick={() => scrollFeed("right")} aria-label="Next update">
+                <span className="arrow-btn__chevron arrow-btn__chevron--right" aria-hidden="true" />
+              </button>
             </div>
           </div>
         </section>
-
-        <footer className="px-4 mt-6 md:mt-8 pb-4">
-          <Card
-            className="max-w-6xl mx-auto p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/30 transition-all duration-300 hover:scale-[1.01] md:py-[23px] my-[11px]"
-            style={{
-              backgroundColor: "rgba(10, 10, 10, 0.95)",
-              boxShadow:
-                "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(99, 102, 241, 0.1)",
-            }}
-          >
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <Image
-                  src="/images/mandy-logo-menu-icon-white.svg"
-                  alt="Mandy.gg + Thrill Casino - Premier Crypto Casino Partnership"
-                  width={500}
-                  height={200}
-                  className="h-16 md:h-20 w-auto"
-                />
-              </div>
-              <div className="flex flex-wrap justify-center gap-3 md:gap-6 text-sm md:text-lg text-gray-200 mb-3 md:mb-4">
-                <Link href="/privacy" className="hover:text-primary transition-colors uppercase">
-                  PRIVACY POLICY
-                </Link>
-                <Link href="/terms" className="hover:text-primary transition-colors uppercase">
-                  TERMS OF SERVICE
-                </Link>
-                <Link
-                  href="https://t.me/mandysupport_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors uppercase"
-                >
-                  SUPPORT
-                </Link>
-              </div>
-
-              <MailingListForm />
-
-              <p className="text-sm md:text-base text-gray-300 mb-2 uppercase leading-relaxed mt-6">
-                © 2025 MANDY.GG. ALL RIGHTS RESERVED.
-              </p>
-              <p className="text-sm md:text-base text-gray-300 uppercase leading-relaxed">
-                PLAY RESPONSIBLY. CRYPTOCURRENCY GAMBLING INVOLVES RISK. MUST BE 18+ TO PARTICIPATE.
-              </p>
-            </div>
-          </Card>
-        </footer>
       </div>
-    </div>
-  )
+
+      {/* ── Gambling Gossip / Blog ── */}
+      <section className="blog-section" aria-label="Gambling Gossip blog" style={{ display: "none" }}>
+        <div className="blog-header">
+          <div
+            className="holo-mask"
+            onMouseMove={holo.onMove}
+            onMouseLeave={holo.onLeave}
+          >
+            <span className="holo-mask__letters blog-title-size">GAMBLING GOSSIP</span>
+            <HoloText />
+            <span className="holo-sheen" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="blog-grid">
+          {BLOG_POSTS.map((post) => (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="blog-card mandy-card"
+              onMouseMove={card.onMove}
+              onMouseLeave={card.onLeave}
+            >
+              <span className="card-gloss" aria-hidden="true" />
+              <div className="blog-image-wrap" aria-hidden="true" style={{ overflow: "hidden", borderRadius: "8px 8px 0 0", marginBottom: "1rem", aspectRatio: "16/9" }}>
+                <img src={post.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
+              <div className="blog-meta">
+                <span className="tag tag--blue">{post.tag}</span>
+                <span className="blog-date">{post.date}</span>
+              </div>
+              <h3 className="blog-card-title">{post.title}</h3>
+              <p className="blog-card-excerpt">{post.excerpt}</p>
+              <span className="blog-cta">READ MORE →</span>
+            </Link>
+          ))}
+        </div>
+        <div className="blog-more-row">
+          <HoloButton href="/blog" className="btn-sm">MORE</HoloButton>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="faq-section" id="faq" aria-label="FAQ">
+        {/* Outer div handles vertical layout; inner holo-mask is free of transform conflicts */}
+        <div className="faq-title-wrap">
+          <div
+            className="holo-mask"
+            onMouseMove={holo.onMove}
+            onMouseLeave={holo.onLeave}
+          >
+            <span className="holo-mask__letters faq-title-size">F.A.Q.</span>
+            <HoloText />
+            <span className="holo-sheen" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="faq-list">
+          {faqItems.map((item, i) => (
+            <div
+              key={i}
+              className={`faq-item mandy-card${expandedFaq === i ? " faq-item--open" : ""}`}
+              onMouseMove={card.onMove}
+              onMouseLeave={card.onLeave}
+            >
+              <span className="card-gloss" aria-hidden="true" />
+              <button
+                className="faq-q"
+                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                aria-expanded={expandedFaq === i}
+              >
+                <span>{item.question}</span>
+                <span className="faq-chevron" aria-hidden="true" />
+              </button>
+              {expandedFaq === i && (
+                <div className="faq-answer">{item.answer}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="site-footer" aria-label="Site footer">
+        <video autoPlay loop muted playsInline aria-hidden="true" className="footer-video">
+          <source src={HOLO_BG_MP4} type="video/mp4" />
+        </video>
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <span className="footer-logo">MANDY.GG</span>
+            <span className="footer-sub">YEAH, I&apos;M A GIRL AND I GAMBLE.</span>
+            <span className="footer-code" style={{
+              fontSize: "0.62rem",
+              lineHeight: 1.5,
+              display: "inline-block",
+              background: "#000000",
+              color: "#ffffff",
+              padding: "0.5rem 0.75rem",
+              borderRadius: "4px",
+              maxWidth: "320px",
+              opacity: 1,
+            }}>
+              GAMBLING IS FOR ENTERTAINMENT. IF YOU&apos;RE USING YOUR RENT MONEY, THAT&apos;S A DIFFERENT PROBLEM. PLAY RESPONSIBLY. 18+.
+            </span>
+          </div>
+          <nav className="footer-nav" aria-label="Footer nav">
+            <Link href="/how-to-join">HOW TO JOIN</Link>
+            <Link href="/rewards">REWARDS</Link>
+            <Link href="/leaderboard">WEEKLY RACE</Link>
+            <Link href="/tools">TOOLS</Link>
+            <Link href="/blog">GOSSIP</Link>
+            <a href="https://t.me/MandyggChat" target="_blank" rel="noopener noreferrer">TELEGRAM</a>
+            <a href="https://discord.gg/mandygg" target="_blank" rel="noopener noreferrer">DISCORD</a>
+          </nav>
+        </div>
+        <div className="footer-bottom">
+          <span className="footer-copy">© 2026 MANDY.GG — ALL RIGHTS RESERVED</span>
+          <div className="footer-legal">
+            <Link href="/responsible-gambling">RESPONSIBLE GAMBLING</Link>
+            <Link href="/terms">TERMS</Link>
+            <Link href="/privacy">PRIVACY</Link>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
 }

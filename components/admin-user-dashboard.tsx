@@ -380,13 +380,13 @@ export function AdminUserDashboard({ profile }: AdminUserDashboardProps) {
               {/* Stats Error */}
               {statsError && (
                 <Card
-                  className="p-6 rounded-xl border border-yellow-500/30 mb-6"
+                  className="p-6 rounded-xl border border-[#3C7BFF]/30 mb-6"
                   style={{
                     backgroundColor: "rgba(10, 10, 10, 0.95)",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(234, 179, 8, 0.15)",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(60,123,255,0.12)",
                   }}
                 >
-                  <p className="text-yellow-500 text-center">{statsError}</p>
+                  <p className="text-[#3C7BFF] text-center">{statsError}</p>
                 </Card>
               )}
 

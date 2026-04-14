@@ -375,14 +375,7 @@ export async function prefetchAllCommonRanges(forceRefresh = false): Promise<{
     const pastWeek = getPastWeekRange()
     ranges.push(`Past week: ${pastWeek.fromDate} to ${pastWeek.toDate}`)
 
-    // 4. Get Christmas raffle range (Dec 1-25, 2025)
-    const christmasRange = {
-      fromDate: "2025-12-01",
-      toDate: "2025-12-26", // Exclusive
-    }
-    ranges.push(`Christmas: ${christmasRange.fromDate} to ${christmasRange.toDate}`)
-
-    // 5. Get 30-day range for wager history
+    // 4. Get 30-day range for wager history
     const thirtyDaysAgo = new Date(now)
     thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30)
     const thirtyDayRange = {
