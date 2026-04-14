@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { AnnouncementsTicker } from "@/components/announcements-ticker"
 
 const HOLO_BG_MP4 = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/HOLO_BG_FAST-1WSSOyBAdLQZmNScrtDjhoPOGYVLGg.mp4"
 
@@ -26,16 +27,20 @@ const SOCIAL_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer style={{ position: "relative", overflow: "hidden", paddingTop: "3.5rem", paddingBottom: "2rem" }}>
-      {/* Holographic video background */}
-      <video
-        autoPlay loop muted playsInline aria-hidden="true"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
-      >
-        <source src={HOLO_BG_MP4} type="video/mp4" />
-      </video>
+    <footer style={{ position: "relative", overflow: "hidden" }}>
+      {/* Ticker at the top of footer */}
+      <AnnouncementsTicker />
+      
+      <div style={{ paddingTop: "3.5rem", paddingBottom: "2rem" }}>
+        {/* Holographic video background */}
+        <video
+          autoPlay loop muted playsInline aria-hidden="true"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
+        >
+          <source src={HOLO_BG_MP4} type="video/mp4" />
+        </video>
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: "960px", margin: "0 auto", padding: "0 1.5rem" }}>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: "960px", margin: "0 auto", padding: "0 1.5rem" }}>
         {/* Brand */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <p style={{ fontWeight: 900, fontSize: "clamp(2.5rem,10vw,5rem)", color: "#000", letterSpacing: "-0.01em", lineHeight: 1, marginBottom: "0.25rem", fontFamily: "var(--font-poppins), sans-serif" }}>
@@ -105,7 +110,6 @@ export function SiteFooter() {
                 {l.label}
               </a>
             ))}
-          </div>
         </div>
       </div>
     </footer>
