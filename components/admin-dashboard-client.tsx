@@ -532,7 +532,7 @@ export function AdminDashboardClient({ user, profiles: initialProfiles }: AdminD
     try {
       const result = await unlinkAllAccountsAction()
 
-      if (result.success) {
+      if (result.success && result.data) {
         alert(`Success! Unlinked ${result.data.count} accounts.`)
         router.refresh()
       } else {
